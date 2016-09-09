@@ -1,0 +1,21 @@
+[
+{
+    "modid": "ExBombs",
+    "name": "ExBombs",
+    "description": "Add some bombs ",
+    "mcversion": "$mcversion",
+    "version": "$version",
+    "url": "",
+    "updateUrl": "",
+    "authors": [
+        "OhoNou"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [
+    ],
+    "parent":"",
+    "dependencies": [
+    ]
+}
+]
