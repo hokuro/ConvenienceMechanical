@@ -1,4 +1,4 @@
 /.classpath
 /*.launch
-/bin/*
-/run/*
+/bin
+/run
