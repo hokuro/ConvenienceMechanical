@@ -4,18 +4,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModRegisterItem {
 	// 名前
-	public static final String NAME_ITEMOIL = "oil";
-	public static final String NAME_PLASTIC = "plastic";
-	public static final String NAME_HEAVYMATTER = "heavymatter";
-	public static final String NAME_ITEMURANIUM = "uranium";
-	public static final String NAME_ITEMROCKETFUEL = "rocketfuel";
-	public static final String NAME_ITEMBOMB = "bomb";
-	public static final String NAME_ITEMWATERBOMB = "waterbomb";
-	public static final String NAME_ITEMTNTMISSILE = "tntmissile";
-	public static final String NAME_ITEMNCMISSILE = "nuclearemissile";
-	public static final String NAME_ITEMRADAR = "radar";
-	public static final String NAME_ITEMMC = "molotovcoctail";
-	public static final String NAME_ITEMDEFUSER ="defuser";
+	public static final String NAME_ITEMLIQUIDTANK = "liquid_tank";
 
 //	// アイテム
 //	public static final Item item_Oil = new Item()

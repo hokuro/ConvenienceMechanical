@@ -1,5 +1,6 @@
 package mod.cvmachine.core;
 
+import mod.cvmachine.creative.CreativeTabCvMachine;
 import net.minecraft.block.ModRegisterBlock;
 import net.minecraft.item.ModRegisterItem;
 import net.minecraftforge.fml.common.Mod;

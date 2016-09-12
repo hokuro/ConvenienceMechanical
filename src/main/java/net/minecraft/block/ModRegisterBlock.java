@@ -4,9 +4,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModRegisterBlock {
 	// 名前
-	public static final String NAME_BLOCKFUSE = "fuse";
-	public static final String NAME_BLOCKNCBOMB = "nuclearexplosive";
-	public static final String NAME_BLOCKTUNNELBOMB = "tunnelexplosive";
+	public static final String NAME_BLOCKCRASSHER = "machine_crasshaer";
+	public static final String NAME_BLOCKCOMMPLESSER = "machine_complesser";
+	public static final String NAME_BLOCKRECYCLER = "machine_recycler";
+	public static final String NAME_BLOCKLIQUIDPOMP = "machine_liquidpomp";
+	public static final String NAME_BLOCKSTONEGENERATOR = "matchine_stonegenerator";
+	public static final String NAME_BLOCKLAVAGENERATOR = "machine_lavagenerator";
 
 //	// ブロック
 //	public static final Block block_Fuse = new BlockFuse()
