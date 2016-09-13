@@ -11,6 +11,8 @@ public class ModRegisterBlock {
 	public static final String NAME_BLOCKSTONEGENERATOR = "matchine_stonegenerator";
 	public static final String NAME_BLOCKLAVAGENERATOR = "machine_lavagenerator";
 
+	// 色付きの砂
+	// 色付きの砂岩
 //	// ブロック
 //	public static final Block block_Fuse = new BlockFuse()
 //			.setHardness(0.0F)

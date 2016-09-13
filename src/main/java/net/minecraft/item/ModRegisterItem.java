@@ -6,6 +6,10 @@ public class ModRegisterItem {
 	// 名前
 	public static final String NAME_ITEMLIQUIDTANK = "liquid_tank";
 
+	// 屑鉄
+	// 金屑
+	// 砂鉄
+	// スクラップ
 //	// アイテム
 //	public static final Item item_Oil = new Item()
 //			.setUnlocalizedName(NAME_ITEMOIL);
