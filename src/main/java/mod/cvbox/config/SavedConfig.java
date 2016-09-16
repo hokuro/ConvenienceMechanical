@@ -9,9 +9,8 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.config.Property.Type;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-public class CustomConfig extends Configuration{
-
-	public CustomConfig(File _file){
+public class SavedConfig extends Configuration {
+	public SavedConfig(File _file){
 		super(_file);
 	}
 
@@ -73,6 +72,4 @@ public class CustomConfig extends Configuration{
 			properties.put(key, prop);
 		}
 	}
-
-
 }

@@ -1,8 +1,8 @@
-package mod.cvbox.container;
+package mod.cvbox.inventory;
 
 import mod.cvbox.block.BlockCore;
 import mod.cvbox.core.ModCommon;
-import mod.cvbox.entity.TileEntityAutoPlanting;
+import mod.cvbox.tileentity.TileEntityPlanter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -18,11 +18,11 @@ public class ContainerAutoPlanting extends Container {
 	private int zCoord;
 	private EntityPlayer player;
 	private IInventory playerInventory;
-	private TileEntityAutoPlanting TileEntityAP;
+	private TileEntityPlanter TileEntityAP;
 	private int last_dt_selectPriority = 0;
 
 
-	public ContainerAutoPlanting(EntityPlayer pl, TileEntityAutoPlanting te, World wd, int x, int y, int z){
+	public ContainerAutoPlanting(EntityPlayer pl, TileEntityPlanter te, World wd, int x, int y, int z){
 		player = pl;
 		playerInventory = player.inventory;
 		world = wd;
@@ -101,40 +101,6 @@ public class ContainerAutoPlanting extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer entityPlayer){
-		return world.getBlockState(new BlockPos(xCoord,yCoord,zCoord)).getBlock() == BlockCore.instance.getBlock(BlockCore.NAME_AUTOPLANTING);
+		return world.getBlockState(new BlockPos(xCoord,yCoord,zCoord)).getBlock() == BlockCore.block_planter;
 	}
-
-//	@Override
-//	public void onCraftGuiOpened(ICrafting cl){
-//		super.onCraftGuiOpened(cl);
-//		cl.sendProgressBarUpdate(this, 0, this.TileEntityAP.dt_selectPriority);
-//	}
-
-	@Override
-	public void detectAndSendChanges(){
-		super.detectAndSendChanges();
-//        for (int i = 0; i < this.inventorySlots.size(); ++i)
-//        {
-//            ItemStack itemstack = ((Slot)this.inventorySlots.get(i)).getStack();
-//            ItemStack itemstack1 = (ItemStack)this.inventoryItemStacks.get(i);
-//
-//            if (!ItemStack.areItemStacksEqual(itemstack1, itemstack))
-//            {
-//                itemstack1 = itemstack == null ? null : itemstack.copy();
-//                this.inventoryItemStacks.set(i, itemstack1);
-//
-//                for (int j = 0; j < this.crafters.size(); ++j)
-//                {
-//                    ((ICrafting)this.crafters.get(j)).sendSlotContents(this, i, itemstack1);
-//                }
-//            }
-//        }
-	}
-
-//	@Override
-//	public void updateProgressBar(int par1, int par2){
-//		if (par1 == 0){
-//			TileEntityAP.dt_selectPriority = par2;
-//		}
-//	}
 }

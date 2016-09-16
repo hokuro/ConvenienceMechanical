@@ -1,7 +1,7 @@
 package mod.cvbox.event;
 
-import mod.cvbox.gui.ContainerExpBank;
 import mod.cvbox.gui.GuiExpBank;
+import mod.cvbox.inventory.ContainerExpBank;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;

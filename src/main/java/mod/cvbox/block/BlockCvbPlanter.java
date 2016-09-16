@@ -6,10 +6,10 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
 import mod.cvbox.config.ConfigValue;
-import mod.cvbox.core.AutoPlanting;
 import mod.cvbox.core.ModCommon;
+import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.entity.EntityPlayerDM;
-import mod.cvbox.entity.TileEntityAutoPlanting;
+import mod.cvbox.tileentity.TileEntityPlanter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
@@ -48,8 +48,8 @@ public class BlockCvbPlanter extends BlockContainer{
 
 	public BlockCvbPlanter() {
 		super(Material.wood);
-		maxFarland = ConfigValue.General.MaxFarmland;
-		sowDistanceMax = ConfigValue.General.MaxDistance;
+		maxFarland = ConfigValue.Planter.MaxFarmland;
+		sowDistanceMax = ConfigValue.Planter.MaxDistance;
 		chkCounter = 0;
 		chkX = new int[maxFarland + 1];
 		chkY = new int[maxFarland + 1];
@@ -87,7 +87,7 @@ public class BlockCvbPlanter extends BlockContainer{
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int par2){
-		return new TileEntityAutoPlanting();
+		return new TileEntityPlanter();
 	}
 
     /**返しているのは「切り抜き」「ミップマップされた」である。*/
@@ -110,15 +110,11 @@ public class BlockCvbPlanter extends BlockContainer{
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ){
 		if ((!worldIn.isRemote) && (!playerIn.isSneaking())){
-			playerIn.openGui(AutoPlanting.instance, AutoPlanting.guiIdAutoSowSeed, worldIn, pos.getX(),pos.getY(),pos.getZ());
+			playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_PLANTER, worldIn, pos.getX(),pos.getY(),pos.getZ());
 			return true;
 		}
-		if (AutoPlanting.rightClick != true){
-			return true;
-		}
-		int ret;
-		if (playerIn.getHeldEquipment() == null){
-			ret = Exec(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn);
+		if (ConfigValue.Planter.RightClick == true && playerIn.getHeldItemMainhand() == null){
+			Exec(worldIn,pos.getX(),pos.getY(),pos.getZ(),playerIn);
 		}
 		return true;
 	}
@@ -155,7 +151,7 @@ public class BlockCvbPlanter extends BlockContainer{
 	@Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state )
     {
-		TileEntityAutoPlanting tile = (TileEntityAutoPlanting) worldIn.getTileEntity(pos);
+		TileEntityPlanter tile = (TileEntityPlanter) worldIn.getTileEntity(pos);
 		if (tile != null) {
 			for (int i1 = 0; i1 < tile.getSizeInventory(); i1++) {
 				ItemStack itemstack = tile.getStackInSlot(i1);
@@ -213,7 +209,7 @@ public class BlockCvbPlanter extends BlockContainer{
 	}
 
 	private boolean getList(World world, int i, int j, int k){
-		TileEntityAutoPlanting tile = (TileEntityAutoPlanting) world.getTileEntity(new BlockPos(i,j,k));
+		TileEntityPlanter tile = (TileEntityPlanter) world.getTileEntity(new BlockPos(i,j,k));
 
 		int num = 0;
 		for (int m = 0; m < ModCommon.PLANTER_CONTENASIZE; m++){
@@ -274,7 +270,7 @@ public class BlockCvbPlanter extends BlockContainer{
 
 	private int SeedSet(World world, EntityPlayer entityplayer, BlockPos pos){
 		boolean ret;
-		TileEntityAutoPlanting tile = (TileEntityAutoPlanting) world.getTileEntity(pos);
+		TileEntityPlanter tile = (TileEntityPlanter) world.getTileEntity(pos);
 
 		for (int p = 0; p < chkCounter; p++){
 			Block tagPos = world.getBlockState(new BlockPos(chkX[p],chkY[p],chkZ[p])).getBlock();

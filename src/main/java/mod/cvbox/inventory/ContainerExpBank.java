@@ -1,7 +1,5 @@
-package mod.cvbox.gui;
+package mod.cvbox.inventory;
 
-import basashi.expbox.block.BlockCore;
-import mod.cvbox.block.BlockCvbExpBank;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.math.BlockPos;
@@ -22,6 +20,6 @@ public class ContainerExpBank extends Container{
 
 	public boolean canInteractWith(EntityPlayer player){
 		BlockPos pos = new BlockPos(x,y,z);
-		return this.world.getBlockState(pos).getBlock() == BlockCore.getBlock(BlockCvbExpBank.NAME_EXPBANK);
+		return this.world.getBlockState(pos).getBlock() == mod.cvbox.block.BlockCore.block_expbank;
 	}
 }

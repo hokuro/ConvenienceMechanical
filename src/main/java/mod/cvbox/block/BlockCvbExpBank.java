@@ -2,19 +2,22 @@ package mod.cvbox.block;
 
 import java.util.Random;
 
-import basashi.expbox.core.ExpBox;
-import basashi.expbox.core.ModCommon;
 import mod.cvbox.core.FileManager;
+import mod.cvbox.core.ModCommon;
+import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.core.PlayerExpBank;
-import mod.cvbox.network.Message1;
+import mod.cvbox.network.MessageExperienceInfo;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -27,24 +30,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockCvbExpBank extends BlockContainer {
-	public static final PropertyInteger METADATA = PropertyInteger.create("meta", 0, 14);
+
+	public static final PropertyDirection FACING = BlockDirectional.FACING;
 
 	public BlockCvbExpBank(Material material){
 		super(material);
 		setHardness(0.5F);
 		this.setStepSound(SoundType.ANVIL);
 		this.setResistance(2000.0F);
-		this.setDefaultState(blockState.getBaseState().withProperty(METADATA, Integer.valueOf(0)));
-	}
-
-	@Override
-	public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn){
-		TileEntityExpBank ent = (TileEntityExpBank) worldIn.getTileEntity(pos);
-		if((ent == null) || (playerIn == null) || (playerIn.isSneaking())){
-			return;
-		}
-		boolean flag = !ent.get_cover();
-		ent.set_cover(flag);
+		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
 
 	@Override
@@ -62,11 +56,8 @@ public class BlockCvbExpBank extends BlockContainer {
 		if(!worldIn.isRemote){
 			FileManager.read_file(playerIn.getPersistentID().toString());
 		}
-		if(tileEntity.get_cover()){
-			return false;
-		}
 		CreateMessage(playerIn);
-		playerIn.openGui(ExpBox.instance,  ModCommon.GUIID_EXPBANK, worldIn, pos.getX(),pos.getY(),pos.getZ());
+		playerIn.openGui(Mod_ConvenienceBox.instance,  ModCommon.GUIID_EXPBANK, worldIn, pos.getX(),pos.getY(),pos.getZ());
 		return true;
 	}
 
@@ -104,11 +95,6 @@ public class BlockCvbExpBank extends BlockContainer {
 	}
 
 	@Override
-	public int damageDropped(IBlockState state){
-		return ((Integer) state.getValue(METADATA)).intValue();
-	}
-
-	@Override
 	public int quantityDropped(Random random){
 		return 1;
 	}
@@ -122,19 +108,26 @@ public class BlockCvbExpBank extends BlockContainer {
 		}
 	}
 
+    @Override
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    {
+    	EnumFacing fc = BlockPistonBase.getFacingFromEntity(pos, placer);
+        return this.getDefaultState().withProperty(FACING, fc);
+    }
+
 	@Override
 	public IBlockState getStateFromMeta(int meta){
-		return getDefaultState().withProperty(METADATA, Integer.valueOf(meta));
+		return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
 	}
 
 	@Override
 	public int getMetaFromState(IBlockState state){
-		return ((Integer) state.getValue(METADATA).intValue());
+		return ((EnumFacing) state.getValue(FACING)).getIndex();
 	}
 
 	@Override
 	protected BlockStateContainer createBlockState(){
-		return new BlockStateContainer(this, new IProperty[]{METADATA});
+		return new BlockStateContainer(this, new IProperty[]{FACING});
 	}
 
 	public static void update_exp(World worldIn, BlockPos pos, int mode, int Input, EntityPlayer player){
@@ -298,7 +291,7 @@ public class BlockCvbExpBank extends BlockContainer {
 		int player_exp = tmp + bar_exp;
 		PlayerExpBank.player_exp.set(list_no, Integer.valueOf(player_exp));
 		if(player instanceof EntityPlayerMP){
-			ExpBox.INSTANCE.sendTo(new Message1(player_exp, box_exp), (EntityPlayerMP)player);
+			Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExperienceInfo(player_exp, box_exp), (EntityPlayerMP)player);
 		}
 	}
 
@@ -310,7 +303,7 @@ public class BlockCvbExpBank extends BlockContainer {
 		entityplayer.experience += p/entityplayer.xpBarCap();
 		for (entityplayer.experienceTotal += p; entityplayer.experience >= 1.0F; entityplayer.experience /= entityplayer.xpBarCap()){
 			entityplayer.experience = ((entityplayer.experience -1.0F) * entityplayer.xpBarCap());
-					entityplayer.addExperienceLevel(1);;
+					entityplayer.addExperienceLevel(1);
 		}
 	}
 

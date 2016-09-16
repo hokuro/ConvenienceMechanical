@@ -1,4 +1,4 @@
-package mod.cvbox.container;
+package mod.cvbox.inventory;
 
 import mod.cvbox.block.BlockSuperAnvil;
 import net.minecraft.block.BlockAnvil;
@@ -20,9 +20,9 @@ public class SlotRepair extends Slot {
 	    private final BlockPos blockPos;
 
 	    /** The anvil this slot belongs to. */
-	    private final mod.cvbox.container.ContainerRepair anvil;
+	    private final mod.cvbox.inventory.ContainerRepair anvil;
 
-	    public SlotRepair(mod.cvbox.container.ContainerRepair containerRepairBA, IInventory iInventory, int slotIndex, int slotX, int slotY, World world, int blockX, int blockY, int blockZ) {
+	    public SlotRepair(mod.cvbox.inventory.ContainerRepair containerRepairBA, IInventory iInventory, int slotIndex, int slotX, int slotY, World world, int blockX, int blockY, int blockZ) {
 	        super(iInventory, slotIndex, slotX, slotY);
 	        this.anvil = containerRepairBA;
 	        this.theWorld = world;
@@ -54,8 +54,8 @@ public class SlotRepair extends Slot {
 	            entityPlayer.addExperienceLevel(-this.anvil.maximumCost);
 	        }
 
-	        mod.cvbox.container.ContainerRepair.getRepairInputInventory(this.anvil).setInventorySlotContents(1, this.anvil.resultInputStack);
-	        mod.cvbox.container.ContainerRepair.getRepairInputInventory(this.anvil).setInventorySlotContents(0, this.anvil.resultInputStack1);
+	        mod.cvbox.inventory.ContainerRepair.getRepairInputInventory(this.anvil).setInventorySlotContents(1, this.anvil.resultInputStack);
+	        mod.cvbox.inventory.ContainerRepair.getRepairInputInventory(this.anvil).setInventorySlotContents(0, this.anvil.resultInputStack1);
 	        this.anvil.maximumCost = 0;
 
 	        if (!entityPlayer.capabilities.isCreativeMode && !this.theWorld.isRemote &&

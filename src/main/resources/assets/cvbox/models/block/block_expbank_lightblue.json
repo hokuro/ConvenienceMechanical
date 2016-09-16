@@ -1,11 +1,11 @@
 {
-   "parent": "expbox:block/block_expbank_base",
+   "parent": "cvbox:block/block_expbank_base",
    "textures": {
-        "down_body": "expbox:blocks/expbank_body_bottom_lightblue",
-        "up_body":    "expbox:blocks/expbank_body_top_lightblue",
-        "north_body": "expbox:blocks/expbank_body_bottom_lightblue",
-        "south_body": "expbox:blocks/expbank_body_bottom_lightblue",
-        "west_body": "expbox:blocks/expbank_body_bottom_lightblue",
-        "east_body": "expbox:blocks/expbank_body_bottom_lightblue"
+        "down_body": "cvbox:blocks/expbank_body_bottom_lightblue",
+        "up_body":    "cvbox:blocks/expbank_body_top_lightblue",
+        "north_body": "cvbox:blocks/expbank_body_bottom_lightblue",
+        "south_body": "cvbox:blocks/expbank_body_bottom_lightblue",
+        "west_body": "cvbox:blocks/expbank_body_bottom_lightblue",
+        "east_body": "cvbox:blocks/expbank_body_bottom_lightblue"
     }
 }

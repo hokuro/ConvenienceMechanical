@@ -1,9 +1,9 @@
 package mod.cvbox.client;
 
 import mod.cvbox.core.CommonProxy;
-import mod.cvbox.entity.TileEntityAutoPlanting;
-import mod.cvbox.entity.TileEntityAutoPlantingRender;
-import mod.cvbox.tileentity.TileEntityEcpBankRender;
+import mod.cvbox.render.TileEntityEcpBankRender;
+import mod.cvbox.render.TileEntityPlanterRender;
+import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -21,7 +21,7 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	public void registerTileEntity(){
-		ClientRegistry.registerTileEntity(TileEntityAutoPlanting.class, "AutoPlanting", new TileEntityAutoPlantingRender());
+		ClientRegistry.registerTileEntity(TileEntityPlanter.class, "AutoPlanting", new TileEntityPlanterRender());
 		ClientRegistry.registerTileEntity(TileEntityExpBank.class, "ExpBanking", new TileEntityEcpBankRender());
 	}
 

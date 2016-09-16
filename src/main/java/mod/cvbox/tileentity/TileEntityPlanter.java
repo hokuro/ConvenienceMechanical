@@ -1,12 +1,10 @@
-package mod.cvbox.entity;
+package mod.cvbox.tileentity;
 
-import mod.cvbox.container.SlotPlant;
-import mod.cvbox.core.AutoPlanting;
 import mod.cvbox.core.ModCommon;
-import mod.cvbox.network.PacketAutoPlanting;
+import mod.cvbox.inventory.SlotPlant;
+import mod.cvbox.network.MessageHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -16,12 +14,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-public class TileEntityAutoPlanting extends TileEntity  implements IInventory {
+public class TileEntityPlanter extends TileEntity  implements IInventory {
 	private final static int max = ModCommon.PLANTER_CONTENASIZE;
 	private ItemStack[] itemStack = new ItemStack[max];
 	private String customName;
 
-	public TileEntityAutoPlanting(){
+	public TileEntityPlanter(){
 
 	}
 
@@ -212,7 +210,7 @@ public class TileEntityAutoPlanting extends TileEntity  implements IInventory {
 		if(world.isRemote){
 			return;
 		}
-		TileEntityAutoPlanting tile =(TileEntityAutoPlanting)world.getTileEntity(new BlockPos(i,j,k));
+		TileEntityPlanter tile =(TileEntityPlanter)world.getTileEntity(new BlockPos(i,j,k));
 	}
 
 	private void sendPacket(){
@@ -230,27 +228,10 @@ public class TileEntityAutoPlanting extends TileEntity  implements IInventory {
 	}
 
 	private void sendItemInfo(){
-		int[] idList = new int[max];
-		int[] metaList = new int[max];
-		for ( int i = 0; i < max; i++){
-			int meta;
-			int id;
-			if(itemStack[i] != null){
-				Item itemst = itemStack[i].getItem();
-				id = Item.getIdFromItem(itemst);
-				meta = itemStack[i].getItemDamage();
-			}else{
-				id = 0;
-				meta = 0;
-			}
-			idList[i] = id;
-			metaList[i] = meta;
-		}
 		int x = this.pos.getX();
 		int y = this.pos.getY();
 		int z = this.pos.getZ();
-
-		AutoPlanting.packetPipeline2.sendPacketToAllPlayer(new PacketAutoPlanting(idList, metaList, x,y,z));
+		MessageHelper.MessagePlanting(x, y, z);
 	}
 
 

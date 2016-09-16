@@ -2,9 +2,9 @@ package mod.cvbox.gui;
 
 import org.lwjgl.opengl.GL11;
 
-import mod.cvbox.container.ContainerAutoPlanting;
 import mod.cvbox.core.ModCommon;
-import mod.cvbox.entity.TileEntityAutoPlanting;
+import mod.cvbox.inventory.ContainerAutoPlanting;
+import mod.cvbox.tileentity.TileEntityPlanter;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -19,11 +19,11 @@ public class GuiAutoPlanting extends GuiContainer {
 	private int x1;
 	private int y1;
 	private int z1;
-	private TileEntityAutoPlanting tile;
+	private TileEntityPlanter tile;
 	private BlockPos pos;
 
 
-	public GuiAutoPlanting(EntityPlayer player, TileEntityAutoPlanting tileEntity, World world, int x, int y, int z){
+	public GuiAutoPlanting(EntityPlayer player, TileEntityPlanter tileEntity, World world, int x, int y, int z){
 		super(new ContainerAutoPlanting(player, tileEntity, world, x, y, z));
 		xSize = 222;
 		ySize = xSize - 108;

@@ -12,9 +12,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 @Mod(modid = ModCommon.MOD_ID, name = ModCommon.MOD_NAME, version = ModCommon.MOD_VERSION)
-public class Mod_ConvienienceBox {
+public class Mod_ConvenienceBox {
 	@Mod.Instance(ModCommon.MOD_ID)
-	public static Mod_ConvienienceBox instance;
+	public static Mod_ConvenienceBox instance;
 	@SidedProxy(clientSide = ModCommon.MOD_PACKAGE + ModCommon.MOD_CLIENT_SIDE, serverSide = ModCommon.MOD_PACKAGE + ModCommon.MOD_SERVER_SIDE)
 	public static CommonProxy proxy;
 	public static final SimpleNetworkWrapper Net_Instance = NetworkRegistry.INSTANCE.newSimpleChannel(ModCommon.MOD_CHANEL);

@@ -1,6 +1,6 @@
 package mod.cvbox.block;
 
-import mod.cvbox.core.ReAnvile;
+import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +23,7 @@ public class BlockSuperAnvil extends BlockAnvil{
 
 	@Override
 	 public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ){
-		playerIn.openGui(ReAnvile.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(Mod_ConvenienceBox.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 }

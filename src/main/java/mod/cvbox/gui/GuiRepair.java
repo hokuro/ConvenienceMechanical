@@ -23,15 +23,15 @@ import net.minecraft.world.World;
 
 public class GuiRepair extends GuiContainer implements ICrafting {
 
-    private mod.cvbox.container.ContainerRepair repairContainer;
+    private mod.cvbox.inventory.ContainerRepair repairContainer;
     private GuiTextField itemNameField;
     private InventoryPlayer playerInventory;
 
     public GuiRepair(InventoryPlayer playerInventory, World world, int x, int y, int z)
     {
-        super(new mod.cvbox.container.ContainerRepair(playerInventory, world, x, y, z, playerInventory.player));
+        super(new mod.cvbox.inventory.ContainerRepair(playerInventory, world, x, y, z, playerInventory.player));
         this.playerInventory = playerInventory;
-        this.repairContainer = (mod.cvbox.container.ContainerRepair)this.inventorySlots;
+        this.repairContainer = (mod.cvbox.inventory.ContainerRepair)this.inventorySlots;
     }
 
     @Override

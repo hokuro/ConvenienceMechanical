@@ -14,24 +14,17 @@ public class EntityPlayerDM extends EntityPlayer {
 	public boolean canCommandSenderUseCommand(int par1, String par2Str){
 		return false;
 	}
-//
-//	public ChunkCoordComparator getPlayerCoordinates(){
-////		return new ChunkCoordComparator(MathHelper.floor_double(posX),
-////			MathHelper.floor_double(posY+0.5D), MathHelper.floor_double(posZ));
-//	}
 
 	public void addChatMessage(ITextComponent var1){
 	}
 
 	@Override
 	public boolean isSpectator() {
-		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
 
 	@Override
 	public boolean isCreative() {
-		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
 }

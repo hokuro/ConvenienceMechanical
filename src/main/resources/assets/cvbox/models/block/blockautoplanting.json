@@ -1,8 +1,8 @@
 {
     "parent": "block/cube_bottom_top",
     "textures": {
-        "bottom": "autoplanting:blocks/box1_bottom",
-        "top": "autoplanting:blocks/box1_top",
-        "side": "autoplanting:blocks/box1_side"
+        "bottom": "cvbox:blocks/box1_bottom",
+        "top": "cvbox:blocks/box1_top",
+        "side": "cvbox:blocks/box1_side"
     }
 }

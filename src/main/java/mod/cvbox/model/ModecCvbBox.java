@@ -3,10 +3,10 @@ package mod.cvbox.model;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelExpBank extends ModelBase {
+public class ModecCvbBox extends ModelBase{
 	ModelRenderer box;
 
-	public ModelExpBank() {
+	public ModecCvbBox() {
 		this.textureWidth = 128;
 		this.textureHeight = 64;
 

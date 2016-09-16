@@ -10,48 +10,31 @@ public class ConfigValue{
 	public static final int MAX_DISTANCE = 100;
 	private static final ModConfig config = new ModConfig();
 
-	public static class General{
-		@ConfigProperty(comment="Maximum farmland 1-5000")
+	public static void init(FMLPreInitializationEvent event){
+		config.init(new Class<?>[]{Planter.class, ExpBank.class}, event);
+	}
+
+	public static void save(){
+		config.saveConfig();
+	}
+
+	public static class Planter{
+		@ConfigProperty(comment="Maximum farmland 1-5000",max="5000",min="1")
 		public static int MaxFarmland = 1000;
-		@ConfigProperty(comment="Maximum Distance 1-100")
+		@ConfigProperty(comment="Maximum Distance 1-100" ,max="100",min="1")
 		public static int MaxDistance = 30;
 		@ConfigProperty(comment="right click possible [true/false]")
 		public static boolean RightClick = true;
 		@ConfigProperty(comment="enable item ids")
 		public static String TargetItemIds = "";
-
-		public static boolean Check(){
-			boolean ischange = false;
-			if (MaxFarmland < 1) {
-				MaxFarmland = 1;
-				ischange = true;
-			} else if (MaxFarmland > MAX_FIELD) {
-				MaxFarmland = MAX_FIELD;
-				ischange = true;
-			}
-			if (MaxDistance < 1) {
-				MaxDistance = 1;
-				ischange = true;
-			} else if (MaxDistance > MAX_DISTANCE) {
-				MaxDistance = MAX_DISTANCE;
-				ischange = true;
-			}
-			return ischange;
-		}
 	}
 
-	public static void init(FMLPreInitializationEvent event){
-		config.init(new Class<?>[]{General.class}, event);
-		boolean ischagne = General.Check();
-		if(ischagne){config.saveConfig();}
+	public static class ExpBank{
+
+
 	}
 
-
-	public static class ANVILE{
-		@ConfigProperty(comment="legacy anvil mode")
-		public static boolean legacyMode = false;
-		@ConfigProperty(comment="breack chance")
-		public static double breackChance = 12/100;
+	public static class ANVIL{
 		@ConfigProperty(comment="maltiplay")
 		public static double constMultiplaier = 1;
 		@ConfigProperty(comment="rname cost")
@@ -168,15 +151,11 @@ public class ConfigValue{
 
 	}
 
-	public static void save(){
-		config.saveConfig();
-	}
-
 	public static int EnchantmentLimits(String enchName, int defaultLimit) {
 		int ret;
-		if ((ret = ANVILE.EnchantmentLimits(enchName, defaultLimit))<0){
+		if ((ret = ANVIL.EnchantmentLimits(enchName, defaultLimit))<0){
 			save();
-			ANVILE.reLoade();
+			ANVIL.reLoade();
 			ret = defaultLimit;
 		}
 		return ret;
@@ -184,9 +163,9 @@ public class ConfigValue{
 
 	public static String[] EnchantmentBlack(String enchName, String[] array) {
 		String[] ret = null;
-		if ((ret = ANVILE.EnchantmentBlack(enchName, array)) == null){
+		if ((ret = ANVIL.EnchantmentBlack(enchName, array)) == null){
 			save();
-			ANVILE.reLoade();
+			ANVIL.reLoade();
 			ret = array;
 		}
 		return ret;

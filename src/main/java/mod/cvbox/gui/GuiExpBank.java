@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
-import basashi.expbox.core.ExpBox;
 import mod.cvbox.core.PlayerExpBank;
-import mod.cvbox.network.Message0;
+import mod.cvbox.inventory.ContainerExpBank;
+import mod.cvbox.network.MessageHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -279,8 +279,8 @@ public class GuiExpBank extends GuiContainer{
 			this.input_exp = 0;
 			return true;
 		case 11:
-			ExpBox.INSTANCE.sendToServer(new Message0(2, this.xCoord, this.yCoord, this.zCoord,
-					((Integer) player_exp.get(list_no)).intValue()));
+			MessageHelper.MessageExecExperience(2, this.xCoord, this.yCoord, this.zCoord,
+					((Integer) player_exp.get(list_no)).intValue());
 			this.input_exp = 0;
 			return true;
 		case 12:
@@ -289,7 +289,7 @@ public class GuiExpBank extends GuiContainer{
 			} else {
 				exp = ((Integer) box_exp.get(list_no)).intValue();
 			}
-			ExpBox.INSTANCE.sendToServer(new Message0(1, this.xCoord, this.yCoord, this.zCoord, exp));
+			MessageHelper.MessageExecExperience(1, this.xCoord, this.yCoord, this.zCoord, exp);
 			this.input_exp = 0;
 			return true;
 		case 13:
@@ -301,7 +301,7 @@ public class GuiExpBank extends GuiContainer{
 			} else {
 				exp = this.input_exp;
 			}
-			ExpBox.INSTANCE.sendToServer(new Message0(4, this.xCoord, this.yCoord, this.zCoord, exp));
+			MessageHelper.MessageExecExperience(4, this.xCoord, this.yCoord, this.zCoord, exp);
 			this.input_exp = 0;
 			return true;
 		case 14:
@@ -309,7 +309,7 @@ public class GuiExpBank extends GuiContainer{
 				return false;
 			}
 			exp = this.input_exp;
-			ExpBox.INSTANCE.sendToServer(new Message0(3, this.xCoord, this.yCoord, this.zCoord, exp));
+			MessageHelper.MessageExecExperience(3, this.xCoord, this.yCoord, this.zCoord, exp);
 			this.input_exp = 0;
 			return true;
 		case 17:
@@ -317,7 +317,7 @@ public class GuiExpBank extends GuiContainer{
 				return false;
 			}
 			exp = this.input_exp;
-			ExpBox.INSTANCE.sendToServer(new Message0(7, this.xCoord, this.yCoord, this.zCoord, exp));
+			MessageHelper.MessageExecExperience(7, this.xCoord, this.yCoord, this.zCoord, exp);
 			this.input_exp = 0;
 			return true;
 		}

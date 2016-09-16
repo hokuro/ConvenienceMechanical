@@ -1,5 +1,5 @@
 {
-    "parent": "autoplanting:block/blockautoplanting",
+    "parent": "cvbox:block/blockautoplanting",
     "display": {
         "thirdperson_righthand": {
             "rotation": [ 10, -45, 170 ],

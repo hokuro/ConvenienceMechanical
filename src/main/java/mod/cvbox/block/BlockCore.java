@@ -6,7 +6,7 @@ import java.util.Map;
 import mod.cvbox.block.item.ItemCvbExpBank;
 import mod.cvbox.block.item.ItemCvbPlanter;
 import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvienienceBox;
+import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -27,17 +27,17 @@ public class BlockCore{
 	public static final String NAME_STONEGENERATOR = "stonegenerator";
 	public static final String NAME_SUPERANVIL = "superanvil";
 
-	public static final Block block_expbank = new BlockCvbExpBank(Material.rock).setUnlocalizedName(NAME_EXPBANK).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_planter = new BlockCvbPlanter().setHardness(0.3F).setUnlocalizedName(NAME_PLANTER).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_harvester = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_crusher = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_compresser = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_liquidpump = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_recycler = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_separator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_lavagenerator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_stonegenerator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
-	public static final Block block_superanvile = new BlockSuperAnvil().setCreativeTab(Mod_ConvienienceBox.tabCvBox);
+	public static final Block block_expbank = new BlockCvbExpBank(Material.rock).setUnlocalizedName(NAME_EXPBANK).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_planter = new BlockCvbPlanter().setHardness(0.3F).setUnlocalizedName(NAME_PLANTER).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_harvester = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_crusher = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_compresser = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_liquidpump = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_recycler = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_separator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_lavagenerator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_stonegenerator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	public static final Block block_superanvile = new BlockSuperAnvil().setCreativeTab(Mod_ConvenienceBox.tabCvBox);
 
 	public static Map<String,Block> getBlock(){
 		return (new HashMap<String,Block>(){

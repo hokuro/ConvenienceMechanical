@@ -1,5 +1,5 @@
 {
-    "parent": "expbox:block/block_expbank_lightblue",
+    "parent": "cvbox:block/block_expbank_lightblue",
     "display": {
         "thirdperson_righthand":{
             "rotation": [ 10, 180, 170 ],

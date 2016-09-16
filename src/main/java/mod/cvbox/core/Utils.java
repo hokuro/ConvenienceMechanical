@@ -21,21 +21,21 @@ public class Utils {
 				if(compatEnchList.containsKey(id)){
 					int value = enchList2.get(id);
 					int origVal = compatEnchList.get(id);
-					int limit = ConfigValue.General.ENCHANT_LIMITS.get(id);
+					int limit = ConfigValue.ANVIL.ENCHANT_LIMITS.get(id);
 					if (origVal == value && origVal < limit){
 						compatEnchList.put(id, value+1);
-						repairCost += ConfigValue.General.enchantCombineRepairCost * value;
-						repairAmount += ConfigValue.General.enchantCombineRepairBonus * value;
+						repairCost += ConfigValue.ANVIL.enchantCombineRepairCost * value;
+						repairAmount += ConfigValue.ANVIL.enchantCombineRepairBonus * value;
 					}else if(origVal < value){
 						compatEnchList.put(id, value);
-						repairCost += ConfigValue.General.enchantTransferRepairCost * value;
-						repairAmount += ConfigValue.General.enchantTransferRepairBonus * value;
+						repairCost += ConfigValue.ANVIL.enchantTransferRepairCost * value;
+						repairAmount += ConfigValue.ANVIL.enchantTransferRepairBonus * value;
 					}
 				}else if(item.getItem() == Items.enchanted_book || id.canApply(item)){
 					//}else if(item.getItem() == Items.enchanted_book || Enchantment.enchantmentsBookList[id].canApply(item)){
 					boolean found = false;
 					for(Map.Entry<Enchantment,Integer> entry2: compatEnchList.entrySet()){
-						if(contains(ConfigValue.General.ENCHANT_BLACK_LIST.get(entry2.getKey()), getEnchName(id))) {
+						if(contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(entry2.getKey()), getEnchName(id))) {
 							inCompatEnchList.put(id, entry.getValue());
 							found = true;
 							break;
@@ -43,8 +43,8 @@ public class Utils {
 					}
 					if(!found){
 						compatEnchList.put(id, entry.getValue());
-						repairCost += ConfigValue.General.enchantTransferRepairCost * entry.getValue();
-						repairAmount += ConfigValue.General.enchantTransferRepairBonus * entry.getValue();
+						repairCost += ConfigValue.ANVIL.enchantTransferRepairCost * entry.getValue();
+						repairAmount += ConfigValue.ANVIL.enchantTransferRepairBonus * entry.getValue();
 					}
 				}else{
 					inCompatEnchList.put(id, entry.getValue());
@@ -70,6 +70,6 @@ public class Utils {
 	}
 
 	public static boolean canApplyTogether(Enchantment ench1, Enchantment ench2){
-		return contains(ConfigValue.General.ENCHANT_BLACK_LIST.get(ench1.getEnchantmentID(ench1)), getEnchName(ench2));
+		return contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(ench1.getEnchantmentID(ench1)), getEnchName(ench2));
 	}
 }

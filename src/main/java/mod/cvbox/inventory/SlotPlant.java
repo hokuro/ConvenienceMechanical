@@ -1,4 +1,4 @@
-package mod.cvbox.container;
+package mod.cvbox.inventory;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;

@@ -27,9 +27,15 @@ public final class ModCommon {
 
 
 	// GUIID
+	public static final int GUIID_EXPBANK = 0;
+	public static final int GUIID_PLANTER = 5;
+	public static final int GUIID_REPAIR = 100;
 
 
 	// MessageID
+	public static final int MESSID_MESSAGEPLANTING = 0;
+	public static final int MESSID_MESSAGEECECECPERIENCE = 5;
+	public static final int MESSID_MESSAGEEXPERIENCEINFO = 6;
 
 
 
@@ -41,4 +47,8 @@ public final class ModCommon {
 	public static final int PLANTER_MAX_ROW_SLOT = 6;
 	public static final int PLANTER_MAX_COL_SLOT = 9;
 	public static final int PLANTER_CONTENASIZE = PLANTER_MAX_ROW_SLOT*PLANTER_MAX_COL_SLOT;
+
+
+
+
 }

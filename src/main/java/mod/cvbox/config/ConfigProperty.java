@@ -10,4 +10,6 @@ public @interface ConfigProperty {
 	String category() default "general";
 	String comment() default "";
 	boolean isSave() default false;
+	String max() default "";
+	String min() default "";
 }

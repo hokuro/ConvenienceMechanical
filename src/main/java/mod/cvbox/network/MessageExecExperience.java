@@ -8,16 +8,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class Message0 implements IMessage, IMessageHandler<Message0, IMessage> {
+public class MessageExecExperience implements IMessage, IMessageHandler<MessageExecExperience, IMessage> {
 	private int mode;
 	private int x;
 	private int y;
 	private int z;
 	private int exp;
 
-	public Message0(){}
+	public MessageExecExperience(){}
 
-	public Message0(int mode, int x, int y, int z, int exp){
+	public MessageExecExperience(int mode, int x, int y, int z, int exp){
 		this.mode = mode;
 		this.x = x;
 		this.y = y;
@@ -46,7 +46,7 @@ public class Message0 implements IMessage, IMessageHandler<Message0, IMessage> {
 	}
 
 	@Override
-	public IMessage onMessage(Message0 message, MessageContext ctx){
+	public IMessage onMessage(MessageExecExperience message, MessageContext ctx){
 		EntityPlayer entityPlayer = ctx.getServerHandler().playerEntity;
 
 		BlockPos pos = new BlockPos(message.x, message.y, message.z);
