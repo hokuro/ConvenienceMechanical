@@ -1,0 +1,16 @@
+{
+    "ambientocclusion": false,
+    "elements": [
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  {"texture": "#down_body", "cullface": "down" },
+                "up":    {"texture": "#up_body", "cullface": "up" },
+                "north": {"texture": "#north_body", "cullface": "north" },
+                "south": {"texture": "#south_body", "cullface": "south" },
+                "west":  {"texture": "#west_body", "cullface": "west" },
+                "east":  {"texture": "#east_body", "cullface": "east" }
+            }
+        }
+    ]
+}

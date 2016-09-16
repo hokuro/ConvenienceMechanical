@@ -1,0 +1,11 @@
+{
+   "parent": "expbox:block/block_expbank_base",
+   "textures": {
+        "down_body": "expbox:blocks/expbank_body_bottom_purple",
+        "up_body":    "expbox:blocks/expbank_body_top_purple",
+        "north_body": "expbox:blocks/expbank_body_bottom_purple",
+        "south_body": "expbox:blocks/expbank_body_bottom_purple",
+        "west_body": "expbox:blocks/expbank_body_bottom_purple",
+        "east_body": "expbox:blocks/expbank_body_bottom_purple"
+    }
+}
