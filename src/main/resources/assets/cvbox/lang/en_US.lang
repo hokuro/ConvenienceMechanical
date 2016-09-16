@@ -17,3 +17,10 @@ gui.button_dep=DEP
 gui.button_wd=WD
 gui.button_setlv=Set Level
 error.open_message=You can't open ExpContainer on this dimension.
+tile.blockautoplanting.name=PlantingBox
+mess.blockAutoPlanting.text.button0=Filter
+mess.blockAutoPlanting.text.button1=Chest
+mess.blockAutoPlanting.text.priority=Priority
+
+
+

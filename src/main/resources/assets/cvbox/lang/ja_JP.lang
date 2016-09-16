@@ -17,3 +17,8 @@ gui.button_dep=預入
 gui.button_wd=引出
 gui.button_setlv=レベルをセット
 error.open_message=このディメンションではExpContainerは無効化されています
+tile.blockautoplanting.name=種蒔機
+mess.blockAutoPlanting.text.button0=フィルタ
+mess.blockAutoPlanting.text.button1=チェスト
+mess.blockAutoPlanting.text.priority=優先
+
