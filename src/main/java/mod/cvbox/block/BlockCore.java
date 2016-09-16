@@ -3,13 +3,14 @@ package mod.cvbox.block;
 import java.util.HashMap;
 import java.util.Map;
 
-import mod.cvbox.block.item.ItemCvbPlanter;
 import mod.cvbox.block.item.ItemCvbExpBank;
+import mod.cvbox.block.item.ItemCvbPlanter;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvienienceBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemAnvilBlock;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,6 +25,7 @@ public class BlockCore{
 	public static final String NAME_SEPARATOR = "separator";
 	public static final String NAME_LAVAGENERATOR = "lavagenerator";
 	public static final String NAME_STONEGENERATOR = "stonegenerator";
+	public static final String NAME_SUPERANVIL = "superanvil";
 
 	public static final Block block_expbank = new BlockCvbExpBank(Material.rock).setUnlocalizedName(NAME_EXPBANK).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
 	public static final Block block_planter = new BlockCvbPlanter().setHardness(0.3F).setUnlocalizedName(NAME_PLANTER).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
@@ -35,6 +37,7 @@ public class BlockCore{
 	public static final Block block_separator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
 	public static final Block block_lavagenerator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
 	public static final Block block_stonegenerator = new Block(Material.rock).setCreativeTab(Mod_ConvienienceBox.tabCvBox);
+	public static final Block block_superanvile = new BlockSuperAnvil().setCreativeTab(Mod_ConvienienceBox.tabCvBox);
 
 	public static Map<String,Block> getBlock(){
 		return (new HashMap<String,Block>(){
@@ -48,6 +51,7 @@ public class BlockCore{
 			{put(NAME_SEPARATOR, block_separator);}
 			{put(NAME_LAVAGENERATOR, block_lavagenerator);}
 			{put(NAME_STONEGENERATOR, block_stonegenerator);}
+			{put(NAME_SUPERANVIL, block_superanvile);}
 		});
 	}
 
@@ -63,6 +67,7 @@ public class BlockCore{
 			{put(NAME_SEPARATOR, new ItemBlock(block_separator));}
 			{put(NAME_LAVAGENERATOR, new ItemBlock(block_lavagenerator));}
 			{put(NAME_STONEGENERATOR, new ItemBlock(block_stonegenerator));}
+			{put(NAME_SUPERANVIL, new ItemAnvilBlock(block_superanvile));}
 		});
 	}
 	public static Map<String,ResourceLocation[]> getResource(){
@@ -93,6 +98,10 @@ public class BlockCore{
 			{put(NAME_SEPARATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SEPARATOR)});}
 			{put(NAME_LAVAGENERATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAGENERATOR)});}
 			{put(NAME_STONEGENERATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_STONEGENERATOR)});}
+			{put(NAME_SUPERANVIL, new ResourceLocation[]{
+					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_intact"),
+					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_slightly_damaged"),
+					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_very_damaged")});}
 		});
 
 	}
