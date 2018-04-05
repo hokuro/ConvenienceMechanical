@@ -90,7 +90,7 @@ public class ContainerAutoPlanting extends Container {
 					return null;
 				}
 			}
-			if (destItemStack.stackSize == 0) {
+			if (destItemStack.getCount() == 0) {
 				slot.putStack(null);
 			} else {
 				slot.onSlotChanged();

@@ -27,15 +27,22 @@ public final class ModCommon {
 
 
 	// GUIID
-	public static final int GUIID_EXPBANK = 0;
-	public static final int GUIID_PLANTER = 5;
-	public static final int GUIID_REPAIR = 100;
+	public static final int GUIID_EXPBANK = 1;
+	public static final int GUIID_EXENCHANTER = 2;
+	public static final int GUIID_PLANTER = 101;
+	public static final int GUIID_REPAIR = 201;
+
+	// GUINAME
+	public static final String GUIID_EXENCHANTMENT = "exenchantment";
 
 
 	// MessageID
-	public static final int MESSID_MESSAGEPLANTING = 0;
-	public static final int MESSID_MESSAGEECECECPERIENCE = 5;
-	public static final int MESSID_MESSAGEEXPERIENCEINFO = 6;
+	public static final int MESSID_MESSAGEPLANTING = 101;
+	public static final int MESSID_MESSAGEECECECPERIENCE = 1;
+	public static final int MESSID_MESSAGEEXPERIENCEINFO = 2;
+	public static final int MESSID_MESSAGEUPDATEENCHANT = 3;
+	public static final int MESSID_MESSAGECLEARENCHANT = 4;
+	public static final int MESSID_MESSAGEEXECENCHANT = 5;
 
 
 
@@ -47,6 +54,12 @@ public final class ModCommon {
 	public static final int PLANTER_MAX_ROW_SLOT = 6;
 	public static final int PLANTER_MAX_COL_SLOT = 9;
 	public static final int PLANTER_CONTENASIZE = PLANTER_MAX_ROW_SLOT*PLANTER_MAX_COL_SLOT;
+
+
+
+
+
+
 
 
 

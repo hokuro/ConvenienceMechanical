@@ -3,106 +3,230 @@ package mod.cvbox.block;
 import java.util.HashMap;
 import java.util.Map;
 
-import mod.cvbox.block.item.ItemCvbExpBank;
-import mod.cvbox.block.item.ItemCvbPlanter;
+import mod.cvbox.block.item.ItemExpBank;
+import mod.cvbox.block.item.ItemPlanter;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemAnvilBlock;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BlockCore{
-	public static final String NAME_EXPBANK = "expbank";
-	public static final String NAME_PLANTER = "planter";
-	public static final String NAME_HARVESTER = "harvester";
-	public static final String NAME_CRUSHER = "crusher";
-	public static final String NAME_COMPRESSER = "compresser";
-	public static final String NAME_LIQUIDPUMP = "liquidpump";
-	public static final String NAME_RECYCLER = "recycler";
-	public static final String NAME_SEPARATOR = "separator";
-	public static final String NAME_LAVAGENERATOR = "lavagenerator";
-	public static final String NAME_STONEGENERATOR = "stonegenerator";
-	public static final String NAME_SUPERANVIL = "superanvil";
 
-	public static final Block block_expbank = new BlockCvbExpBank(Material.rock).setUnlocalizedName(NAME_EXPBANK).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_planter = new BlockCvbPlanter().setHardness(0.3F).setUnlocalizedName(NAME_PLANTER).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_harvester = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_crusher = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_compresser = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_liquidpump = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_recycler = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_separator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_lavagenerator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_stonegenerator = new Block(Material.rock).setCreativeTab(Mod_ConvenienceBox.tabCvBox);
-	public static final Block block_superanvile = new BlockSuperAnvil().setCreativeTab(Mod_ConvenienceBox.tabCvBox);
+	// 工房系
+	public static final String NAME_EXPBANK = "expbank";			// 経験値貯金箱
+	public static final String NAME_EXENCHANTER = "exenchanter";	// スーパーエンチャントテーブル
+	public static final String NAME_EXANVIL ="exanvil";				// スーパーアンビル
 
-	public static Map<String,Block> getBlock(){
-		return (new HashMap<String,Block>(){
-			{put(NAME_EXPBANK, block_expbank);}
-			{put(NAME_PLANTER, block_planter);}
-			{put(NAME_HARVESTER, block_harvester);}
-			{put(NAME_CRUSHER, block_crusher);}
-			{put(NAME_COMPRESSER, block_compresser);}
-			{put(NAME_LIQUIDPUMP, block_liquidpump);}
-			{put(NAME_RECYCLER, block_recycler);}
-			{put(NAME_SEPARATOR, block_separator);}
-			{put(NAME_LAVAGENERATOR, block_lavagenerator);}
-			{put(NAME_STONEGENERATOR, block_stonegenerator);}
-			{put(NAME_SUPERANVIL, block_superanvile);}
-		});
-	}
+	// 農業系
+	public static final String NAME_PLANTER = "planter";			// 種まき機
+	public static final String NAME_HARVESTER = "harvester";		//　収穫機
 
-	public static Map<String,Item> getItem(){
-		return (new HashMap<String,Item>(){
-			{put(NAME_EXPBANK, new ItemCvbExpBank(block_expbank));}
-			{put(NAME_PLANTER, new ItemCvbPlanter(block_planter));}
-			{put(NAME_HARVESTER, new ItemBlock(block_harvester));}
-			{put(NAME_CRUSHER, new ItemBlock(block_crusher));}
-			{put(NAME_COMPRESSER, new ItemBlock(block_compresser));}
-			{put(NAME_LIQUIDPUMP, new ItemBlock(block_liquidpump));}
-			{put(NAME_RECYCLER, new ItemBlock(block_recycler));}
-			{put(NAME_SEPARATOR, new ItemBlock(block_separator));}
-			{put(NAME_LAVAGENERATOR, new ItemBlock(block_lavagenerator));}
-			{put(NAME_STONEGENERATOR, new ItemBlock(block_stonegenerator));}
-			{put(NAME_SUPERANVIL, new ItemAnvilBlock(block_superanvile));}
-		});
-	}
-	public static Map<String,ResourceLocation[]> getResource(){
-		return (new HashMap<String,ResourceLocation[]>(){
-			{put(NAME_EXPBANK, new ResourceLocation[]{
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_orange"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_magenta"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_lightblue"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_yellow"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_pink"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_lime"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_gray"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_lightgray"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_cyan"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_purple"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_blue"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_brown"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_green"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_red"),
-					new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank_black")});}
+	// 工業系
+	public static final String NAME_ICEMAKER = "icemaker";			// 製氷機
+	public static final String NAME_LAVAMAKER = "lavamaker";		// 溶解機
+	public static final String NAME_DESTROYER = "destroyer";		// 破砕機
+	public static final String NAME_SETTER = "setter";				// 配置機
+	public static final String NAME_KIRER = "kirer";				// 屠殺機
+	public static final String NAME_EXCOLLECTOR = "excollector";	// 経験値収集機
+	public static final String NAME_CRUSSHER = "crussher";			// 粉砕機
+	public static final String NAME_COMPLESSER = "commpleser";		// 圧縮機
+
+
+
+
+	public static Block block_expbank;
+	public static Block block_exenchanter;
+	public static Block block_exanvil;
+
+	public static Block block_planter;
+	public static Block block_harvester;
+
+	public static Block block_icemaker;
+	public static Block block_lavamaker;
+	public static Block block_destroyer;
+	public static Block block_setter;
+	public static Block block_kirer;
+	public static Block block_excollector;
+	public static Block block_crusher;
+	public static Block block_compresser;
+
+	private static final String[] NAME_LIST = new String[]{
+			 NAME_EXPBANK,
+			 NAME_EXENCHANTER,
+//			 NAME_EXANVIL,
+
+			 NAME_PLANTER,
+			 NAME_HARVESTER,
+
+//			 NAME_ICEMAKER,
+//			 NAME_LAVAMAKER,
+//			 NAME_DESTROYER,
+//			 NAME_SETTER,
+//			 NAME_KIRER,
+//			 NAME_EXCOLLECTOR,
+//			 NAME_CRUSSHER,
+//			 NAME_COMPLESSER,
+	};
+
+	private static Map<String,Block> blockMap;
+	private static Map<String,Item> itemMap;
+	private static Map<String,ResourceLocation[]> resourceMap;
+
+	private static void init(){
+		// 経験値貯金箱
+		block_expbank = new BlockExpBank(Material.ROCK)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK)
+				.setUnlocalizedName(NAME_EXPBANK)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		// エンチャント台
+		block_exenchanter = new BlockExEnchantmentTable()
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER)
+				.setUnlocalizedName(NAME_EXENCHANTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_exanvil = new Block(Material.ANVIL)
+		.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL)
+		.setUnlocalizedName(NAME_EXANVIL)
+		.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		// 種まき機
+		block_planter = new BlockPlanter()
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER)
+				.setUnlocalizedName(NAME_PLANTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+		// 収穫機
+		block_harvester = new Block(Material.ROCK)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER)
+				.setUnlocalizedName(NAME_HARVESTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_icemaker = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER)
+				.setUnlocalizedName(NAME_ICEMAKER)
+
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+		block_lavamaker = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER)
+				.setUnlocalizedName(NAME_LAVAMAKER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_destroyer = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER)
+				.setUnlocalizedName(NAME_DESTROYER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_setter = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER)
+				.setUnlocalizedName(NAME_SETTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_kirer = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KIRER)
+				.setUnlocalizedName(NAME_KIRER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_excollector = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
+				.setUnlocalizedName(NAME_EXCOLLECTOR)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_crusher = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER)
+				.setUnlocalizedName(NAME_CRUSSHER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+		block_compresser = new Block(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER)
+				.setUnlocalizedName(NAME_COMPLESSER)
+				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+
+
+
+		blockMap = new HashMap<String,Block>(){
+			{put(NAME_EXPBANK,block_expbank);}
+			{put(NAME_EXENCHANTER,block_exenchanter);}
+			{put(NAME_EXANVIL,block_exanvil);}
+
+			{put(NAME_PLANTER,block_planter);}
+			{put(NAME_HARVESTER,block_harvester);}
+
+			{put(NAME_ICEMAKER,block_icemaker);}
+			{put(NAME_LAVAMAKER,block_lavamaker);}
+			{put( NAME_DESTROYER,block_destroyer);}
+			{put(NAME_SETTER,block_setter);}
+			{put(NAME_KIRER,block_kirer);}
+			{put(NAME_EXCOLLECTOR,block_excollector);}
+			{put(NAME_CRUSSHER,block_crusher);}
+			{put(NAME_COMPLESSER,block_compresser);}
+		};
+
+		itemMap = new HashMap<String,Item>(){
+			{put(NAME_EXPBANK,new ItemExpBank(block_expbank).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK));}
+			{put(NAME_EXENCHANTER, new ItemBlock(block_exenchanter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER));}
+			{put(NAME_EXANVIL, new ItemBlock(block_exanvil).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL));}
+
+			{put(NAME_PLANTER, new ItemPlanter(block_planter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER));}
+			{put(NAME_HARVESTER, new ItemBlock(block_harvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER));}
+
+			{put(NAME_ICEMAKER, new ItemBlock(block_icemaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER));}
+			{put(NAME_LAVAMAKER, new ItemBlock(block_lavamaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER));}
+			{put(NAME_DESTROYER, new ItemBlock(block_destroyer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER));}
+			{put(NAME_SETTER, new ItemBlock(block_setter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER));}
+			{put(NAME_KIRER, new ItemBlock(block_kirer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KIRER));}
+			{put(NAME_EXCOLLECTOR, new ItemBlock(block_excollector).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR));}
+			{put(NAME_CRUSSHER, new ItemBlock(block_crusher).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
+			{put(NAME_COMPLESSER, new ItemBlock(block_compresser).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
+		};
+
+
+		resourceMap = new HashMap<String,ResourceLocation[]>(){
+			{put(NAME_EXPBANK, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank")});}
+
+			{put(NAME_EXENCHANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXENCHANTER)});}
+			{put(NAME_EXANVIL, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXANVIL)});}
+
 			{put(NAME_PLANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_PLANTER)});}
 			{put(NAME_HARVESTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_HARVESTER)});}
-			{put(NAME_CRUSHER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_CRUSHER)});}
-			{put(NAME_COMPRESSER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_COMPRESSER)});}
-			{put(NAME_LIQUIDPUMP, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LIQUIDPUMP)});}
-			{put(NAME_RECYCLER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_RECYCLER)});}
-			{put(NAME_SEPARATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SEPARATOR)});}
-			{put(NAME_LAVAGENERATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAGENERATOR)});}
-			{put(NAME_STONEGENERATOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_STONEGENERATOR)});}
-			{put(NAME_SUPERANVIL, new ResourceLocation[]{
-					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_intact"),
-					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_slightly_damaged"),
-					new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SUPERANVIL+"_very_damaged")});}
-		});
 
+			{put(NAME_ICEMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_ICEMAKER)});}
+			{put(NAME_LAVAMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAMAKER)});}
+			{put(NAME_DESTROYER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_DESTROYER)});}
+			{put(NAME_SETTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SETTER)});}
+			{put(NAME_KIRER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_KIRER)});}
+			{put(NAME_EXCOLLECTOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXCOLLECTOR)});}
+			{put(NAME_CRUSSHER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_CRUSSHER)});}
+			{put(NAME_COMPLESSER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_COMPLESSER)});}
+		};
+	}
+
+
+	public static void register(FMLPreInitializationEvent event){
+		init();
+		for (String key: NAME_LIST){
+			ForgeRegistries.BLOCKS.register(blockMap.get(key));
+			ForgeRegistries.ITEMS.register(itemMap.get(key));
+		}
+
+		if (event.getSide().isClient()){
+			for (String key : NAME_LIST){
+				Item witem = itemMap.get(key);
+				ResourceLocation[] wresource = resourceMap.get(key);
+				if (wresource.length > 1){
+					ModelLoader.registerItemVariants(witem, wresource);
+				}
+				for (int i = 0; i < wresource.length; i++){
+					ModelLoader.setCustomModelResourceLocation(witem, i,
+							new ModelResourceLocation(wresource[i], "inventory"));
+				}
+			}
+		}
 	}
 }

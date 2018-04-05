@@ -2,11 +2,11 @@ package mod.cvbox.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityExpBank extends TileEntity{
+	public static final String REGISTER_NAME = "expbanck";
 	private int input_exp = 0;
 	private int box_exp = 0;
 	private String player_name = "";
@@ -57,6 +57,7 @@ public class TileEntityExpBank extends TileEntity{
 		return this.box_exp;
 	}
 
+	@Override
 	public void readFromNBT(NBTTagCompound nbt){
 		super.readFromNBT(nbt);;
 		input_exp = nbt.getInteger("input_exp");
@@ -67,7 +68,8 @@ public class TileEntityExpBank extends TileEntity{
 		angle = nbt.getFloat("angle");
 	}
 
-	public void writeToNBT(NBTTagCompound nbt){
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
 		super.writeToNBT(nbt);
 		nbt.setInteger("input_exp", input_exp);
 		nbt.setInteger("box_exp", box_exp);
@@ -75,48 +77,19 @@ public class TileEntityExpBank extends TileEntity{
 		nbt.setInteger("face", face);
 		nbt.setBoolean("cover", cover_open);
 		nbt.setFloat("angle", angle);
+		return nbt;
 
 	}
 
-	public Packet getDescriptionPacket(){
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket(){
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		writeToNBT(nbtTagCompound);
 		return new SPacketUpdateTileEntity(pos, 1, nbtTagCompound);
 	}
 
+	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
 		readFromNBT(pkt.getNbtCompound());
 	}
-
-
-	public void update(){
-		if((cover_open) && (angle < 0.0F)){
-			angle +=0.1F;
-			if(angle >= 0.0F){
-				angle = 0.0F;
-			}
-			send_packet(pos.getX(), pos.getY(), pos.getZ(), cover_open);
-		}
-		if((!cover_open) && (angle > -2.1F)){
-			angle -= 0.1F;
-			if(angle >= 0.0F){
-				angle = 0.0F;
-			}
-			send_packet(pos.getX(),pos.getY(),pos.getZ(),cover_open);
-		}
-	}
-
-	public void send_packet(int x, int y, int z, boolean flag){
-//		ArrayList<EntityPlayerMP> allp = new ArrayList<EntityPlayerMP>();
-//		for (int i = 0; i < MinecraftServer.getServer().worldServers.length; i++) {
-//			ListIterator itl = MinecraftServer.getServer().worldServers[i].playerEntities.listIterator();
-//			while (itl.hasNext()) {
-//				allp.add((EntityPlayerMP) itl.next());
-//			}
-//		}
-//		for (EntityPlayerMP player : allp) {
-//			ExpBox.INSTANCE.sendTo(new Message2(x, y, z), player);
-//		}
-	}
-
 }

@@ -8,10 +8,9 @@ import mod.cvbox.model.ModelPlanter;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class TileEntityPlanterRender extends TileEntitySpecialRenderer{
+public class TileEntityPlanterRender extends TileEntitySpecialRenderer<TileEntityPlanter>{
 
 	private static final ResourceLocation mainResource = new ResourceLocation("cvbox:textures/blocks/tileentity_planting.png");
 
@@ -22,7 +21,7 @@ public class TileEntityPlanterRender extends TileEntitySpecialRenderer{
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void render(TileEntityPlanter te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		TileEntityPlanter tile = (TileEntityPlanter) te;
 		mdl = new ModelPlanter();
 		GL11.glPushMatrix();

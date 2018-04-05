@@ -11,11 +11,30 @@ public class ConfigValue{
 	private static final ModConfig config = new ModConfig();
 
 	public static void init(FMLPreInitializationEvent event){
-		config.init(new Class<?>[]{Planter.class, ExpBank.class}, event);
+		config.init(new Class<?>[]{
+//			ExpBank.class
+			ExEnchant.class
+		}, event);
 	}
 
 	public static void save(){
 		config.saveConfig();
+	}
+
+	public static class General{
+		@ConfigProperty(comment="Maximum farmland 1-5000",max="5000",min="1")
+		public static String[] ENCHANT_LIMITS;
+
+	}
+
+	public static class ExpBank{
+	}
+
+	public static class ExEnchant{
+		@ConfigProperty(comment="config.comment.exenchant.tributeitemlevel",max="3",min="1")
+		public static int TributeItemLevel  = 2;
+		@ConfigProperty(comment="config.comment.exenchant.tributeitemcount",max="64",min="10")
+		public static int TrubuteItemCount = 10;
 	}
 
 	public static class Planter{
@@ -29,10 +48,7 @@ public class ConfigValue{
 		public static String TargetItemIds = "";
 	}
 
-	public static class ExpBank{
 
-
-	}
 
 	public static class ANVIL{
 		@ConfigProperty(comment="maltiplay")

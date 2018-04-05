@@ -31,15 +31,15 @@ public class Utils {
 						repairCost += ConfigValue.ANVIL.enchantTransferRepairCost * value;
 						repairAmount += ConfigValue.ANVIL.enchantTransferRepairBonus * value;
 					}
-				}else if(item.getItem() == Items.enchanted_book || id.canApply(item)){
+				}else if(item.getItem() == Items.ENCHANTED_BOOK || id.canApply(item)){
 					//}else if(item.getItem() == Items.enchanted_book || Enchantment.enchantmentsBookList[id].canApply(item)){
 					boolean found = false;
 					for(Map.Entry<Enchantment,Integer> entry2: compatEnchList.entrySet()){
-						if(contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(entry2.getKey()), getEnchName(id))) {
-							inCompatEnchList.put(id, entry.getValue());
-							found = true;
-							break;
-						}
+//						if(contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(entry2.getKey()), getEnchName(id))) {
+//							inCompatEnchList.put(id, entry.getValue());
+//							found = true;
+//							break;
+//						}
 					}
 					if(!found){
 						compatEnchList.put(id, entry.getValue());
@@ -55,21 +55,21 @@ public class Utils {
 	}
 
 	public static String getEnchName(Enchantment ench){
-		return ench.getName().substring(ench.getName().indexOf('.') + 1);
+		return net.minecraft.util.text.translation.I18n.translateToLocal(ench.getName());
 	}
 
-	public static boolean contains(String[] array, String target){
-		if (array != null){
-			for (String value : array){
-				if (value != null && value.equals(target)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	public static boolean canApplyTogether(Enchantment ench1, Enchantment ench2){
-		return contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(ench1.getEnchantmentID(ench1)), getEnchName(ench2));
-	}
+//	public static boolean contains(String[] array, String target){
+//		if (array != null){
+//			for (String value : array){
+//				if (value != null && value.equals(target)){
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
+//
+//	public static boolean canApplyTogether(Enchantment ench1, Enchantment ench2){
+//		return contains(ConfigValue.ANVIL.ENCHANT_BLACK_LIST.get(ench1.getEnchantmentID(ench1)), getEnchName(ench2));
+//	}
 }

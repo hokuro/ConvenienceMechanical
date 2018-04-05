@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
+import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.PlayerExpBank;
 import mod.cvbox.inventory.ContainerExpBank;
 import mod.cvbox.network.MessageHelper;
@@ -187,7 +188,7 @@ public class GuiExpBank extends GuiContainer{
 	}
 
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		this.fontRendererObj.drawString(I18n.translateToLocal("gui.title"), 8, 4, 4210752);
+		this.fontRenderer.drawString(I18n.translateToLocal("gui.title"), 8, 4, 4210752);
 	}
 
 
@@ -195,7 +196,7 @@ public class GuiExpBank extends GuiContainer{
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		ResourceLocation GUI_RESOURCE_LOCATION = new ResourceLocation("expbox","textures/gui/gui_expbank.png");
+		ResourceLocation GUI_RESOURCE_LOCATION = new ResourceLocation(ModCommon.MOD_ID+":"+"textures/gui/gui_expbank.png");
 		this.mc.renderEngine.bindTexture(GUI_RESOURCE_LOCATION);
 		this.x = ((this.width - this.xSize) / 2);
 		this.y = ((this.height - this.ySize) / 2);

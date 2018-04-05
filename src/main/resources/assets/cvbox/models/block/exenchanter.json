@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "cvbox:blocks/exenchant_side",
+        "down": "cvbox:blocks/exenchant_bottom",
+        "up": "cvbox:blocks/exenchant_top",
+        "north": "cvbox:blocks/exenchant_side",
+        "east": "cvbox:blocks/exenchant_side",
+        "south": "cvbox:blocks/exenchant_side",
+        "west": "cvbox:blocks/exenchant_side"
+    }
+}

@@ -1,27 +1,18 @@
 package mod.cvbox.gui;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.apache.commons.io.Charsets;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
-public class GuiRepair extends GuiContainer implements ICrafting {
+public class GuiRepair extends GuiContainer{// implements ICrafting {
 
     private mod.cvbox.inventory.ContainerRepair repairContainer;
     private GuiTextField itemNameField;
@@ -41,13 +32,13 @@ public class GuiRepair extends GuiContainer implements ICrafting {
         Keyboard.enableRepeatEvents(true);
         int x = (this.width - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
-        this.itemNameField = new GuiTextField(0,this.fontRendererObj, x + 62, y + 24, 103, 12);
+        this.itemNameField = new GuiTextField(0,this.fontRenderer, x + 62, y + 24, 103, 12);
         this.itemNameField.setTextColor(-1);
         this.itemNameField.setDisabledTextColour(-1);
         this.itemNameField.setEnableBackgroundDrawing(false);
         this.itemNameField.setMaxStringLength(30);
-        this.inventorySlots.removeCraftingFromCrafters(this);
-        this.inventorySlots.onCraftGuiOpened(this);
+//        this.inventorySlots.removeCraftingFromCrafters(this);
+//        this.inventorySlots.onCraftGuiOpened(this);
     }
 
     @Override
@@ -55,14 +46,14 @@ public class GuiRepair extends GuiContainer implements ICrafting {
     {
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
-        this.inventorySlots.removeCraftingFromCrafters(this);
+//        this.inventorySlots.removeCraftingFromCrafters(this);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         GL11.glDisable(GL11.GL_LIGHTING);
-        this.fontRendererObj.drawString(I18n.translateToLocal("container.repair"), 60, 6, 4210752);
+        this.fontRenderer.drawString(I18n.translateToLocal("container.repair"), 60, 6, 4210752);
 
         if (this.repairContainer.maximumCost > 0 || this.repairContainer.isRenamingOnly)
         {
@@ -77,22 +68,22 @@ public class GuiRepair extends GuiContainer implements ICrafting {
             if (this.repairContainer.hadOutput)
             {
                 int finalColour = -16777216 | (colour & 16579836) >> 2 | colour & -16777216;
-                int stringX = this.xSize - 8 - this.fontRendererObj.getStringWidth(s);
+                int stringX = this.xSize - 8 - this.fontRenderer.getStringWidth(s);
                 byte stringY = 67;
 
-                if (this.fontRendererObj.getUnicodeFlag())
+                if (this.fontRenderer.getUnicodeFlag())
                 {
                     drawRect(stringX - 3, stringY - 2, this.xSize - 7, stringY + 10, -16777216);
                     drawRect(stringX - 2, stringY - 1, this.xSize - 8, stringY + 9, -12895429);
                 }
                 else
                 {
-                    this.fontRendererObj.drawString(s, stringX, stringY + 1, finalColour);
-                    this.fontRendererObj.drawString(s, stringX + 1, stringY, finalColour);
-                    this.fontRendererObj.drawString(s, stringX + 1, stringY + 1, finalColour);
+                    this.fontRenderer.drawString(s, stringX, stringY + 1, finalColour);
+                    this.fontRenderer.drawString(s, stringX + 1, stringY, finalColour);
+                    this.fontRenderer.drawString(s, stringX + 1, stringY + 1, finalColour);
                 }
 
-                this.fontRendererObj.drawString(s, stringX, stringY, colour);
+                this.fontRenderer.drawString(s, stringX, stringY, colour);
             }
         }
 
@@ -105,7 +96,7 @@ public class GuiRepair extends GuiContainer implements ICrafting {
         if (this.itemNameField.textboxKeyTyped(character, key))
         {
             this.repairContainer.updateItemName(this.itemNameField.getText());
-            mc.thePlayer.sendQueue.addToSendQueue(new CPacketCustomPayload("MC|ItemName", new PacketBuffer(Unpooled.wrappedBuffer(itemNameField.getText().getBytes(Charsets.UTF_8)))));
+//            mc.thePlayer.sendQueue.addToSendQueue(new CPacketCustomPayload("MC|ItemName", new PacketBuffer(Unpooled.wrappedBuffer(itemNameField.getText().getBytes(Charsets.UTF_8)))));
         }
         else
         {
@@ -139,39 +130,39 @@ public class GuiRepair extends GuiContainer implements ICrafting {
     }
 
 
-	@Override
-	public void updateCraftingInventory(Container containerToSend, List<ItemStack> itemsList) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	@Override
-	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
-        if (slotInd == 0)
-        {
-            this.itemNameField.setText(stack == null ? "" : stack.getDisplayName());
-            this.itemNameField.setEnabled(stack != null); //set enabled
-
-            if (stack != null)
-            {
-                this.repairContainer.updateItemName(this.itemNameField.getText());
-                mc.thePlayer.sendQueue.addToSendQueue(new CPacketCustomPayload("MC|ItemName", new PacketBuffer(Unpooled.wrappedBuffer(itemNameField.getText().getBytes(Charsets.UTF_8)))));
-            }
-        }
-
-	}
-
-	@Override
-	public void sendProgressBarUpdate(Container containerIn, int varToUpdate, int newValue) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	@Override
-	public void sendAllWindowProperties(Container p_175173_1_, IInventory p_175173_2_) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
+//	@Override
+//	public void updateCraftingInventory(Container containerToSend, List<ItemStack> itemsList) {
+//		// TODO 自動生成されたメソッド・スタブ
+//
+//	}
+//
+//	@Override
+//	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
+//        if (slotInd == 0)
+//        {
+//            this.itemNameField.setText(stack == null ? "" : stack.getDisplayName());
+//            this.itemNameField.setEnabled(stack != null); //set enabled
+//
+//            if (stack != null)
+//            {
+//                this.repairContainer.updateItemName(this.itemNameField.getText());
+//                mc.thePlayer.sendQueue.addToSendQueue(new CPacketCustomPayload("MC|ItemName", new PacketBuffer(Unpooled.wrappedBuffer(itemNameField.getText().getBytes(Charsets.UTF_8)))));
+//            }
+//        }
+//
+//	}
+//
+//	@Override
+//	public void sendProgressBarUpdate(Container containerIn, int varToUpdate, int newValue) {
+//		// TODO 自動生成されたメソッド・スタブ
+//
+//	}
+//
+//	@Override
+//	public void sendAllWindowProperties(Container p_175173_1_, IInventory p_175173_2_) {
+//		// TODO 自動生成されたメソッド・スタブ
+//
+//	}
 
 
 	@Override

@@ -45,8 +45,8 @@ public class GuiAutoPlanting extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j){
-		fontRendererObj.drawString("AutoPlanting",8,4,4210752);
-		fontRendererObj.drawString("Inventory", 8, ySize - 98, 42510752);
+		fontRenderer.drawString("AutoPlanting",8,4,4210752);
+		fontRenderer.drawString("Inventory", 8, ySize - 98, 42510752);
 	}
 
 	@Override

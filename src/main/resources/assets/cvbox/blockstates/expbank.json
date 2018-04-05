@@ -1,20 +1,8 @@
 {
     "variants": {
-    	"meta=15": { "model": "cvbox:block_expbank_black" },
-        "meta=14": { "model": "cvbox:block_expbank_red" },
-        "meta=13": { "model": "cvbox:block_expbank_green" },
-        "meta=12": { "model": "cvbox:block_expbank_brown" },
-        "meta=11": { "model": "cvbox:block_expbank_blue" },
-        "meta=10": { "model": "cvbox:block_expbank_purple" },
-        "meta=9": { "model": "cvbox:block_expbank_cyan" },
-        "meta=8": { "model": "cvbox:block_expbank_lightgray" },
-        "meta=7": { "model": "cvbox:block_expbank_gray" },
-        "meta=6": { "model": "cvbox:block_expbank_pink" },
-        "meta=5": { "model": "cvbox:block_expbank_lime" },
-        "meta=4": { "model": "cvbox:block_expbank_yellow" },
-        "meta=3": { "model": "cvbox:block_expbank_lightblue" },
-        "meta=2": { "model": "cvbox:block_expbank_magenta" },
-        "meta=1": { "model": "cvbox:block_expbank_orange" },
-        "meta=0": { "model": "cvbox:block_expbank" }
+        "facing=north": {"model": "cvbox:block_expbank"},
+        "facing=east": {"model": "cvbox:block_expbank","y":90},
+        "facing=south": {"model": "cvbox:block_expbank", "y":180},
+        "facing=west": {"model": "cvbox:block_expbank", "y":-90}
     }
 }
