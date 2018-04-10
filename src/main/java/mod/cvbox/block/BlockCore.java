@@ -27,6 +27,8 @@ public class BlockCore{
 	// 農業系
 	public static final String NAME_PLANTER = "planter";			// 種まき機
 	public static final String NAME_HARVESTER = "harvester";		//　収穫機
+	private static final String NAME_WOODPLANTER ="woodplanter";	// 植林機
+	private static final String NAME_WOODHARVESTER = "woodharvester";	// きこり機
 
 	// 工業系
 	public static final String NAME_ICEMAKER = "icemaker";			// 製氷機
@@ -47,6 +49,8 @@ public class BlockCore{
 
 	public static Block block_planter;
 	public static Block block_harvester;
+	public static Block block_woodplanter;
+	public static Block block_woodharvester;
 
 	public static Block block_icemaker;
 	public static Block block_lavamaker;
@@ -60,10 +64,12 @@ public class BlockCore{
 	private static final String[] NAME_LIST = new String[]{
 			 NAME_EXPBANK,
 			 NAME_EXENCHANTER,
-//			 NAME_EXANVIL,
+			 NAME_EXANVIL,
 
 			 NAME_PLANTER,
 			 NAME_HARVESTER,
+			 NAME_WOODPLANTER,
+			 NAME_WOODHARVESTER,
 
 //			 NAME_ICEMAKER,
 //			 NAME_LAVAMAKER,
@@ -92,7 +98,8 @@ public class BlockCore{
 				.setUnlocalizedName(NAME_EXENCHANTER)
 				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
 
-		block_exanvil = new Block(Material.ANVIL)
+		// かなとこ
+		block_exanvil = new BlockExAnvil()
 		.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL)
 		.setUnlocalizedName(NAME_EXANVIL)
 		.setCreativeTab(Mod_ConvenienceBox.tabWorker);
@@ -101,12 +108,24 @@ public class BlockCore{
 		block_planter = new BlockPlanter()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER)
 				.setUnlocalizedName(NAME_PLANTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 		// 収穫機
-		block_harvester = new Block(Material.ROCK)
+		block_harvester = new BlockHarvester()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER)
 				.setUnlocalizedName(NAME_HARVESTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
+
+		// 植林機
+		block_woodplanter = new BlockWoodPlanter()
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER)
+				.setUnlocalizedName(NAME_WOODPLANTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
+
+		// きこり機
+		block_woodharvester = new BlockWoodHarvester()
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER)
+				.setUnlocalizedName(NAME_WOODHARVESTER)
+				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 
 		block_icemaker = new Block(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER)
@@ -157,6 +176,8 @@ public class BlockCore{
 
 			{put(NAME_PLANTER,block_planter);}
 			{put(NAME_HARVESTER,block_harvester);}
+			{put(NAME_WOODPLANTER,block_woodplanter);}
+			{put(NAME_WOODHARVESTER,block_woodharvester);}
 
 			{put(NAME_ICEMAKER,block_icemaker);}
 			{put(NAME_LAVAMAKER,block_lavamaker);}
@@ -175,6 +196,8 @@ public class BlockCore{
 
 			{put(NAME_PLANTER, new ItemPlanter(block_planter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER));}
 			{put(NAME_HARVESTER, new ItemBlock(block_harvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER));}
+			{put(NAME_WOODPLANTER, new ItemPlanter(block_woodplanter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER));}
+			{put(NAME_WOODHARVESTER, new ItemBlock(block_woodharvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER));}
 
 			{put(NAME_ICEMAKER, new ItemBlock(block_icemaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER));}
 			{put(NAME_LAVAMAKER, new ItemBlock(block_lavamaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER));}
@@ -188,13 +211,14 @@ public class BlockCore{
 
 
 		resourceMap = new HashMap<String,ResourceLocation[]>(){
-			{put(NAME_EXPBANK, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID + ":" + "expbank")});}
-
+			{put(NAME_EXPBANK, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID + ":" + NAME_EXPBANK)});}
 			{put(NAME_EXENCHANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXENCHANTER)});}
 			{put(NAME_EXANVIL, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXANVIL)});}
 
 			{put(NAME_PLANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_PLANTER)});}
 			{put(NAME_HARVESTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_HARVESTER)});}
+			{put(NAME_WOODPLANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_WOODPLANTER)});}
+			{put(NAME_WOODHARVESTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_WOODHARVESTER)});}
 
 			{put(NAME_ICEMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_ICEMAKER)});}
 			{put(NAME_LAVAMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAMAKER)});}

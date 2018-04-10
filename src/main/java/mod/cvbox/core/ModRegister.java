@@ -1,11 +1,13 @@
 package mod.cvbox.core;
 
 import mod.cvbox.block.BlockCore;
+import mod.cvbox.item.ItemCore;
 import mod.cvbox.network.MessageExEnchant_ClearParameter;
 import mod.cvbox.network.MessageExEnchant_ExecEnchant;
 import mod.cvbox.network.MessageExEnchant_UpdateParameter;
 import mod.cvbox.network.MessageExpBank_ExecExperience;
 import mod.cvbox.network.MessageExpBank_ExperienceInfo;
+import mod.cvbox.network.MessageFarmer_UpdateDelivery;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -20,7 +22,7 @@ public class ModRegister {
 	}
 
 	public static void RegisterItem(FMLPreInitializationEvent event){
-
+		ItemCore.register(event);
 	}
 
 	public static void RegisterEntity(CommonProxy proxy){
@@ -59,6 +61,250 @@ public class ModRegister {
 				'D',Blocks.DIAMOND_BLOCK,
 				'E',Blocks.EMERALD_BLOCK,
 				'S',Items.NETHER_STAR);
+
+		// スーパーアンビル
+		GameRegistry.addShapedRecipe(BlockCore.block_exanvil.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_exanvil,1),
+				"GGG",
+				" G ",
+				"GGG",
+				'G',Blocks.IRON_BLOCK
+				);
+
+		// 種まき機
+		GameRegistry.addShapedRecipe(BlockCore.block_planter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_planter,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER,
+				'K',Items.WOODEN_HOE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_planter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_planter,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER,
+				'K',Items.STONE_HOE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_planter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_planter,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER,
+				'K',Items.IRON_HOE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_planter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_planter,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER,
+				'K',Items.GOLDEN_HOE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_planter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_planter,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER,
+				'K',Items.DIAMOND_HOE
+				);
+
+		// 収穫機
+		GameRegistry.addShapedRecipe(BlockCore.block_harvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_harvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',ItemCore.item_sickle_wood
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_harvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_harvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',ItemCore.item_sickle_stone
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_harvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_harvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',ItemCore.item_sickle_iron
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_harvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_harvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',ItemCore.item_sickle_gold
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_harvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_harvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',ItemCore.item_sickle_diamond
+				);
+
+
+
+		// 鎌
+		GameRegistry.addShapedRecipe(ItemCore.item_sickle_wood.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_sickle_wood,1),
+				"WWW",
+				"S W",
+				"S  ",
+				'S',Items.STICK,
+				'W',Blocks.PLANKS
+				);
+		GameRegistry.addShapedRecipe(ItemCore.item_sickle_stone.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_sickle_stone,1),
+				"WWW",
+				"S W",
+				"S  ",
+				'S',Items.STICK,
+				'W',Blocks.COBBLESTONE
+				);
+		GameRegistry.addShapedRecipe(ItemCore.item_sickle_iron.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_sickle_iron,1),
+				"WWW",
+				"S W",
+				"S  ",
+				'S',Items.STICK,
+				'W',Items.IRON_INGOT
+				);
+		GameRegistry.addShapedRecipe(ItemCore.item_sickle_gold.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_sickle_gold,1),
+				"WWW",
+				"S W",
+				"S  ",
+				'S',Items.STICK,
+				'W',Items.GOLD_INGOT
+				);
+		GameRegistry.addShapedRecipe(ItemCore.item_sickle_diamond.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_sickle_diamond,1),
+				"WWW",
+				"S W",
+				"S  ",
+				'S',Items.STICK,
+				'W',Items.DIAMOND
+				);
+
+
+		// 植林機
+		GameRegistry.addShapedRecipe(BlockCore.block_woodplanter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodplanter,1),
+				"WDW",
+				"WRW",
+				"WWW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.DISPENSER
+				);
+
+		// 収穫機
+		GameRegistry.addShapedRecipe(BlockCore.block_woodharvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodharvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',Items.WOODEN_AXE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_woodharvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodharvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',Items.STONE_AXE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_woodharvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodharvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',Items.IRON_AXE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_woodharvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodharvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',Items.GOLDEN_AXE
+				);
+		GameRegistry.addShapedRecipe(BlockCore.block_woodharvester.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_woodharvester,1),
+				"WDW",
+				"WRW",
+				"WKW",
+				'R',Blocks.REDSTONE_BLOCK,
+				'W',Blocks.PLANKS,
+				'D',Blocks.HOPPER,
+				'K',Items.DIAMOND_AXE
+				);
+
 //		GameRegistry.addRecipe(new ItemStack(BlockCore.getBlock(BlockExpBank.NAME_EXPBANK), 1, 8),
 //				new Object[] { "OGO", "ICI", "ERE", Character.valueOf('O'), Blocks.obsidian,
 //						Character.valueOf('E'), Items.ender_pearl, Character.valueOf('I'), Items.iron_ingot,
@@ -99,6 +345,8 @@ public class ModRegister {
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_UpdateParameter.class, MessageExEnchant_UpdateParameter.class, ModCommon.MESSID_MESSAGEUPDATEENCHANT, Side.SERVER);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ClearParameter.class, MessageExEnchant_ClearParameter.class, ModCommon.MESSID_MESSAGECLEARENCHANT, Side.CLIENT);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ExecEnchant.class, MessageExEnchant_ExecEnchant.class, ModCommon.MESSID_MESSAGEEXECENCHANT, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageFarmer_UpdateDelivery.class,MessageFarmer_UpdateDelivery.class, ModCommon.MESSID_MESSAGEFARMERUPDATE, Side.SERVER);
+
 	}
 
 

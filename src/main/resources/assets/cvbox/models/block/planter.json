@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "cvbox:blocks/planter_bottom",
+        "top": "cvbox:blocks/planter_top",
+        "side": "cvbox:blocks/planter_side"
+    }
+}

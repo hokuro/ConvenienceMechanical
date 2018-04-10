@@ -3,6 +3,10 @@ package mod.cvbox.client;
 import mod.cvbox.core.CommonProxy;
 import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
 import mod.cvbox.tileentity.TileEntityExpBank;
+import mod.cvbox.tileentity.TileEntityHarvester;
+import mod.cvbox.tileentity.TileEntityPlanter;
+import mod.cvbox.tileentity.TileEntityWoodHarvester;
+import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -24,7 +28,10 @@ public class ClientProxy extends CommonProxy{
 
 		GameRegistry.registerTileEntity(TileEntityExpBank.class, TileEntityExpBank.REGISTER_NAME);
 		GameRegistry.registerTileEntity(TileEntityExEnchantmentTable.class, TileEntityExEnchantmentTable.NAME);
-//		ClientRegistry.registerTileEntity(TileEntityPlanter.class, "AutoPlanting", new TileEntityPlanterRender());
+		GameRegistry.registerTileEntity(TileEntityPlanter.class, TileEntityPlanter.NAME);
+		GameRegistry.registerTileEntity(TileEntityHarvester.class, TileEntityHarvester.NAME);
+		GameRegistry.registerTileEntity(TileEntityWoodPlanter.class, TileEntityWoodPlanter.NAME);
+		GameRegistry.registerTileEntity(TileEntityWoodHarvester.class, TileEntityWoodHarvester.NAME);
 	}
 
 	public void registerRender(){

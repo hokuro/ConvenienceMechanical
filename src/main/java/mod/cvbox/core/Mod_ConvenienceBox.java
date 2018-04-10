@@ -3,6 +3,7 @@ package mod.cvbox.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mod.cvbox.config.ConfigValue;
 import mod.cvbox.creative.CreativeTabFactBox;
 import mod.cvbox.creative.CreativeTabFarmarBox;
 import mod.cvbox.creative.CreativeWorkerBox;
@@ -34,6 +35,9 @@ public class Mod_ConvenienceBox {
 	public static List<Enchantment> encList = new ArrayList<Enchantment>();
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		// コンフィグ読み込み
+		ConfigValue.init(event);
+
 		// ブロック登録
 		ModRegister.RegisterBlock(event);
 		// アイテム登録
@@ -41,7 +45,6 @@ public class Mod_ConvenienceBox {
 
 		// エンティティ設定
 		ModRegister.RegisterEntity(proxy);
-
 		// レンダー設定
 		ModRegister.RegisterRender(proxy);
 	}
@@ -58,6 +61,9 @@ public class Mod_ConvenienceBox {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
+		// コンフィグ初期設定
+		ConfigValue.setting();
+
 		for (Enchantment enc : Enchantment.REGISTRY){
 			encList.add(enc);
 		}
@@ -96,6 +102,7 @@ public class Mod_ConvenienceBox {
 	public static final String TileEntity_Fuse = "EntityFuse";
 
 
+
 //	@EventHandler
 //	public void updateAlphaAnvil(FMLMissingMappingsEvent event){
 //		for (int i = 0; i < event.get().size(); i++){
@@ -112,8 +119,6 @@ public class Mod_ConvenienceBox {
 //			}
 //		}
 //	}
-
-
 
 
 //

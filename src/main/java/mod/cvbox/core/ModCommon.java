@@ -2,7 +2,7 @@ package mod.cvbox.core;
 
 public final class ModCommon {
 	// デバッグモードかどうか
-	public static boolean isDebug = false;
+	public static boolean isDebug = true;
 
 	// モッドID
 	public static final String MOD_ID = "cvbox";
@@ -29,7 +29,12 @@ public final class ModCommon {
 	// GUIID
 	public static final int GUIID_EXPBANK = 1;
 	public static final int GUIID_EXENCHANTER = 2;
+	public static final int GUIID_EXANVIL = 3;
 	public static final int GUIID_PLANTER = 101;
+	public static final int GUIID_HARVESTER = 102;
+	public static final int GUIID_WOODPLANTER = 103;
+	public static final int GUIID_WOODHARVESTER = 104;
+
 	public static final int GUIID_REPAIR = 201;
 
 	// GUINAME
@@ -43,6 +48,7 @@ public final class ModCommon {
 	public static final int MESSID_MESSAGEUPDATEENCHANT = 3;
 	public static final int MESSID_MESSAGECLEARENCHANT = 4;
 	public static final int MESSID_MESSAGEEXECENCHANT = 5;
+	public static final int MESSID_MESSAGEFARMERUPDATE = 6;
 
 
 
@@ -51,9 +57,11 @@ public final class ModCommon {
 //	public static final String MOD_CHANNEL1 = "AutoPlanting1";
 //	public static final String MOD_CHANNEL2 = "AutoPlanting2";
 
-	public static final int PLANTER_MAX_ROW_SLOT = 6;
-	public static final int PLANTER_MAX_COL_SLOT = 9;
-	public static final int PLANTER_CONTENASIZE = PLANTER_MAX_ROW_SLOT*PLANTER_MAX_COL_SLOT;
+
+
+
+
+
 
 
 

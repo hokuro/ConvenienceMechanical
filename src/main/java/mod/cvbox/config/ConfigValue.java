@@ -1,8 +1,14 @@
 package mod.cvbox.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ConfigValue{
@@ -12,9 +18,17 @@ public class ConfigValue{
 
 	public static void init(FMLPreInitializationEvent event){
 		config.init(new Class<?>[]{
-//			ExpBank.class
-			ExEnchant.class
+			ExEnchant.class,
+			Planter.class,
+			Harvester.class,
+			WoodPlanter.class,
+			WoodHarvester.class,
 		}, event);
+	}
+
+
+	public static void setting() {
+		Planter.setItem();
 	}
 
 	public static void save(){
@@ -31,21 +45,201 @@ public class ConfigValue{
 	}
 
 	public static class ExEnchant{
-		@ConfigProperty(comment="config.comment.exenchant.tributeitemlevel",max="3",min="1")
+		@ConfigProperty(category="ExEnchant", comment="config.comment.exenchant.tributeitemlevel",max="3",min="1")
 		public static int TributeItemLevel  = 2;
-		@ConfigProperty(comment="config.comment.exenchant.tributeitemcount",max="64",min="10")
+		@ConfigProperty(category="ExEnchant", comment="config.comment.exenchant.tributeitemcount",max="64",min="10")
 		public static int TrubuteItemCount = 10;
 	}
 
 	public static class Planter{
-		@ConfigProperty(comment="Maximum farmland 1-5000",max="5000",min="1")
-		public static int MaxFarmland = 1000;
-		@ConfigProperty(comment="Maximum Distance 1-100" ,max="100",min="1")
-		public static int MaxDistance = 30;
-		@ConfigProperty(comment="right click possible [true/false]")
+		@ConfigProperty(category="Planter", comment="Maximum Distance(x-z) 1-128" ,max="128",min="1")
+		public static int MaxDistance = 9;
+		@ConfigProperty(category="Planter", comment="Maximum Distance(y) 1-128" ,max="128",min="1")
+		public static int MaxHeight = 3;
+		@ConfigProperty(category="Planter", comment="Planting one tick 1-128" ,max="128",min="1")
+		public static int OneTicPlant = 1;
+		@ConfigProperty(category="Planter", comment="Planting Time Span")
+		public static final int ExecTimeSpan = 20;
+		@ConfigProperty(category="Planter", comment="right click possible [true/false]")
 		public static boolean RightClick = true;
-		@ConfigProperty(comment="enable item ids")
-		public static String TargetItemIds = "";
+		@ConfigProperty(category="Planter", comment="enable item ids")
+		public static String TargetItemIds ="minecraft:potato,"
+				+ "minecraft:carrot,"
+				+ "minecraft:wheat_seeds,"
+				+ "minecraft:melon_seeds,"
+				+ "minecraft:pumpkin_seeds,"
+				+ "minecraft:dye:3,"
+				+ "minecraft:beetroot_seeds,"
+				+ "minecraft:cactus,"
+				+ "minecraft:reeds,"
+				+ "minecraft:nether_wart,"
+				+ "minecraft:chorus_flower";
+
+		private static List<ItemStack> targetStacks = new ArrayList<ItemStack>();
+		public static void setItem(){
+			targetStacks.clear();
+			String regex="^[0-9]+$";
+			Pattern p = Pattern.compile(regex);
+			String[] targets = TargetItemIds.split(",");
+			for (String target : targets){
+				String[] sep = target.trim().split(":");
+				String domain = "minecraft";
+				String name = "";
+				int meta = 0;
+				if (sep.length == 1){
+					// アイテム名のみ
+					name = sep[0];
+				}else if (sep.length == 2 && p.matcher(sep[1]).find()){
+					// アイテム名 + メタ値
+					name = sep[0];
+					meta = new Integer(sep[1]).intValue();
+				}else if (sep.length == 2){
+					// モッド名+アイテム名
+					domain = sep[0];
+					name = sep[1];
+				}else if (sep.length == 3 && p.matcher(sep[2]).find()){
+					// モッド名+アイテム名 +メタ値
+					domain = sep[0];
+					name = sep[1];
+					meta = new Integer(sep[2]).intValue();
+				}else{
+					// 知らんがな
+					break;
+				}
+				ItemStack w = ItemStack.EMPTY;
+				try{
+					w = new ItemStack(Item.getByNameOrId(domain+":"+name),1,meta);
+				}catch(Exception ex){
+
+				}
+				if (w.isEmpty()){
+					try{
+						w = new ItemStack(Block.getBlockFromName(domain+":"+name),1,meta);
+					}catch(Exception ex){
+
+					}
+				}
+				if (!w.isEmpty()){
+					targetStacks.add(w.copy());
+				}
+			}
+		}
+		public static List<ItemStack> getItems() {
+			if (targetStacks.size() == 0){
+				setItem();
+			}
+			return targetStacks;
+		}
+	}
+
+	public static class Harvester{
+		@ConfigProperty(category="Harvester", comment="Maximum Distance(x-z) 1-128" ,max="128",min="1")
+		public static int MaxDistance = 9;
+		@ConfigProperty(category="Harvester", comment="Maximum Distance(y) 1-128" ,max="128",min="1")
+		public static int MaxHeight = 3;
+		@ConfigProperty(category="Harvester", comment="Harvest one tick 1-128" ,max="128",min="1")
+		public static int OneTicPlant = 1;
+		@ConfigProperty(category="Harvester", comment="Planting Time Span")
+		public static final int ExecTimeSpan = 20;
+		@ConfigProperty(category="Harvester", comment="search planter block distance(x.y.z) 1-128" ,max="128",min="1")
+		public static int SearchPlanter = 3;
+
+	}
+
+
+	public static class WoodPlanter{
+		@ConfigProperty(category="WoodPlanter", comment="Maximum Distance(x-z) 1-128" ,max="128",min="1")
+		public static int MaxDistance = 9;
+		@ConfigProperty(category="WoodPlanter", comment="Maximum Distance(y) 1-128" ,max="128",min="1")
+		public static int MaxHeight = 3;
+		@ConfigProperty(category="WoodPlanter", comment="Planting one tick 1-128" ,max="128",min="1")
+		public static int OneTicPlant = 1;
+		@ConfigProperty(category="WoodPlanter", comment="Planting Time Span")
+		public static final int ExecTimeSpan = 20;
+		@ConfigProperty(category="WoodPlanter", comment="right click possible [true/false]")
+		public static boolean RightClick = true;
+		@ConfigProperty(category="WoodPlanter", comment="enable item ids")
+		public static String TargetItemIds ="minecraft:potato,"
+				+ "minecraft:carrot,"
+				+ "minecraft:wheat_seeds,"
+				+ "minecraft:melon_seeds,"
+				+ "minecraft:pumpkin_seeds,"
+				+ "minecraft:dye:3,"
+				+ "minecraft:beetroot_seeds,"
+				+ "minecraft:cactus,"
+				+ "minecraft:reeds,"
+				+ "minecraft:nether_wart,"
+				+ "minecraft:chorus_flower";
+
+		private static List<ItemStack> targetStacks = new ArrayList<ItemStack>();
+		public static void setItem(){
+			targetStacks.clear();
+			String regex="^[0-9]+$";
+			Pattern p = Pattern.compile(regex);
+			String[] targets = TargetItemIds.split(",");
+			for (String target : targets){
+				String[] sep = target.trim().split(":");
+				String domain = "minecraft";
+				String name = "";
+				int meta = 0;
+				if (sep.length == 1){
+					// アイテム名のみ
+					name = sep[0];
+				}else if (sep.length == 2 && p.matcher(sep[1]).find()){
+					// アイテム名 + メタ値
+					name = sep[0];
+					meta = new Integer(sep[1]).intValue();
+				}else if (sep.length == 2){
+					// モッド名+アイテム名
+					domain = sep[0];
+					name = sep[1];
+				}else if (sep.length == 3 && p.matcher(sep[2]).find()){
+					// モッド名+アイテム名 +メタ値
+					domain = sep[0];
+					name = sep[1];
+					meta = new Integer(sep[2]).intValue();
+				}else{
+					// 知らんがな
+					break;
+				}
+				ItemStack w = ItemStack.EMPTY;
+				try{
+					w = new ItemStack(Item.getByNameOrId(domain+":"+name),1,meta);
+				}catch(Exception ex){
+
+				}
+				if (w.isEmpty()){
+					try{
+						w = new ItemStack(Block.getBlockFromName(domain+":"+name),1,meta);
+					}catch(Exception ex){
+
+					}
+				}
+				if (!w.isEmpty()){
+					targetStacks.add(w.copy());
+				}
+			}
+		}
+		public static List<ItemStack> getItems() {
+			if (targetStacks.size() == 0){
+				setItem();
+			}
+			return targetStacks;
+		}
+	}
+
+	public static class WoodHarvester{
+		@ConfigProperty(category="WoodHarvester", comment="Maximum Distance(x-z) 1-128" ,max="128",min="1")
+		public static int MaxDistance = 9;
+		@ConfigProperty(category="WoodHarvester", comment="Maximum Distance(y) 1-128" ,max="128",min="1")
+		public static int MaxHeight = 3;
+		@ConfigProperty(category="WoodHarvester", comment="Harvest one tick 1-128" ,max="128",min="1")
+		public static int OneTicPlant = 1;
+		@ConfigProperty(category="WoodHarvester", comment="Planting Time Span")
+		public static final int ExecTimeSpan = 20;
+		@ConfigProperty(category="WoodHarvester", comment="search planter block distance(x.y.z) 1-128" ,max="128",min="1")
+		public static int SearchPlanter = 3;
+
 	}
 
 
@@ -186,6 +380,7 @@ public class ConfigValue{
 		}
 		return ret;
 	}
+
 
 
 }

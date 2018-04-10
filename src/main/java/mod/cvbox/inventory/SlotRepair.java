@@ -1,6 +1,5 @@
 package mod.cvbox.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -18,9 +17,9 @@ public class SlotRepair extends Slot {
 	    private final BlockPos blockPos;
 
 	    /** The anvil this slot belongs to. */
-	    private final mod.cvbox.inventory.ContainerRepair anvil;
+	    private final mod.cvbox.inventory.ContainerExRepair anvil;
 
-	    public SlotRepair(mod.cvbox.inventory.ContainerRepair containerRepairBA, IInventory iInventory, int slotIndex, int slotX, int slotY, World world, int blockX, int blockY, int blockZ) {
+	    public SlotRepair(mod.cvbox.inventory.ContainerExRepair containerRepairBA, IInventory iInventory, int slotIndex, int slotX, int slotY, World world, int blockX, int blockY, int blockZ) {
 	        super(iInventory, slotIndex, slotX, slotY);
 	        this.anvil = containerRepairBA;
 	        this.theWorld = world;
@@ -41,10 +40,10 @@ public class SlotRepair extends Slot {
 	    /**
 	     * Return whether this slot's stack can be taken from this slot.
 	     */
-	    @Override
-	    public boolean canTakeStack(EntityPlayer entityPlayer) {
-	        return (entityPlayer.capabilities.isCreativeMode || entityPlayer.experienceLevel >= this.anvil.maximumCost) && (this.anvil.maximumCost > 0 || this.anvil.isRenamingOnly) && this.getHasStack();
-	    }
+//	    @Override
+//	    public boolean canTakeStack(EntityPlayer entityPlayer) {
+////	        return (entityPlayer.capabilities.isCreativeMode || entityPlayer.experienceLevel >= this.anvil.maximumCost) && (this.anvil.maximumCost > 0 || this.anvil.isRenamingOnly) && this.getHasStack();
+//	    }
 
 //	    @Override
 //	    public void onPickupFromSlot(EntityPlayer entityPlayer, ItemStack itemStack) {

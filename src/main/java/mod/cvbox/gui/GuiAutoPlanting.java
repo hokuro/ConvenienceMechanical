@@ -1,11 +1,15 @@
 package mod.cvbox.gui;
 
-import org.lwjgl.opengl.GL11;
+import java.io.IOException;
 
-import mod.cvbox.core.ModCommon;
+import org.apache.commons.lang3.BooleanUtils;
+
+import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerAutoPlanting;
+import mod.cvbox.network.MessageFarmer_UpdateDelivery;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -15,47 +19,63 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiAutoPlanting extends GuiContainer {
-	private static final ResourceLocation gui = new ResourceLocation("autoplanting", "textures/gui/plant.png");
+	private static final ResourceLocation tex = new ResourceLocation("cvbox", "textures/gui/planter.png");
 	private int x1;
 	private int y1;
 	private int z1;
-	private TileEntityPlanter tile;
 	private BlockPos pos;
+	TileEntityPlanter planter;
 
 
 	public GuiAutoPlanting(EntityPlayer player, TileEntityPlanter tileEntity, World world, int x, int y, int z){
 		super(new ContainerAutoPlanting(player, tileEntity, world, x, y, z));
-		xSize = 222;
-		ySize = xSize - 108;
-
-		x1 = x;
-		y1 = y;
-		z1 = z;
-		pos = new BlockPos(x,y,z);
-		tile = tileEntity;
-
-		ySize = ySize + ModCommon.PLANTER_MAX_ROW_SLOT * 18;
-	}
-
-	public void initGui(){
-		super.initGui();
-		int i = this.width - this.xSize >> 1;
-		int j = this.height - this.ySize >> 1;
+		ySize = 222;
+		planter = (TileEntityPlanter)tileEntity;
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j){
 		fontRenderer.drawString("AutoPlanting",8,4,4210752);
-		fontRenderer.drawString("Inventory", 8, ySize - 98, 42510752);
+		fontRenderer.drawString("Inventory", 8, ySize - 96, 4210752);
+		fontRenderer.drawString("Deliver", xSize/2+10, ySize - 96, 4210752);
+	}
+
+   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+   {
+       super.mouseClicked(mouseX, mouseY, mouseButton);
+       int i = (this.width - this.xSize) / 2;
+       int j = (this.height - this.ySize) / 2;
+
+       int l = mouseX - (i + 138);
+       int i1 = mouseY - (j + 126);
+
+       if (l >= 0 && i1 >= 0 && l < 32 && 12 < 19)
+       {
+    	   boolean deliver = planter.canDeliver();
+    	   Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageFarmer_UpdateDelivery(planter.getPos(), !deliver));
+    	   planter.setField(1, BooleanUtils.toInteger(!deliver));
+       }
+   }
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
-		GL11.glColor4f(1.0F,1.0F,1.0F,1.0F);
-		mc.getTextureManager().bindTexture(gui);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-        this.drawTexturedModalRect(x, y-4, 0, 0, this.xSize, ModCommon.PLANTER_MAX_ROW_SLOT * 18 + 17);
-        this.drawTexturedModalRect(x, y + ModCommon.PLANTER_MAX_ROW_SLOT * 18 + 13, 0, 126, this.xSize, 96);
+	protected void drawGuiContainerBackgroundLayer(float f, int x, int y){
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(tex);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
+
+        if (planter.canDeliver()){
+        	this.drawTexturedModalRect(i + 138, j + 126, 177, 13, 32, 12);
+        }else{
+        	this.drawTexturedModalRect(i + 138, j + 126, 177, 0, 32, 12);
+        }
 	}
 }

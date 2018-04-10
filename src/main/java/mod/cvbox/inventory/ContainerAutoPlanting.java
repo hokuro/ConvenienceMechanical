@@ -1,5 +1,7 @@
 package mod.cvbox.inventory;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import mod.cvbox.block.BlockCore;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.tileentity.TileEntityPlanter;
@@ -8,41 +10,41 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ContainerAutoPlanting extends Container {
-	private World world;
+	public final static int ROW_SLOT = 6;
+	public final static int COL_SLOT = 9;
+
+	private final World world;
+	private final IInventory playerInventory;
+	private final IInventory seedInventory;
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
-	private EntityPlayer player;
-	private IInventory playerInventory;
-	private TileEntityPlanter TileEntityAP;
 	private int last_dt_selectPriority = 0;
 
 
-	public ContainerAutoPlanting(EntityPlayer pl, TileEntityPlanter te, World wd, int x, int y, int z){
-		player = pl;
-		playerInventory = player.inventory;
+	public ContainerAutoPlanting(EntityPlayer pl, TileEntity te, World wd, int x, int y, int z){
+		playerInventory = pl.inventory;
+		seedInventory = (TileEntityPlanter)te;
 		world = wd;
 		xCoord = x;
 		yCoord = y;
 		zCoord = z;
-		TileEntityAP = te;
 
 		// コンテナインベントリ
-	    for (int row = 0; row < ModCommon.PLANTER_MAX_ROW_SLOT; row++) {
-		      for (int col = 0; col < ModCommon.PLANTER_MAX_COL_SLOT; col++) {
+	    for (int row = 0; row < ROW_SLOT; row++) {
+		      for (int col = 0; col < COL_SLOT; col++) {
 		    	  addSlotToContainer(
-		    			  new SlotPlant(te,
-		    			  (row *ModCommon.PLANTER_MAX_ROW_SLOT) + col, 	// インデックス
-		    			  8 + col * 18, 						// x
-		    			  14 + row * 18							// y
-		    			  ));
+		    			  new SlotPlant((TileEntityPlanter)te,
+		    			  col + (row * COL_SLOT), 	// インデックス
+		    			  8 + col * 18,
+		    			  18 + row * 18));
 		      }
 	    }
-
 		// プレイヤーインベントリ
 		int OFFSET = 74;
 		for (int rows = 0; rows < 3; rows++){
@@ -50,7 +52,7 @@ public class ContainerAutoPlanting extends Container {
 				addSlotToContainer(new Slot(playerInventory,
 						slotIndex + (rows * 9) + 9,
 						8 + slotIndex * 18,
-						135 + rows * 18));
+						139 + rows * 18));
 			}
 		}
 
@@ -59,48 +61,64 @@ public class ContainerAutoPlanting extends Container {
 			addSlotToContainer(new Slot(this.playerInventory,
 					slotIndex,
 					8 + slotIndex * 18,
-					193));
+					197));
 		}
 	}
 
-	@Override
-	public void onContainerClosed(EntityPlayer pl){
-		super.onContainerClosed(pl);
-	}
+    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
+    {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
 
-	@Override
-	public ItemStack transferStackInSlot(EntityPlayer pl, int slotIndex){
-		Slot slot = (Slot)inventorySlots.get(slotIndex);
-		ItemStack srcItemStack = null;
+        if (slot != null && slot.getHasStack())
+        {
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
 
-		if ((slot != null) && (slot.getHasStack()))
-		{
-			ItemStack destItemStack = slot.getStack();
-			srcItemStack = destItemStack.copy();
-			if (slotIndex < this.TileEntityAP.getSizeInventory())
-			{
-				if (!mergeItemStack(destItemStack, this.TileEntityAP.getSizeInventory(), this.inventorySlots.size(), true))
-				{
-					return null;
-				}
-			} else {
-				if ((!SlotPlant.checkExtends(destItemStack)))
-					return null;
-				if (!mergeItemStack(destItemStack, 0, this.TileEntityAP.getSizeInventory(), false)){
-					return null;
-				}
-			}
-			if (destItemStack.getCount() == 0) {
-				slot.putStack(null);
-			} else {
-				slot.onSlotChanged();
-			}
-		}
-		return srcItemStack;
-	}
+            if (index < ROW_SLOT * COL_SLOT)
+            {
+                if (!this.mergeItemStack(itemstack1, ROW_SLOT * 9, this.inventorySlots.size(), true))
+                {
+                    return ItemStack.EMPTY;
+                }
+            }
+            else if (!this.mergeItemStack(itemstack1, 0, ROW_SLOT * 9, false))
+            {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty())
+            {
+                slot.putStack(ItemStack.EMPTY);
+            }
+            else
+            {
+                slot.onSlotChanged();
+            }
+        }
+
+        return itemstack;
+    }
+
+    /**
+     * Called when the container is closed.
+     */
+    public void onContainerClosed(EntityPlayer playerIn)
+    {
+        super.onContainerClosed(playerIn);
+        this.seedInventory.closeInventory(playerIn);
+    }
 
 	@Override
 	public boolean canInteractWith(EntityPlayer entityPlayer){
 		return world.getBlockState(new BlockPos(xCoord,yCoord,zCoord)).getBlock() == BlockCore.block_planter;
+	}
+
+	public void setDeliverMode(Boolean deliver) {
+		((TileEntityPlanter)seedInventory).setField(1, BooleanUtils.toInteger(deliver));
+	}
+
+	public World getWorld() {
+		return ((TileEntityPlanter)seedInventory).getWorld();
 	}
 }

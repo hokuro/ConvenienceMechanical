@@ -1,9 +1,10 @@
 package mod.cvbox.inventory;
 
+import mod.cvbox.config.ConfigValue;
+import mod.cvbox.util.ModUtil;
+import mod.cvbox.util.ModUtil.CompaierLevel;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 
 public class SlotPlant extends Slot {
@@ -21,10 +22,7 @@ public class SlotPlant extends Slot {
     }
 
     public static boolean checkExtends(ItemStack stack){
-    	if ( (stack.getItem() instanceof ItemFood) || (stack.getItem() instanceof ItemSeeds)){
-    		return true;
-    	}
-    	return false;
+    	return ModUtil.containItemStack(stack, ConfigValue.Planter.getItems(), CompaierLevel.LEVEL_EQUAL_META);
     }
 
 }

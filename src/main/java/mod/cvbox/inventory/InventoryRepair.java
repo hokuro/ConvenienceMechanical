@@ -6,9 +6,9 @@ import net.minecraft.item.ItemStack;
 public class InventoryRepair extends InventoryBasic {
 
     /** Container of this anvil's block. */
-    private final mod.cvbox.inventory.ContainerRepair theContainer;
+    private final mod.cvbox.inventory.ContainerExRepair theContainer;
 
-    public InventoryRepair(mod.cvbox.inventory.ContainerRepair containerRepairBA, String inventoryTitle, boolean isLocalized, int slotCount) {
+    public InventoryRepair(mod.cvbox.inventory.ContainerExRepair containerRepairBA, String inventoryTitle, boolean isLocalized, int slotCount) {
         super(inventoryTitle, isLocalized, slotCount);
         this.theContainer = containerRepairBA;
     }

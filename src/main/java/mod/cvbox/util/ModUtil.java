@@ -1,5 +1,7 @@
 package mod.cvbox.util;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 
 public class ModUtil {
@@ -47,6 +49,11 @@ public class ModUtil {
 		return ret;
 	}
 
+
+	public static boolean containItemStack(ItemStack checkItem,List<ItemStack> itemArray, CompaierLevel leve){
+		ItemStack[] stacks = itemArray.toArray(new ItemStack[itemArray.size()]);
+		return containItemStack(checkItem,stacks,leve);
+	}
 
 	public static boolean containItemStack(ItemStack checkItem, ItemStack[] itemArray, CompaierLevel level) {
 		boolean ret = false;
