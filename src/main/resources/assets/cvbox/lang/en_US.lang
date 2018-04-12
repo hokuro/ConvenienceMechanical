@@ -23,10 +23,29 @@ tile.exanvil.name=No Limit Anvil
 tile.planter.name = Auto Planter
 tile_harvester.name=Auto Harvest
 tile.woodplanter.name=Wood Planter
+tile.icemaker.name=IceMaker
+tile.lavamaker.name=LavaMaker
 tile.woodharvester.name=Wood Harvester
+tile.destroyer.name=Block Destoryer
+tile.setter.name=Block Setter
+tile.straw.name=LiquidStraw
+tile.excollector.name=Exp Remover
+tile.kirer.name=MobKirer
+tile.commpleser.name=Complesser
+tile.crussher.name=Crussher
 mess.blockAutoPlanting.text.button0=Filter
 mess.blockAutoPlanting.text.button1=Chest
 mess.blockAutoPlanting.text.priority=Priority
+
+item.sickle_wood.name=Wood Sickle
+item.sickle_stone.name=Stone Sickle
+item.sickle_iron.name=Iron Sickle
+item.sickle_gold.name=Gold Sickle
+item.sickle_diamond.name=Diamond Sickle
+item.machinematter.name=MachineMatter
+item.waterball.name=Water Ball
+item.lavaball.name=Lava Ball
+
 
 config.comment.exenchant.tributeitemlevel=types of items required to enchant(1:diamond, 2:emerald, 3:nether star)
 config.comment.exenchant.tributeitemcount=number of items required to enchant(minimum 10 maximum 64)

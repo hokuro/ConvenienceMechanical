@@ -1,6 +1,6 @@
 package mod.cvbox.creative;
 
-import mod.cvbox.block.BlockCore;
+import mod.cvbox.item.ItemCore;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -18,7 +18,7 @@ public class CreativeTabFactBox  extends CreativeTabs {
 
 	@Override
 	public ItemStack getTabIconItem() {
-		return new ItemStack(BlockCore.block_crusher);
+		return new ItemStack(ItemCore.item_machinematter);
 	}
 
 	@SideOnly(Side.CLIENT)

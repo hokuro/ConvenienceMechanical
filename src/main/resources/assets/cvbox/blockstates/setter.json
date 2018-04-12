@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "facing=down,power=false":  { "model": "cvbox:setter_vertical", "x": 180 },
+        "facing=up,power=false":    { "model": "cvbox:setter_vertical" },
+        "facing=north,power=false": { "model": "cvbox:setter" },
+        "facing=south,power=false": { "model": "cvbox:setter", "y": 180 },
+        "facing=west,power=false":  { "model": "cvbox:setter", "y": 270 },
+        "facing=east,power=false":  { "model": "cvbox:setter", "y": 90 },
+        "facing=down,power=true":  { "model": "cvbox:setter_vertical_on", "x": 180 },
+        "facing=up,power=true":    { "model": "cvbox:setter_vertical_on" },
+        "facing=north,power=true": { "model": "cvbox:setter_on" },
+        "facing=south,power=true": { "model": "cvbox:setter_on", "y": 180 },
+        "facing=west,power=true":  { "model": "cvbox:setter_on", "y": 270 },
+        "facing=east,power=true":  { "model": "cvbox:setter_on", "y": 90 }
+    }
+}

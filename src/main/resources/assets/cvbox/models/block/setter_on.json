@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "top": "cvbox:blocks/setter_side_on",
+        "front": "cvbox:blocks/setter_front_on",
+        "side": "cvbox:blocks/setter_side_on"
+    }
+}

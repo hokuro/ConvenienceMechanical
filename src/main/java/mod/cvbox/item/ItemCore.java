@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mod.cvbox.core.ModCommon;
+import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -16,6 +18,9 @@ public class ItemCore {
 	public static final String NAME_IRONSICKLE ="sickle_iron";
 	public static final String NAME_GOLDSICKLE = "sickle_gold";
 	public static final String NAME_DIAMONDSICKLE = "sickle_diamond";
+	public static final String NAME_MACHINEMATTER = "machinematter";
+	public static final String NAME_WATERBALL = "waterball";
+	public static final String NAME_LAVABALL = "lavaball";
 
 	public static final String[] NAME_LIST = new String[]{
 			NAME_WOODSICKLE,
@@ -23,6 +28,9 @@ public class ItemCore {
 			NAME_IRONSICKLE,
 			NAME_GOLDSICKLE,
 			NAME_DIAMONDSICKLE,
+			NAME_MACHINEMATTER,
+			NAME_WATERBALL,
+			NAME_LAVABALL,
 	};
 
 	public static Item item_sickle_wood;
@@ -30,6 +38,9 @@ public class ItemCore {
 	public static Item item_sickle_iron;
 	public static Item item_sickle_gold;
 	public static Item item_sickle_diamond;
+	public static Item item_machinematter;
+	public static Item item_waterball;
+	public static Item item_lavaball;
 
 
 	private static Map<String,Item> itemMap;
@@ -41,12 +52,18 @@ public class ItemCore {
 		item_sickle_iron = new ItemSickle(Item.ToolMaterial.IRON).setRegistryName(NAME_IRONSICKLE).setUnlocalizedName(NAME_IRONSICKLE);
 		item_sickle_gold = new ItemSickle(Item.ToolMaterial.GOLD).setRegistryName(NAME_GOLDSICKLE).setUnlocalizedName(NAME_GOLDSICKLE);
 		item_sickle_diamond = new ItemSickle(Item.ToolMaterial.DIAMOND).setRegistryName(NAME_DIAMONDSICKLE).setUnlocalizedName(NAME_DIAMONDSICKLE);
+		item_machinematter = new Item().setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_MACHINEMATTER).setUnlocalizedName(NAME_MACHINEMATTER);
+		item_waterball = new ItemLiquidBall(Blocks.FLOWING_WATER).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_WATERBALL).setUnlocalizedName(NAME_WATERBALL);
+		item_lavaball =  new ItemLiquidBall(Blocks.FLOWING_LAVA).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_LAVABALL).setUnlocalizedName(NAME_LAVABALL);
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_WOODSICKLE,item_sickle_wood);}
 			{put(NAME_STONESICKLE,item_sickle_stone);}
 			{put(NAME_IRONSICKLE,item_sickle_iron);}
 			{put(NAME_GOLDSICKLE,item_sickle_gold);}
 			{put(NAME_DIAMONDSICKLE,item_sickle_diamond);}
+			{put(NAME_MACHINEMATTER,item_machinematter);}
+			{put(NAME_WATERBALL,item_waterball);}
+			{put(NAME_LAVABALL,item_lavaball);}
 		};
 
 
@@ -56,6 +73,9 @@ public class ItemCore {
 			{put(NAME_IRONSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_IRONSICKLE, "inventory")});}
 			{put(NAME_GOLDSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_GOLDSICKLE, "inventory")});}
 			{put(NAME_DIAMONDSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_DIAMONDSICKLE, "inventory")});}
+			{put(NAME_MACHINEMATTER,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_MACHINEMATTER, "inventory")});}
+			{put(NAME_WATERBALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WATERBALL, "inventory")});}
+			{put(NAME_LAVABALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LAVABALL, "inventory")});}
 		};
 	}
 

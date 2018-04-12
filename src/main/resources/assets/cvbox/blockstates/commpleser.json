@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "power=false":{ "model":"cvbox:commpleser" },
+        "power=true":{ "model":"cvbox:commpleser_on" }
+    }
+}

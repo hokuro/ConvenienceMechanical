@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "power=false":{ "model":"cvbox:kirer" },
+        "power=true":{ "model":"cvbox:kirer_on" }
+    }
+}

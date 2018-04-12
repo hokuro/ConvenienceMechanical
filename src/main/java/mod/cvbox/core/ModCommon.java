@@ -34,6 +34,7 @@ public final class ModCommon {
 	public static final int GUIID_HARVESTER = 102;
 	public static final int GUIID_WOODPLANTER = 103;
 	public static final int GUIID_WOODHARVESTER = 104;
+	public static final int GUIID_SETTER = 201;
 
 	public static final int GUIID_REPAIR = 201;
 
@@ -56,6 +57,7 @@ public final class ModCommon {
 	public static final int PLANTER_MAX_SLOT = 9;
 //	public static final String MOD_CHANNEL1 = "AutoPlanting1";
 //	public static final String MOD_CHANNEL2 = "AutoPlanting2";
+
 
 
 

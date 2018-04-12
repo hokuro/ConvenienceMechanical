@@ -4,6 +4,7 @@ import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import mod.cvbox.tileentity.TileEntityHarvester;
 import mod.cvbox.tileentity.TileEntityPlanter;
+import mod.cvbox.tileentity.TileEntitySetter;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
 import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,7 @@ public class CommonProxy{
 		GameRegistry.registerTileEntity(TileEntityHarvester.class, TileEntityHarvester.NAME);
 		GameRegistry.registerTileEntity(TileEntityWoodPlanter.class, TileEntityWoodPlanter.NAME);
 		GameRegistry.registerTileEntity(TileEntityWoodHarvester.class, TileEntityWoodHarvester.NAME);
+		GameRegistry.registerTileEntity(TileEntitySetter.class, TileEntitySetter.NAME);
 	}
 
 	public void registerRender(){

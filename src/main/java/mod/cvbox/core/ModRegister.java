@@ -305,6 +305,129 @@ public class ModRegister {
 				'K',Items.DIAMOND_AXE
 				);
 
+		// 機械の素
+		GameRegistry.addShapedRecipe(ItemCore.item_machinematter.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(ItemCore.item_machinematter,1),
+				"IRI",
+				"DGD",
+				"GIG",
+				'R',Items.REDSTONE,
+				'D',Items.DIAMOND,
+				'G',Items.GOLD_INGOT,
+				'I',Items.IRON_INGOT
+				);
+
+		// 製氷機
+		GameRegistry.addShapedRecipe(BlockCore.block_icemaker.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_icemaker,1),
+				"IKI",
+				"KKK",
+				"IRI",
+				'I',Blocks.ICE,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+		//　溶解機
+		GameRegistry.addShapedRecipe(BlockCore.block_lavamaker.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_lavamaker,1),
+				"MKM",
+				"KKK",
+				"MRM",
+				'M',Blocks.MAGMA,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+
+//		public static final String NAME_DESTROYER = "destroyer";		// 破砕機
+//		public static final String NAME_SETTER = "setter";				// 配置機
+//		public static final String NAME_KIRER = "kirer";				// 屠殺機
+//		public static final String NAME_EXCOLLECTOR = "excollector";	// 経験値収集機
+//		public static final String NAME_CRUSSHER = "crussher";			// 粉砕機
+//		public static final String NAME_COMPLESSER = "commpleser";		// 圧縮機
+//		public static final String NAME_LIQUIDCSTRAWER = "straw";		// 給水機
+
+		// 破砕機
+		GameRegistry.addShapedRecipe(BlockCore.block_destroyer.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_destroyer,1),
+				"TTT",
+				"KPK",
+				"KRK",
+				'T',Blocks.TNT,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter,
+				'P',Blocks.PISTON
+				);
+		// 配置機
+		GameRegistry.addShapedRecipe(BlockCore.block_setter.getRegistryName(),
+		new ResourceLocation(ModCommon.MOD_ID),
+		new ItemStack(BlockCore.block_setter,1),
+		"KDK",
+		"KRK",
+		'D',Blocks.DROPPER,
+		'R',Items.REDSTONE,
+		'K',ItemCore.item_machinematter
+		);
+		// 屠殺機
+		GameRegistry.addShapedRecipe(BlockCore.block_kirer.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_kirer,1),
+				" K ",
+				"K K",
+				" R ",
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+		// 経験値収集機
+		GameRegistry.addShapedRecipe(BlockCore.block_excollector.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_excollector,1),
+				"BKB",
+				"KHK",
+				"BRB",
+				'B',Items.GLASS_BOTTLE,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter,
+				'H',Blocks.HOPPER
+				);
+		// 粉砕機
+		GameRegistry.addShapedRecipe(BlockCore.block_crusher.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_crusher,1),
+				"KKK",
+				"KDK",
+				"KRK",
+				'D',Items.DIAMOND,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+		// 圧縮機
+		GameRegistry.addShapedRecipe(BlockCore.block_compresser.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_compresser,1),
+				"KPK",
+				"PRP",
+				"KPK",
+				'P',Blocks.PISTON,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+
+		// 給水機
+		GameRegistry.addShapedRecipe(BlockCore.block_straw.getRegistryName(),
+				new ResourceLocation(ModCommon.MOD_ID),
+				new ItemStack(BlockCore.block_straw,1),
+				"KKK",
+				"KBK",
+				"KRK",
+				'B',Items.BUCKET,
+				'R',Items.REDSTONE,
+				'K',ItemCore.item_machinematter
+				);
+
 //		GameRegistry.addRecipe(new ItemStack(BlockCore.getBlock(BlockExpBank.NAME_EXPBANK), 1, 8),
 //				new Object[] { "OGO", "ICI", "ERE", Character.valueOf('O'), Blocks.obsidian,
 //						Character.valueOf('E'), Items.ender_pearl, Character.valueOf('I'), Items.iron_ingot,

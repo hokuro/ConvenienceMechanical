@@ -23,6 +23,8 @@ public class ConfigValue{
 			Harvester.class,
 			WoodPlanter.class,
 			WoodHarvester.class,
+			IceMaker.class,
+			LavaMaker.class,
 		}, event);
 	}
 
@@ -242,6 +244,17 @@ public class ConfigValue{
 
 	}
 
+	public static class IceMaker{
+		@ConfigProperty(category="IceMaker", comment="Exec Seconds")
+		public static int ExecSec = 10;
+	}
+
+
+	public static class LavaMaker{
+		@ConfigProperty(category="IceMaker", comment="Exec Seconds")
+		public static int ExecSec = 10;
+	}
+
 
 
 	public static class ANVIL{
@@ -380,6 +393,8 @@ public class ConfigValue{
 		}
 		return ret;
 	}
+
+
 
 
 

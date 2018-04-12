@@ -39,6 +39,7 @@ public class BlockCore{
 	public static final String NAME_EXCOLLECTOR = "excollector";	// 経験値収集機
 	public static final String NAME_CRUSSHER = "crussher";			// 粉砕機
 	public static final String NAME_COMPLESSER = "commpleser";		// 圧縮機
+	public static final String NAME_LIQUIDCSTRAWER = "straw";		// 給水機
 
 
 
@@ -60,6 +61,7 @@ public class BlockCore{
 	public static Block block_excollector;
 	public static Block block_crusher;
 	public static Block block_compresser;
+	public static Block block_straw;
 
 	private static final String[] NAME_LIST = new String[]{
 			 NAME_EXPBANK,
@@ -71,14 +73,15 @@ public class BlockCore{
 			 NAME_WOODPLANTER,
 			 NAME_WOODHARVESTER,
 
-//			 NAME_ICEMAKER,
-//			 NAME_LAVAMAKER,
-//			 NAME_DESTROYER,
-//			 NAME_SETTER,
-//			 NAME_KIRER,
-//			 NAME_EXCOLLECTOR,
-//			 NAME_CRUSSHER,
-//			 NAME_COMPLESSER,
+			 NAME_ICEMAKER,
+			 NAME_LAVAMAKER,
+			 NAME_DESTROYER,
+			 NAME_SETTER,
+			 NAME_KIRER,
+			 NAME_EXCOLLECTOR,
+			 NAME_CRUSSHER,
+			 NAME_COMPLESSER,
+			 NAME_LIQUIDCSTRAWER,
 	};
 
 	private static Map<String,Block> blockMap;
@@ -127,45 +130,45 @@ public class BlockCore{
 				.setUnlocalizedName(NAME_WOODHARVESTER)
 				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 
-		block_icemaker = new Block(Material.IRON)
+		// 製氷機
+		block_icemaker = new BlockIceMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER)
-				.setUnlocalizedName(NAME_ICEMAKER)
+				.setUnlocalizedName(NAME_ICEMAKER);
 
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
-		block_lavamaker = new Block(Material.IRON)
+		// 溶解機
+		block_lavamaker = new BlockLavaMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER)
-				.setUnlocalizedName(NAME_LAVAMAKER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_LAVAMAKER);
 
-		block_destroyer = new Block(Material.IRON)
+		// 破砕機
+		block_destroyer = new BlockDestroyer(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER)
-				.setUnlocalizedName(NAME_DESTROYER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_DESTROYER);
 
-		block_setter = new Block(Material.IRON)
+		// 配置機
+		block_setter = new BlockSetter(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER)
-				.setUnlocalizedName(NAME_SETTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_SETTER);
 
-		block_kirer = new Block(Material.IRON)
+		block_kirer = new BlockIceMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KIRER)
-				.setUnlocalizedName(NAME_KIRER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_KIRER);
 
-		block_excollector = new Block(Material.IRON)
+		block_excollector = new BlockIceMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
-				.setUnlocalizedName(NAME_EXCOLLECTOR)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_EXCOLLECTOR);
 
-		block_crusher = new Block(Material.IRON)
+		block_crusher = new BlockIceMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER)
-				.setUnlocalizedName(NAME_CRUSSHER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_CRUSSHER);
 
-		block_compresser = new Block(Material.IRON)
+		block_compresser = new BlockIceMaker(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER)
-				.setUnlocalizedName(NAME_COMPLESSER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
+				.setUnlocalizedName(NAME_COMPLESSER);
+
+		block_straw = new BlockIceMaker(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER)
+				.setUnlocalizedName(NAME_LIQUIDCSTRAWER);
 
 
 
@@ -181,12 +184,13 @@ public class BlockCore{
 
 			{put(NAME_ICEMAKER,block_icemaker);}
 			{put(NAME_LAVAMAKER,block_lavamaker);}
-			{put( NAME_DESTROYER,block_destroyer);}
+			{put(NAME_DESTROYER,block_destroyer);}
 			{put(NAME_SETTER,block_setter);}
 			{put(NAME_KIRER,block_kirer);}
 			{put(NAME_EXCOLLECTOR,block_excollector);}
 			{put(NAME_CRUSSHER,block_crusher);}
 			{put(NAME_COMPLESSER,block_compresser);}
+			{put(NAME_LIQUIDCSTRAWER,block_straw);}
 		};
 
 		itemMap = new HashMap<String,Item>(){
@@ -207,6 +211,7 @@ public class BlockCore{
 			{put(NAME_EXCOLLECTOR, new ItemBlock(block_excollector).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR));}
 			{put(NAME_CRUSSHER, new ItemBlock(block_crusher).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
 			{put(NAME_COMPLESSER, new ItemBlock(block_compresser).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
+			{put(NAME_LIQUIDCSTRAWER, new ItemBlock(block_straw).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER));}
 		};
 
 
@@ -228,6 +233,7 @@ public class BlockCore{
 			{put(NAME_EXCOLLECTOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXCOLLECTOR)});}
 			{put(NAME_CRUSSHER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_CRUSSHER)});}
 			{put(NAME_COMPLESSER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_COMPLESSER)});}
+			{put(NAME_LIQUIDCSTRAWER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LIQUIDCSTRAWER)});}
 		};
 	}
 

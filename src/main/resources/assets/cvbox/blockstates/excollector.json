@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "power=false":{ "model":"cvbox:excollector" },
+        "power=true":{ "model":"cvbox:excollector_on" }
+    }
+}
