@@ -3,7 +3,9 @@ package mod.cvbox.client;
 import mod.cvbox.core.CommonProxy;
 import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
 import mod.cvbox.tileentity.TileEntityExpBank;
+import mod.cvbox.tileentity.TileEntityExpCollector;
 import mod.cvbox.tileentity.TileEntityHarvester;
+import mod.cvbox.tileentity.TileEntityKiller;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntitySetter;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
@@ -34,6 +36,8 @@ public class ClientProxy extends CommonProxy{
 		GameRegistry.registerTileEntity(TileEntityWoodPlanter.class, TileEntityWoodPlanter.NAME);
 		GameRegistry.registerTileEntity(TileEntityWoodHarvester.class, TileEntityWoodHarvester.NAME);
 		GameRegistry.registerTileEntity(TileEntitySetter.class, TileEntitySetter.NAME);
+		GameRegistry.registerTileEntity(TileEntityKiller.class, TileEntityKiller.NAME);
+		GameRegistry.registerTileEntity(TileEntityExpCollector.class, TileEntityExpCollector.NAME);
 	}
 
 	public void registerRender(){

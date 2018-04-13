@@ -35,6 +35,8 @@ public final class ModCommon {
 	public static final int GUIID_WOODPLANTER = 103;
 	public static final int GUIID_WOODHARVESTER = 104;
 	public static final int GUIID_SETTER = 201;
+	public static final int GUIID_KILLER = 202;
+	public static final int GUIID_EXPCOLLECTOR = 203;
 
 	public static final int GUIID_REPAIR = 201;
 
@@ -50,6 +52,9 @@ public final class ModCommon {
 	public static final int MESSID_MESSAGECLEARENCHANT = 4;
 	public static final int MESSID_MESSAGEEXECENCHANT = 5;
 	public static final int MESSID_MESSAGEFARMERUPDATE = 6;
+	public static final int MESSID_MESSAGEKILLAREAUPDATE = 7;
+	public static final int MESSID_MESSAGEKILLTARGETUPDATE = 8;
+	public static final int MESSID_MESSAGELEVELUP = 9;
 
 
 
@@ -57,6 +62,11 @@ public final class ModCommon {
 	public static final int PLANTER_MAX_SLOT = 9;
 //	public static final String MOD_CHANNEL1 = "AutoPlanting1";
 //	public static final String MOD_CHANNEL2 = "AutoPlanting2";
+
+
+
+
+
 
 
 

@@ -29,10 +29,12 @@ tile.woodharvester.name=Wood Harvester
 tile.destroyer.name=Block Destoryer
 tile.setter.name=Block Setter
 tile.straw.name=LiquidStraw
-tile.excollector.name=Exp Remover
+tile.excollector.name=Exp Collector
 tile.kirer.name=MobKirer
 tile.commpleser.name=Complesser
 tile.crussher.name=Crussher
+tile.planter.name=Auto Planter
+tile.harvester.name=Auto Harvester
 mess.blockAutoPlanting.text.button0=Filter
 mess.blockAutoPlanting.text.button1=Chest
 mess.blockAutoPlanting.text.priority=Priority
@@ -45,6 +47,9 @@ item.sickle_diamond.name=Diamond Sickle
 item.machinematter.name=MachineMatter
 item.waterball.name=Water Ball
 item.lavaball.name=Lava Ball
+gui.tile.expcollector=Exp Collector
+gui.button_all=ALL
+gui.button_get=Set Lv
 
 
 config.comment.exenchant.tributeitemlevel=types of items required to enchant(1:diamond, 2:emerald, 3:nether star)

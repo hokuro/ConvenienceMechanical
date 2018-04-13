@@ -1,7 +1,6 @@
 package mod.cvbox.inventory;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
@@ -26,7 +25,6 @@ public class ContainerSetter extends Container {
 	                    	if (Block.getBlockFromItem(stack.getItem()) != null && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR){
 	                    		return true;
 	                    	}
-	                    	GuiDispenser x;
 	                    	return false;
 	                    }
 	                });

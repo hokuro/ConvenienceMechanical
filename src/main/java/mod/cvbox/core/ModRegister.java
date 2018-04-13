@@ -2,12 +2,15 @@ package mod.cvbox.core;
 
 import mod.cvbox.block.BlockCore;
 import mod.cvbox.item.ItemCore;
+import mod.cvbox.network.MessageEXPCollector_LevelUp;
 import mod.cvbox.network.MessageExEnchant_ClearParameter;
 import mod.cvbox.network.MessageExEnchant_ExecEnchant;
 import mod.cvbox.network.MessageExEnchant_UpdateParameter;
 import mod.cvbox.network.MessageExpBank_ExecExperience;
 import mod.cvbox.network.MessageExpBank_ExperienceInfo;
 import mod.cvbox.network.MessageFarmer_UpdateDelivery;
+import mod.cvbox.network.MessageKiller_UpdateAreaSize;
+import mod.cvbox.network.MessageKiller_UpdateTarget;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -372,9 +375,9 @@ public class ModRegister {
 		'K',ItemCore.item_machinematter
 		);
 		// 屠殺機
-		GameRegistry.addShapedRecipe(BlockCore.block_kirer.getRegistryName(),
+		GameRegistry.addShapedRecipe(BlockCore.block_killer.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
-				new ItemStack(BlockCore.block_kirer,1),
+				new ItemStack(BlockCore.block_killer,1),
 				" K ",
 				"K K",
 				" R ",
@@ -420,7 +423,6 @@ public class ModRegister {
 		GameRegistry.addShapedRecipe(BlockCore.block_straw.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_straw,1),
-				"KKK",
 				"KBK",
 				"KRK",
 				'B',Items.BUCKET,
@@ -469,7 +471,9 @@ public class ModRegister {
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ClearParameter.class, MessageExEnchant_ClearParameter.class, ModCommon.MESSID_MESSAGECLEARENCHANT, Side.CLIENT);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ExecEnchant.class, MessageExEnchant_ExecEnchant.class, ModCommon.MESSID_MESSAGEEXECENCHANT, Side.SERVER);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageFarmer_UpdateDelivery.class,MessageFarmer_UpdateDelivery.class, ModCommon.MESSID_MESSAGEFARMERUPDATE, Side.SERVER);
-
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateAreaSize.class,MessageKiller_UpdateAreaSize.class, ModCommon.MESSID_MESSAGEKILLAREAUPDATE, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateTarget.class,MessageKiller_UpdateTarget.class, ModCommon.MESSID_MESSAGEKILLTARGETUPDATE, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageEXPCollector_LevelUp.class,MessageEXPCollector_LevelUp.class, ModCommon.MESSID_MESSAGELEVELUP, Side.SERVER);
 	}
 
 

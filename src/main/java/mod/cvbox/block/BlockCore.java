@@ -35,7 +35,7 @@ public class BlockCore{
 	public static final String NAME_LAVAMAKER = "lavamaker";		// 溶解機
 	public static final String NAME_DESTROYER = "destroyer";		// 破砕機
 	public static final String NAME_SETTER = "setter";				// 配置機
-	public static final String NAME_KIRER = "kirer";				// 屠殺機
+	public static final String NAME_KILLER = "kirer";				// 屠殺機
 	public static final String NAME_EXCOLLECTOR = "excollector";	// 経験値収集機
 	public static final String NAME_CRUSSHER = "crussher";			// 粉砕機
 	public static final String NAME_COMPLESSER = "commpleser";		// 圧縮機
@@ -57,7 +57,7 @@ public class BlockCore{
 	public static Block block_lavamaker;
 	public static Block block_destroyer;
 	public static Block block_setter;
-	public static Block block_kirer;
+	public static Block block_killer;
 	public static Block block_excollector;
 	public static Block block_crusher;
 	public static Block block_compresser;
@@ -77,7 +77,7 @@ public class BlockCore{
 			 NAME_LAVAMAKER,
 			 NAME_DESTROYER,
 			 NAME_SETTER,
-			 NAME_KIRER,
+			 NAME_KILLER,
 			 NAME_EXCOLLECTOR,
 			 NAME_CRUSSHER,
 			 NAME_COMPLESSER,
@@ -150,11 +150,13 @@ public class BlockCore{
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER)
 				.setUnlocalizedName(NAME_SETTER);
 
-		block_kirer = new BlockIceMaker(Material.IRON)
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KIRER)
-				.setUnlocalizedName(NAME_KIRER);
+		// キラー
+		block_killer = new BlockKiller(Material.IRON)
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER)
+				.setUnlocalizedName(NAME_KILLER);
 
-		block_excollector = new BlockIceMaker(Material.IRON)
+		// 経験値収集機
+		block_excollector = new BlockExpCollector(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
 				.setUnlocalizedName(NAME_EXCOLLECTOR);
 
@@ -186,7 +188,7 @@ public class BlockCore{
 			{put(NAME_LAVAMAKER,block_lavamaker);}
 			{put(NAME_DESTROYER,block_destroyer);}
 			{put(NAME_SETTER,block_setter);}
-			{put(NAME_KIRER,block_kirer);}
+			{put(NAME_KILLER,block_killer);}
 			{put(NAME_EXCOLLECTOR,block_excollector);}
 			{put(NAME_CRUSSHER,block_crusher);}
 			{put(NAME_COMPLESSER,block_compresser);}
@@ -207,7 +209,7 @@ public class BlockCore{
 			{put(NAME_LAVAMAKER, new ItemBlock(block_lavamaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER));}
 			{put(NAME_DESTROYER, new ItemBlock(block_destroyer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER));}
 			{put(NAME_SETTER, new ItemBlock(block_setter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER));}
-			{put(NAME_KIRER, new ItemBlock(block_kirer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KIRER));}
+			{put(NAME_KILLER, new ItemBlock(block_killer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER));}
 			{put(NAME_EXCOLLECTOR, new ItemBlock(block_excollector).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR));}
 			{put(NAME_CRUSSHER, new ItemBlock(block_crusher).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
 			{put(NAME_COMPLESSER, new ItemBlock(block_compresser).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
@@ -229,7 +231,7 @@ public class BlockCore{
 			{put(NAME_LAVAMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAMAKER)});}
 			{put(NAME_DESTROYER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_DESTROYER)});}
 			{put(NAME_SETTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SETTER)});}
-			{put(NAME_KIRER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_KIRER)});}
+			{put(NAME_KILLER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_KILLER)});}
 			{put(NAME_EXCOLLECTOR, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_EXCOLLECTOR)});}
 			{put(NAME_CRUSSHER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_CRUSSHER)});}
 			{put(NAME_COMPLESSER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_COMPLESSER)});}

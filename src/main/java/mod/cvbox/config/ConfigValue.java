@@ -148,7 +148,6 @@ public class ConfigValue{
 
 	}
 
-
 	public static class WoodPlanter{
 		@ConfigProperty(category="WoodPlanter", comment="Maximum Distance(x-z) 1-128" ,max="128",min="1")
 		public static int MaxDistance = 9;
@@ -251,8 +250,13 @@ public class ConfigValue{
 
 
 	public static class LavaMaker{
-		@ConfigProperty(category="IceMaker", comment="Exec Seconds")
+		@ConfigProperty(category="LavaMaker", comment="Exec Seconds")
 		public static int ExecSec = 10;
+	}
+
+	public static class ExpCollector{
+		@ConfigProperty(category="ExpCollector", comment="collectable area size x*y*z")
+		public static int AreaSize = 10;
 	}
 
 
