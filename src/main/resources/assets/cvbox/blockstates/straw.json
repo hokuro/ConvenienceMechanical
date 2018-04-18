@@ -1,5 +1,6 @@
 {
     "variants": {
+        "normal":{ "model":"cvbox:straw" },
         "power=false":{ "model":"cvbox:straw" },
         "power=true":{ "model":"cvbox:straw_on" }
     }

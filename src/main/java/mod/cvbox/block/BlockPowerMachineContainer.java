@@ -15,7 +15,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class BlockPowerMachineContainer extends BlockContainer {
@@ -45,9 +47,6 @@ public abstract class BlockPowerMachineContainer extends BlockContainer {
 		this.nextUpdateTick = tick;
 	}
 
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick, 1);
-	}
 
 	@Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
@@ -118,6 +117,11 @@ public abstract class BlockPowerMachineContainer extends BlockContainer {
 		return Math.max(power1, power2);
     }
 
+	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
+		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick, 1);
+	}
+
+
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return null;
@@ -126,6 +130,15 @@ public abstract class BlockPowerMachineContainer extends BlockContainer {
 	@Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.INVISIBLE;
+        return EnumBlockRenderType.MODEL;
+    }
+
+
+
+
+	@Override
+    public boolean shouldCheckWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
+    {
+        return false;
     }
 }

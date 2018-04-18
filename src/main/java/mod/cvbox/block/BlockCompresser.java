@@ -2,7 +2,7 @@ package mod.cvbox.block;
 
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
-import mod.cvbox.tileentity.TileEntityKiller;
+import mod.cvbox.tileentity.TileEntityCompresser;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,9 +15,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockKiller extends BlockPowerMachineContainer {
+public class BlockCompresser extends BlockPowerMachineContainer {
 
-	public BlockKiller(Material materialIn) {
+	public BlockCompresser(Material materialIn) {
 		super(materialIn);
 		this.setTickRandomly(false);
 	}
@@ -28,8 +28,8 @@ public class BlockKiller extends BlockPowerMachineContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		TileEntityKiller ret = new TileEntityKiller();
-		ret.setField(TileEntityKiller.FIELD_POWER, meta);
+		TileEntityCompresser ret = new TileEntityCompresser();
+		ret.setField(TileEntityCompresser.FIELD_POWER, meta);
 		return ret;
 	}
 
@@ -38,7 +38,7 @@ public class BlockKiller extends BlockPowerMachineContainer {
     {
         if (!worldIn.isRemote)
         {
-        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_KILLER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_COMPLESSER, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
@@ -62,5 +62,4 @@ public class BlockKiller extends BlockPowerMachineContainer {
         }
         super.breakBlock(worldIn, pos, state);
     }
-
 }

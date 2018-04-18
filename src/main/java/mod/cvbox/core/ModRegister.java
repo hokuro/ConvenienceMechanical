@@ -2,6 +2,7 @@ package mod.cvbox.core;
 
 import mod.cvbox.block.BlockCore;
 import mod.cvbox.item.ItemCore;
+import mod.cvbox.network.MessageCrusher_ChangeSelect;
 import mod.cvbox.network.MessageEXPCollector_LevelUp;
 import mod.cvbox.network.MessageExEnchant_ClearParameter;
 import mod.cvbox.network.MessageExEnchant_ExecEnchant;
@@ -11,6 +12,9 @@ import mod.cvbox.network.MessageExpBank_ExperienceInfo;
 import mod.cvbox.network.MessageFarmer_UpdateDelivery;
 import mod.cvbox.network.MessageKiller_UpdateAreaSize;
 import mod.cvbox.network.MessageKiller_UpdateTarget;
+import mod.cvbox.network.MessageStraw_AreaSizeUpdate;
+import mod.cvbox.network.MessageStraw_ClearArea;
+import mod.cvbox.network.MessageStraw_GetAll;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -474,6 +478,10 @@ public class ModRegister {
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateAreaSize.class,MessageKiller_UpdateAreaSize.class, ModCommon.MESSID_MESSAGEKILLAREAUPDATE, Side.SERVER);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateTarget.class,MessageKiller_UpdateTarget.class, ModCommon.MESSID_MESSAGEKILLTARGETUPDATE, Side.SERVER);
 		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageEXPCollector_LevelUp.class,MessageEXPCollector_LevelUp.class, ModCommon.MESSID_MESSAGELEVELUP, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageCrusher_ChangeSelect.class,MessageCrusher_ChangeSelect.class, ModCommon.MESSID_MESSAGECRUSHERSELECTCHANGE, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_AreaSizeUpdate.class,MessageStraw_AreaSizeUpdate.class, ModCommon.MESSID_MESSAGESTRAWAREAPUDATE, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_GetAll.class,MessageStraw_GetAll.class,ModCommon.MESSID_MESSAGESTRAWGETALL, Side.SERVER);
+		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_ClearArea.class,MessageStraw_ClearArea.class,ModCommon.MESSID_MESSAGESTRAWCLEAR, Side.SERVER);
 	}
 
 

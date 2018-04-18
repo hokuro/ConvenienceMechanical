@@ -160,17 +160,20 @@ public class BlockCore{
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
 				.setUnlocalizedName(NAME_EXCOLLECTOR);
 
-		block_crusher = new BlockIceMaker(Material.IRON)
+		// 粉砕機
+		block_crusher = new BlockCrusher(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER)
 				.setUnlocalizedName(NAME_CRUSSHER);
 
-		block_compresser = new BlockIceMaker(Material.IRON)
+		// 圧縮機
+		block_compresser = new BlockCompresser(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER)
 				.setUnlocalizedName(NAME_COMPLESSER);
 
-		block_straw = new BlockIceMaker(Material.IRON)
+		// ストロー
+		block_straw = new BlockStraw(Material.IRON)
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER)
-				.setUnlocalizedName(NAME_LIQUIDCSTRAWER);
+				.setUnlocalizedName(NAME_LIQUIDCSTRAWER).setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 
 
 
