@@ -1,51 +1,4 @@
-package mod.cvbox.core;
-
-import mod.cvbox.block.BlockCore;
-import mod.cvbox.item.ItemCore;
-import mod.cvbox.network.MessageCrusher_ChangeSelect;
-import mod.cvbox.network.MessageEXPCollector_LevelUp;
-import mod.cvbox.network.MessageExEnchant_ClearParameter;
-import mod.cvbox.network.MessageExEnchant_ExecEnchant;
-import mod.cvbox.network.MessageExEnchant_UpdateParameter;
-import mod.cvbox.network.MessageExpBank_ExecExperience;
-import mod.cvbox.network.MessageExpBank_ExperienceInfo;
-import mod.cvbox.network.MessageFarmer_UpdateDelivery;
-import mod.cvbox.network.MessageKiller_UpdateAreaSize;
-import mod.cvbox.network.MessageKiller_UpdateTarget;
-import mod.cvbox.network.MessageStraw_AreaSizeUpdate;
-import mod.cvbox.network.MessageStraw_ClearArea;
-import mod.cvbox.network.MessageStraw_GetAll;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-
-public class ModRegister {
-	public static void RegisterBlock(FMLPreInitializationEvent event) {
-		BlockCore.register(event);
-	}
-
-	public static void RegisterItem(FMLPreInitializationEvent event){
-		ItemCore.register(event);
-	}
-
-	public static void RegisterEntity(CommonProxy proxy){
-		// „Çø„Ç§„É´„Ç®„É≥„ÉÜ„Ç£„ÉÜ„Ç£„ÅØserver„Å®client„ÅßÁôªÈå≤ÊñπÊ≥ï„ÅåÈÅï„ÅÜÁÇ∫„Éó„É≠„Ç≠„Ç∑„ÅßÂàÜ„Åë„Çã
-		proxy.registerTileEntity();
-	}
-
-	public static void RegisterRender(CommonProxy proxy){
-		// „É¨„É≥„ÉÄ„Éº„ÅØ„ÇØ„É©„Ç§„Ç¢„É≥„Éà„ÅÆÊú™ÁôªÈå≤
-		proxy.registerRender();
-	}
-
-	public static void RegisterRecipe(){
-
-		// ÁµåÈ®ìÂÄ§„Éú„ÉÉ„ÇØ„Çπ
+		// åoå±ílÉ{ÉbÉNÉX
 		GameRegistry.addShapedRecipe(BlockCore.block_expbank.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_expbank,1),
@@ -59,7 +12,7 @@ public class ModRegister {
 						'B',Items.GLASS_BOTTLE
 						});
 
-		// „Çπ„Éº„Éë„Éº„Ç®„É≥„ÉÅ„É£„É≥„Éà„ÉÜ„Éº„Éñ„É´
+		// ÉXÅ[ÉpÅ[ÉGÉìÉ`ÉÉÉìÉgÉeÅ[ÉuÉã
 		GameRegistry.addShapedRecipe(BlockCore.block_exenchanter.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_exenchanter,1),
@@ -71,7 +24,7 @@ public class ModRegister {
 				'E',Blocks.EMERALD_BLOCK,
 				'S',Items.NETHER_STAR);
 
-		// „Çπ„Éº„Éë„Éº„Ç¢„É≥„Éì„É´
+		// ÉXÅ[ÉpÅ[ÉAÉìÉrÉã
 		GameRegistry.addShapedRecipe(BlockCore.block_exanvil.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_exanvil,1),
@@ -81,7 +34,7 @@ public class ModRegister {
 				'G',Blocks.IRON_BLOCK
 				);
 
-		// Á®Æ„Åæ„ÅçÊ©ü
+		// éÌÇ‹Ç´ã@
 		GameRegistry.addShapedRecipe(
 				new ResourceLocation(BlockCore.block_planter.getRegistryName().getResourceDomain() + ":" + BlockCore.block_planter.getRegistryName().getResourcePath()+"_wood"),
 				new ResourceLocation(ModCommon.MOD_ID),
@@ -143,7 +96,7 @@ public class ModRegister {
 				'K',Items.DIAMOND_HOE
 				);
 
-		// ÂèéÁ©´Ê©ü
+		// é˚änã@
 		GameRegistry.addShapedRecipe(
 				new ResourceLocation(BlockCore.block_harvester.getRegistryName().getResourceDomain() + ":" + BlockCore.block_harvester.getRegistryName().getResourcePath()+"_wood"),
 				new ResourceLocation(ModCommon.MOD_ID),
@@ -207,7 +160,7 @@ public class ModRegister {
 
 
 
-		// Èéå
+		// äô
 		GameRegistry.addShapedRecipe(ItemCore.item_sickle_wood.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(ItemCore.item_sickle_wood,1),
@@ -255,7 +208,7 @@ public class ModRegister {
 				);
 
 
-		// Ê§çÊûóÊ©ü
+		// êAó—ã@
 		GameRegistry.addShapedRecipe(BlockCore.block_woodplanter.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_woodplanter,1),
@@ -267,7 +220,7 @@ public class ModRegister {
 				'D',Blocks.DISPENSER
 				);
 
-		// ÂèéÁ©´Ê©ü
+		// é˚änã@
 		GameRegistry.addShapedRecipe(
 				new ResourceLocation(BlockCore.block_woodharvester.getRegistryName().getResourceDomain() + ":" + BlockCore.block_woodharvester.getRegistryName().getResourcePath()+"_wood"),
 				new ResourceLocation(ModCommon.MOD_ID),
@@ -329,7 +282,7 @@ public class ModRegister {
 				'K',Items.DIAMOND_AXE
 				);
 
-		// Ê©üÊ¢∞„ÅÆÁ¥†
+		// ã@äBÇÃëf
 		GameRegistry.addShapedRecipe(ItemCore.item_machinematter.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(ItemCore.item_machinematter,1),
@@ -342,7 +295,7 @@ public class ModRegister {
 				'I',Items.IRON_INGOT
 				);
 
-		// Ë£ΩÊ∞∑Ê©ü
+		// êªïXã@
 		GameRegistry.addShapedRecipe(BlockCore.block_icemaker.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_icemaker,1),
@@ -353,7 +306,7 @@ public class ModRegister {
 				'R',Items.REDSTONE,
 				'K',ItemCore.item_machinematter
 				);
-		//„ÄÄÊ∫∂Ëß£Ê©ü
+		//Å@ónâã@
 		GameRegistry.addShapedRecipe(BlockCore.block_lavamaker.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_lavamaker,1),
@@ -365,7 +318,7 @@ public class ModRegister {
 				'K',ItemCore.item_machinematter
 				);
 
-		// Á†¥Á†ïÊ©ü
+		// îjç”ã@
 		GameRegistry.addShapedRecipe(BlockCore.block_destroyer.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_destroyer,1),
@@ -377,7 +330,7 @@ public class ModRegister {
 				'K',ItemCore.item_machinematter,
 				'P',Blocks.PISTON
 				);
-		// ÈÖçÁΩÆÊ©ü
+		// îzíuã@
 		GameRegistry.addShapedRecipe(BlockCore.block_setter.getRegistryName(),
 		new ResourceLocation(ModCommon.MOD_ID),
 		new ItemStack(BlockCore.block_setter,1),
@@ -387,7 +340,7 @@ public class ModRegister {
 		'R',Items.REDSTONE,
 		'K',ItemCore.item_machinematter
 		);
-		// Â±†ÊÆ∫Ê©ü
+		// ìjéEã@
 		GameRegistry.addShapedRecipe(BlockCore.block_killer.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_killer,1),
@@ -397,7 +350,7 @@ public class ModRegister {
 				'R',Items.REDSTONE,
 				'K',ItemCore.item_machinematter
 				);
-		// ÁµåÈ®ìÂÄ§ÂèéÈõÜÊ©ü
+		// åoå±ílé˚èWã@
 		GameRegistry.addShapedRecipe(BlockCore.block_excollector.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_excollector,1),
@@ -409,7 +362,7 @@ public class ModRegister {
 				'K',ItemCore.item_machinematter,
 				'H',Blocks.HOPPER
 				);
-		// Á≤âÁ†ïÊ©ü
+		// ï≤ç”ã@
 		GameRegistry.addShapedRecipe(BlockCore.block_crusher.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_crusher,1),
@@ -420,7 +373,7 @@ public class ModRegister {
 				'R',Items.REDSTONE,
 				'K',ItemCore.item_machinematter
 				);
-		// ÂúßÁ∏ÆÊ©ü
+		// à≥èkã@
 		GameRegistry.addShapedRecipe(BlockCore.block_compresser.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_compresser,1),
@@ -432,7 +385,7 @@ public class ModRegister {
 				'K',ItemCore.item_machinematter
 				);
 
-		// Áµ¶Ê∞¥Ê©ü
+		// ããêÖã@
 		GameRegistry.addShapedRecipe(BlockCore.block_straw.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),
 				new ItemStack(BlockCore.block_straw,1),
@@ -443,33 +396,13 @@ public class ModRegister {
 				'K',ItemCore.item_machinematter
 				);
 
-		// Ê∞¥„Éê„Ç±„ÉÑ
+		// êÖÉoÉPÉc
 		GameRegistry.addShapelessRecipe(new ResourceLocation(ModCommon.MOD_ID+":"+"warterbukett"),
 				new ResourceLocation(ModCommon.MOD_ID+":"+"warterbukett"),
 				new ItemStack(Items.WATER_BUCKET,1),
 				Ingredient.fromItems(Items.BUCKET),Ingredient.fromItem(ItemCore.item_waterball));
-		// Ê∫∂Â≤©„Éê„Ç±„ÉÑ
+		// ónä‚ÉoÉPÉc
 		GameRegistry.addShapelessRecipe(new ResourceLocation(ModCommon.MOD_ID+":"+"lavabukett"),
 				new ResourceLocation(ModCommon.MOD_ID+":"+"lavabukett"),
 				new ItemStack(Items.LAVA_BUCKET,1),
 				Ingredient.fromItems(Items.BUCKET),Ingredient.fromItem(ItemCore.item_lavaball));
-	}
-
-	public static void RegisterMessage(){
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExpBank_ExecExperience.class, MessageExpBank_ExecExperience.class, ModCommon.MESSID_MESSAGEECECECPERIENCE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExpBank_ExperienceInfo.class, MessageExpBank_ExperienceInfo.class, ModCommon.MESSID_MESSAGEEXPERIENCEINFO, Side.CLIENT);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_UpdateParameter.class, MessageExEnchant_UpdateParameter.class, ModCommon.MESSID_MESSAGEUPDATEENCHANT, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ClearParameter.class, MessageExEnchant_ClearParameter.class, ModCommon.MESSID_MESSAGECLEARENCHANT, Side.CLIENT);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageExEnchant_ExecEnchant.class, MessageExEnchant_ExecEnchant.class, ModCommon.MESSID_MESSAGEEXECENCHANT, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageFarmer_UpdateDelivery.class,MessageFarmer_UpdateDelivery.class, ModCommon.MESSID_MESSAGEFARMERUPDATE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateAreaSize.class,MessageKiller_UpdateAreaSize.class, ModCommon.MESSID_MESSAGEKILLAREAUPDATE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageKiller_UpdateTarget.class,MessageKiller_UpdateTarget.class, ModCommon.MESSID_MESSAGEKILLTARGETUPDATE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageEXPCollector_LevelUp.class,MessageEXPCollector_LevelUp.class, ModCommon.MESSID_MESSAGELEVELUP, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageCrusher_ChangeSelect.class,MessageCrusher_ChangeSelect.class, ModCommon.MESSID_MESSAGECRUSHERSELECTCHANGE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_AreaSizeUpdate.class,MessageStraw_AreaSizeUpdate.class, ModCommon.MESSID_MESSAGESTRAWAREAPUDATE, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_GetAll.class,MessageStraw_GetAll.class,ModCommon.MESSID_MESSAGESTRAWGETALL, Side.SERVER);
-		Mod_ConvenienceBox.Net_Instance.registerMessage(MessageStraw_ClearArea.class,MessageStraw_ClearArea.class,ModCommon.MESSID_MESSAGESTRAWCLEAR, Side.SERVER);
-	}
-
-
-}
