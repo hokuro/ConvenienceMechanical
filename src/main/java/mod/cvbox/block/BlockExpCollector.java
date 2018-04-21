@@ -1,5 +1,6 @@
 package mod.cvbox.block;
 
+import mod.cvbox.block.ab.BlockPowerMachineContainer;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.tileentity.TileEntityExpCollector;
@@ -20,8 +21,8 @@ import net.minecraft.world.World;
 
 public class BlockExpCollector extends BlockPowerMachineContainer {
 
-	public BlockExpCollector(Material materialIn) {
-		super(materialIn);
+	public BlockExpCollector() {
+		super(Material.GROUND);
 		this.setTickRandomly(false);
 	}
 
@@ -39,11 +40,14 @@ public class BlockExpCollector extends BlockPowerMachineContainer {
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!worldIn.isRemote)
-        {
-        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXPCOLLECTOR, worldIn, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return true;
+		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+	        if (!worldIn.isRemote)
+	        {
+	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXPCOLLECTOR, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	        	return true;
+	        }
+		}
+        return false;
     }
 
 
@@ -86,4 +90,11 @@ public class BlockExpCollector extends BlockPowerMachineContainer {
         }
         super.breakBlock(worldIn, pos, state);
     }
+
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 }

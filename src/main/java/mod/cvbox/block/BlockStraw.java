@@ -2,6 +2,7 @@ package mod.cvbox.block;
 
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.item.ItemCore;
 import mod.cvbox.tileentity.TileEntityStraw;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -19,8 +20,8 @@ import net.minecraft.world.World;
 
 public class BlockStraw extends BlockContainer {
 
-	public BlockStraw(Material materialIn) {
-		super(materialIn);
+	public BlockStraw() {
+		super(Material.GROUND);
 	}
 
 	@Override
@@ -32,7 +33,13 @@ public class BlockStraw extends BlockContainer {
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!worldIn.isRemote)
+		ItemStack mainstack = playerIn.getHeldItemMainhand();
+		if (mainstack.getItem() == ItemCore.item_spana){
+    		this.breakBlock(worldIn, pos, state);
+    		worldIn.setBlockToAir(pos);
+        	InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this,1));
+		}
+		else if (!worldIn.isRemote)
         {
         	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_STRAW, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }

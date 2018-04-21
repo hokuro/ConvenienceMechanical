@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "icemaker",
+  "pattern": [
+    "IKI",
+    "KKK",
+    "IRI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:ice"
+    },
+    "K": {
+      "item": "cvbox:machinematter"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "cvbox:icemaker",
+    "count": 1
+  }
+}

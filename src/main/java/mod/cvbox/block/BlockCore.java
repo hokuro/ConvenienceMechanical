@@ -131,47 +131,47 @@ public class BlockCore{
 				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 
 		// 製氷機
-		block_icemaker = new BlockIceMaker(Material.IRON)
+		block_icemaker = new BlockIceMaker()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER)
 				.setUnlocalizedName(NAME_ICEMAKER);
 
 		// 溶解機
-		block_lavamaker = new BlockLavaMaker(Material.IRON)
+		block_lavamaker = new BlockLavaMaker()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER)
 				.setUnlocalizedName(NAME_LAVAMAKER);
 
 		// 破砕機
-		block_destroyer = new BlockDestroyer(Material.IRON)
+		block_destroyer = new BlockDestroyer()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER)
 				.setUnlocalizedName(NAME_DESTROYER);
 
 		// 配置機
-		block_setter = new BlockSetter(Material.IRON)
+		block_setter = new BlockSetter()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER)
 				.setUnlocalizedName(NAME_SETTER);
 
 		// キラー
-		block_killer = new BlockKiller(Material.IRON)
+		block_killer = new BlockKiller()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER)
 				.setUnlocalizedName(NAME_KILLER);
 
 		// 経験値収集機
-		block_excollector = new BlockExpCollector(Material.IRON)
+		block_excollector = new BlockExpCollector()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
 				.setUnlocalizedName(NAME_EXCOLLECTOR);
 
 		// 粉砕機
-		block_crusher = new BlockCrusher(Material.IRON)
+		block_crusher = new BlockCrusher()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER)
 				.setUnlocalizedName(NAME_CRUSSHER);
 
 		// 圧縮機
-		block_compresser = new BlockCompresser(Material.IRON)
+		block_compresser = new BlockCompresser()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER)
 				.setUnlocalizedName(NAME_COMPLESSER);
 
 		// ストロー
-		block_straw = new BlockStraw(Material.IRON)
+		block_straw = new BlockStraw()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER)
 				.setUnlocalizedName(NAME_LIQUIDCSTRAWER).setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 

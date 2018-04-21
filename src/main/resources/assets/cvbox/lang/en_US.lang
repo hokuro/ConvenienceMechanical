@@ -50,8 +50,8 @@ item.lavaball.name=Lava Ball
 gui.tile.expcollector=Exp Collector
 gui.button_all=ALL
 gui.button_get=Set Lv
-
-
+gui.tile.expcollector=Exp Collector
+container.setter=setter
 config.comment.exenchant.tributeitemlevel=types of items required to enchant(1:diamond, 2:emerald, 3:nether star)
 config.comment.exenchant.tributeitemcount=number of items required to enchant(minimum 10 maximum 64)
 

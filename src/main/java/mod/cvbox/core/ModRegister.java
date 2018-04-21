@@ -44,7 +44,6 @@ public class ModRegister {
 	}
 
 	public static void RegisterRecipe(){
-
 		// 経験値ボックス
 		GameRegistry.addShapedRecipe(BlockCore.block_expbank.getRegistryName(),
 				new ResourceLocation(ModCommon.MOD_ID),

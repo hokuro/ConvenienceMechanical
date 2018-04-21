@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "kirer",
+  "pattern": [
+    "WKS",
+    "KDK",
+    "IRG"
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:wooden_sword"
+    },
+    "S": {
+      "item": "minecraft:stone_sword"
+    },
+    "I": {
+      "item": "minecraft:iron_sword"
+    },
+    "G": {
+      "item": "minecraft:golden_sword"
+    },
+    "D": {
+      "item": "minecraft:diamond_sword"
+    },
+    "K": {
+      "item": "cvbox:machinematter"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "cvbox:kirer",
+    "count": 1
+  }
+}

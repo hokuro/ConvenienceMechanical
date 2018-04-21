@@ -1,9 +1,8 @@
 package mod.cvbox.block;
 
-import java.util.Random;
-
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.block.ab.BlockPowerMachine;
 import mod.cvbox.config.ConfigValue;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.block.BlockLiquid;
@@ -20,37 +19,46 @@ import net.minecraft.world.World;
 public class BlockIceMaker extends BlockPowerMachine {
 
 
-	public BlockIceMaker(Material materialIn) {
-		super(materialIn);
+
+	public BlockIceMaker() {
+		super(Material.GROUND);
 		this.nextUpdateTick = ConfigValue.IceMaker.ExecSec * 20;
 	}
 
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-		if (!worldIn.isRemote){
-	        // レッドストーン入力がある場合周囲の氷をアイテム化する
-			if (BooleanUtils.toBoolean(getPower(state))){
-				for (int x = -1; x <= 1; x++){
-					for (int y = -1; y <= 1; y++){
-						for (int z = -1; z <= 1; z++){
-							BlockPos changePos = pos.add(x,y,z);
-							IBlockState bstate = worldIn.getBlockState(changePos);
-							if (bstate.getBlock() == Blocks.ICE || bstate.getBlock() == Blocks.PACKED_ICE){
-								ModUtil.spawnItemStack(worldIn, changePos.getX(), changePos.getY(), changePos.getZ(), new ItemStack(bstate.getBlock(),1), RANDOM);
-								worldIn.destroyBlock(changePos, false);
+		if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+			if (!worldIn.isRemote){
+		        // レッドストーン入力がある場合周囲の氷をアイテム化する
+				if (BooleanUtils.toBoolean(getPower(state))){
+					for (int x = -1; x <= 1; x++){
+						for (int y = -1; y <= 1; y++){
+							for (int z = -1; z <= 1; z++){
+								BlockPos changePos = pos.add(x,y,z);
+								IBlockState bstate = worldIn.getBlockState(changePos);
+								if (bstate.getBlock() == Blocks.ICE || bstate.getBlock() == Blocks.PACKED_ICE){
+									ModUtil.spawnItemStack(worldIn, changePos.getX(), changePos.getY(), changePos.getZ(), new ItemStack(bstate.getBlock(),1), RANDOM);
+									worldIn.destroyBlock(changePos, false);
+								}
 							}
 						}
 					}
 				}
+				return true;
 			}
 		}
 		return false;
     }
 
 	@Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
+	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
+
+		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick+(this.nextUpdateTick/4*(15-this.redstonePower)), 1);
+	}
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
 		if (!worldIn.isRemote){
 			// 周囲の水源を凍らせる
 			if (BooleanUtils.toBoolean(getPower(state))){
@@ -72,11 +80,5 @@ public class BlockIceMaker extends BlockPowerMachine {
 				setscheduleBlockUpdate(worldIn,pos);
 			}
 		}
-    }
-
-	@Override
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-
-		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick+(this.nextUpdateTick/4*(15-this.redstonePower)), 1);
 	}
 }

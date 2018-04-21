@@ -1,0 +1,64 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "planter",
+  "pattern": [
+    "WDW",
+    "WRW",
+    "WKW"
+  ],
+  "key": {
+    "W":  [
+      {
+        "item": "minecraft:planks",
+        "data": 0
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 1
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 2
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 3
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 4
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 5
+      }
+    ],
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "K":[
+         {
+          "item": "minecraft:wooden_hoe"
+         },
+         {
+          "item": "minecraft:stone_hoe"
+         },
+         {
+          "item": "minecraft:iron_hoe"
+         },
+         {
+          "item": "minecraft:golden_hoe"
+         },
+         {
+          "item": "minecraft:diamond_hoe"
+         }
+     ]
+  },
+  "result": {
+    "item": "cvbox:planter",
+    "count": 1
+  }
+}

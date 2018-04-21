@@ -1,0 +1,231 @@
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+This mapping 'snapshot_20171003' was designed for MC 1.12! Use at your own peril.
+#################################################
+         ForgeGradle 2.3-SNAPSHOT-4f2fe6a        
+  https://github.com/MinecraftForge/ForgeGradle  
+#################################################
+                 Powered by MCP                  
+             http://modcoderpack.com             
+     by: Searge, ProfMobius, R4wk, ZeuX          
+     Fesh0r, IngisKahn, bspkrs, LexManos         
+#################################################
+:deobfCompileDummyTask
+:deobfProvidedDummyTask
+:getVersionJson
+:extractUserdev UP-TO-DATE
+:extractDependencyATs SKIPPED
+:extractMcpData SKIPPED
+:extractMcpMappings SKIPPED
+:genSrgs SKIPPED
+:downloadClient SKIPPED
+:downloadServer SKIPPED
+:splitServerJar SKIPPED
+:mergeJars SKIPPED
+:deobfMcSRG SKIPPED
+:decompileMc SKIPPED
+:fixMcSources SKIPPED
+:applySourcePatches
+:remapMcSources SKIPPED
+:recompileMc
+:extractNatives SKIPPED
+:getAssetIndex
+:getAssets
+Current status: 1120/1283   87%
+:makeStart
+:setupDecompWorkspace
+:AutoPick:deobfCompileDummyTask
+:AutoPick:deobfProvidedDummyTask
+:AutoPick:getVersionJson
+:AutoPick:extractUserdev
+:AutoPick:extractDependencyATs SKIPPED
+:AutoPick:extractMcpData SKIPPED
+:AutoPick:extractMcpMappings SKIPPED
+:AutoPick:genSrgs SKIPPED
+:AutoPick:downloadClient SKIPPED
+:AutoPick:downloadServer SKIPPED
+:AutoPick:splitServerJar SKIPPED
+:AutoPick:mergeJars SKIPPED
+:AutoPick:deobfMcSRG SKIPPED
+:AutoPick:decompileMc SKIPPED
+:AutoPick:fixMcSources SKIPPED
+:AutoPick:applySourcePatches SKIPPED
+:AutoPick:remapMcSources SKIPPED
+:AutoPick:recompileMc SKIPPED
+:AutoPick:extractNatives SKIPPED
+:AutoPick:getAssetIndex UP-TO-DATE
+:AutoPick:getAssets
+Current status: 1282/1283   99%
+:AutoPick:makeStart
+:AutoPick:setupDecompWorkspace
+:ConvenienceMechanical:deobfCompileDummyTask
+:ConvenienceMechanical:deobfProvidedDummyTask
+:ConvenienceMechanical:getVersionJson
+:ConvenienceMechanical:extractUserdev
+:ConvenienceMechanical:extractDependencyATs SKIPPED
+:ConvenienceMechanical:extractMcpData SKIPPED
+:ConvenienceMechanical:extractMcpMappings SKIPPED
+:ConvenienceMechanical:genSrgs SKIPPED
+:ConvenienceMechanical:downloadClient SKIPPED
+:ConvenienceMechanical:downloadServer SKIPPED
+:ConvenienceMechanical:splitServerJar SKIPPED
+:ConvenienceMechanical:mergeJars SKIPPED
+:ConvenienceMechanical:deobfMcSRG SKIPPED
+:ConvenienceMechanical:decompileMc SKIPPED
+:ConvenienceMechanical:fixMcSources SKIPPED
+:ConvenienceMechanical:applySourcePatches SKIPPED
+:ConvenienceMechanical:remapMcSources SKIPPED
+:ConvenienceMechanical:recompileMc SKIPPED
+:ConvenienceMechanical:extractNatives SKIPPED
+:ConvenienceMechanical:getAssetIndex UP-TO-DATE
+:ConvenienceMechanical:getAssets
+:ConvenienceMechanical:makeStart
+:ConvenienceMechanical:setupDecompWorkspace
+:DiningFurniture:deobfCompileDummyTask
+:DiningFurniture:deobfProvidedDummyTask
+:DiningFurniture:getVersionJson
+:DiningFurniture:extractUserdev
+:DiningFurniture:extractDependencyATs SKIPPED
+:DiningFurniture:extractMcpData SKIPPED
+:DiningFurniture:extractMcpMappings SKIPPED
+:DiningFurniture:genSrgs SKIPPED
+:DiningFurniture:downloadClient SKIPPED
+:DiningFurniture:downloadServer SKIPPED
+:DiningFurniture:splitServerJar SKIPPED
+:DiningFurniture:mergeJars SKIPPED
+:DiningFurniture:deobfMcSRG SKIPPED
+:DiningFurniture:decompileMc SKIPPED
+:DiningFurniture:fixMcSources SKIPPED
+:DiningFurniture:applySourcePatches SKIPPED
+:DiningFurniture:remapMcSources SKIPPED
+:DiningFurniture:recompileMc SKIPPED
+:DiningFurniture:extractNatives SKIPPED
+:DiningFurniture:getAssetIndex UP-TO-DATE
+:DiningFurniture:getAssets
+:DiningFurniture:makeStart
+:DiningFurniture:setupDecompWorkspace
+:Dools:deobfCompileDummyTask
+:Dools:deobfProvidedDummyTask
+:Dools:getVersionJson
+:Dools:extractUserdev
+:Dools:extractDependencyATs SKIPPED
+:Dools:extractMcpData SKIPPED
+:Dools:extractMcpMappings SKIPPED
+:Dools:genSrgs SKIPPED
+:Dools:downloadClient SKIPPED
+:Dools:downloadServer SKIPPED
+:Dools:splitServerJar SKIPPED
+:Dools:mergeJars SKIPPED
+:Dools:deobfMcSRG SKIPPED
+:Dools:decompileMc SKIPPED
+:Dools:fixMcSources SKIPPED
+:Dools:applySourcePatches SKIPPED
+:Dools:remapMcSources SKIPPED
+:Dools:recompileMc SKIPPED
+:Dools:extractNatives SKIPPED
+:Dools:getAssetIndex UP-TO-DATE
+:Dools:getAssets
+:Dools:makeStart
+:Dools:setupDecompWorkspace
+:ExBombs:deobfCompileDummyTask
+:ExBombs:deobfProvidedDummyTask
+:ExBombs:getVersionJson
+:ExBombs:extractUserdev
+:ExBombs:extractDependencyATs SKIPPED
+:ExBombs:extractMcpData SKIPPED
+:ExBombs:extractMcpMappings SKIPPED
+:ExBombs:genSrgs SKIPPED
+:ExBombs:downloadClient SKIPPED
+:ExBombs:downloadServer SKIPPED
+:ExBombs:splitServerJar SKIPPED
+:ExBombs:mergeJars SKIPPED
+:ExBombs:deobfMcSRG SKIPPED
+:ExBombs:decompileMc SKIPPED
+:ExBombs:fixMcSources SKIPPED
+:ExBombs:applySourcePatches SKIPPED
+:ExBombs:remapMcSources SKIPPED
+:ExBombs:recompileMc SKIPPED
+:ExBombs:extractNatives SKIPPED
+:ExBombs:getAssetIndex UP-TO-DATE
+:ExBombs:getAssets
+Current status: 1282/1283   99%
+:ExBombs:makeStart
+:ExBombs:setupDecompWorkspace
+:ExchangeBlock:deobfCompileDummyTask
+:ExchangeBlock:deobfProvidedDummyTask
+:ExchangeBlock:getVersionJson
+:ExchangeBlock:extractUserdev
+:ExchangeBlock:extractDependencyATs SKIPPED
+:ExchangeBlock:extractMcpData SKIPPED
+:ExchangeBlock:extractMcpMappings SKIPPED
+:ExchangeBlock:genSrgs SKIPPED
+:ExchangeBlock:downloadClient SKIPPED
+:ExchangeBlock:downloadServer SKIPPED
+:ExchangeBlock:splitServerJar SKIPPED
+:ExchangeBlock:mergeJars SKIPPED
+:ExchangeBlock:deobfMcSRG SKIPPED
+:ExchangeBlock:decompileMc SKIPPED
+:ExchangeBlock:fixMcSources SKIPPED
+:ExchangeBlock:applySourcePatches SKIPPED
+:ExchangeBlock:remapMcSources SKIPPED
+:ExchangeBlock:recompileMc SKIPPED
+:ExchangeBlock:extractNatives SKIPPED
+:ExchangeBlock:getAssetIndex UP-TO-DATE
+:ExchangeBlock:getAssets
+Current status: 1282/1283   99%
+:ExchangeBlock:makeStart
+:ExchangeBlock:setupDecompWorkspace
+:HPViewer:deobfCompileDummyTask
+:HPViewer:deobfProvidedDummyTask
+:HPViewer:getVersionJson
+:HPViewer:extractUserdev
+:HPViewer:extractDependencyATs SKIPPED
+:HPViewer:extractMcpData SKIPPED
+:HPViewer:extractMcpMappings SKIPPED
+:HPViewer:genSrgs SKIPPED
+:HPViewer:downloadClient SKIPPED
+:HPViewer:downloadServer SKIPPED
+:HPViewer:splitServerJar SKIPPED
+:HPViewer:mergeJars SKIPPED
+:HPViewer:deobfMcSRG SKIPPED
+:HPViewer:decompileMc SKIPPED
+:HPViewer:fixMcSources SKIPPED
+:HPViewer:applySourcePatches SKIPPED
+:HPViewer:remapMcSources SKIPPED
+:HPViewer:recompileMc SKIPPED
+:HPViewer:extractNatives SKIPPED
+:HPViewer:getAssetIndex UP-TO-DATE
+:HPViewer:getAssets
+:HPViewer:makeStart
+:HPViewer:setupDecompWorkspace
+:HavestAll:deobfCompileDummyTask
+:HavestAll:deobfProvidedDummyTask
+:HavestAll:getVersionJson
+:HavestAll:extractUserdev
+:HavestAll:extractDependencyATs SKIPPED
+:HavestAll:extractMcpData SKIPPED
+:HavestAll:extractMcpMappings SKIPPED
+:HavestAll:genSrgs SKIPPED
+:HavestAll:downloadClient SKIPPED
+:HavestAll:downloadServer SKIPPED
+:HavestAll:splitServerJar SKIPPED
+:HavestAll:mergeJars SKIPPED
+:HavestAll:deobfMcSRG SKIPPED
+:HavestAll:decompileMc SKIPPED
+:HavestAll:fixMcSources SKIPPED
+:HavestAll:applySourcePatches SKIPPED
+:HavestAll:remapMcSources SKIPPED
+:HavestAll:recompileMc SKIPPED
+:HavestAll:extractNatives SKIPPED
+:HavestAll:getAssetIndex UP-TO-DATE
+:HavestAll:getAssets
+:HavestAll:makeStart
+:HavestAll:setupDecompWorkspace
+
+BUILD SUCCESSFUL
+
+Total time: 3 mins 9.255 secs

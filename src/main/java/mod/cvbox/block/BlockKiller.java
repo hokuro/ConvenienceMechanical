@@ -1,5 +1,6 @@
 package mod.cvbox.block;
 
+import mod.cvbox.block.ab.BlockPowerMachineContainer;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.tileentity.TileEntityKiller;
@@ -17,8 +18,8 @@ import net.minecraft.world.World;
 
 public class BlockKiller extends BlockPowerMachineContainer {
 
-	public BlockKiller(Material materialIn) {
-		super(materialIn);
+	public BlockKiller() {
+		super(Material.GROUND);
 		this.setTickRandomly(false);
 	}
 
@@ -36,10 +37,12 @@ public class BlockKiller extends BlockPowerMachineContainer {
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!worldIn.isRemote)
-        {
-        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_KILLER, worldIn, pos.getX(), pos.getY(), pos.getZ());
-        }
+		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+	        if (!worldIn.isRemote)
+	        {
+	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_KILLER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	        }
+		}
         return true;
     }
 
@@ -62,5 +65,11 @@ public class BlockKiller extends BlockPowerMachineContainer {
         }
         super.breakBlock(worldIn, pos, state);
     }
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 
 }

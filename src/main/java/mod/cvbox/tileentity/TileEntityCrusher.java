@@ -2,7 +2,7 @@ package mod.cvbox.tileentity;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.block.BlockPowerMachineContainer;
+import mod.cvbox.block.ab.BlockPowerMachineContainer;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
 import net.minecraft.block.Block;

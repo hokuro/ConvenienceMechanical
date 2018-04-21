@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.block.BlockPowerMachineContainer;
+import mod.cvbox.block.ab.BlockPowerMachineContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;

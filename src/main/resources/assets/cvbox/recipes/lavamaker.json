@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "lavamaker",
+  "pattern": [
+    "IKI",
+    "KKK",
+    "IRI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:magma"
+    },
+    "K": {
+      "item": "cvbox:machinematter"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "cvbox:lavamaker",
+    "count": 1
+  }
+}

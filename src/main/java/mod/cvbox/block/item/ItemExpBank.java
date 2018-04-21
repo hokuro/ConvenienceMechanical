@@ -18,7 +18,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ItemExpBank extends ItemBlock {
 	public ItemExpBank(Block block){
 		super(block);
-		setHasSubtypes(true);
         this.setMaxDamage(0);
 	}
 

@@ -2,6 +2,7 @@ package mod.cvbox.block;
 
 import java.util.Random;
 
+import mod.cvbox.block.ab.BlockFacingContainer;
 import mod.cvbox.core.FileManager;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;

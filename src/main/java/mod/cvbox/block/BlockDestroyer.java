@@ -2,6 +2,7 @@ package mod.cvbox.block;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.block.ab.BlockFacingMachine;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -14,8 +15,8 @@ import net.minecraft.world.World;
 
 public class BlockDestroyer extends BlockFacingMachine {
 
-	public BlockDestroyer(Material materialIn) {
-		super(materialIn);
+	public BlockDestroyer() {
+		super(Material.GROUND);
 		this.setTickRandomly(false);
 	}
 
@@ -65,5 +66,11 @@ public class BlockDestroyer extends BlockFacingMachine {
 			ModUtil.spawnItemStack(worldIn, pos2.getX(),pos2.getY(),pos2.getZ(), drop, RANDOM);
 			worldIn.destroyBlock(pos2, false);
 		}
+	}
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

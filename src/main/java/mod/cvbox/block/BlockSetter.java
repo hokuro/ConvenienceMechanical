@@ -1,7 +1,6 @@
 package mod.cvbox.block;
 
-import java.util.Random;
-
+import mod.cvbox.block.ab.BlockFacingMachineContainer;
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.tileentity.TileEntitySetter;
@@ -20,8 +19,8 @@ import net.minecraft.world.World;
 
 public class BlockSetter extends BlockFacingMachineContainer {
 
-	public BlockSetter(Material materialIn) {
-		super(materialIn);
+	public BlockSetter() {
+		super(Material.GROUND);
 		this.setTickRandomly(true);
 		this.nextUpdateTick = 20;
 	}
@@ -29,14 +28,16 @@ public class BlockSetter extends BlockFacingMachineContainer {
 	@Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (worldIn.isRemote)
-        {
-        }
-        else
-        {
-        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_SETTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+	        if (worldIn.isRemote)
+	        {
+	        }
+	        else
+	        {
+	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_SETTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 
-        }
+	        }
+		}
         return true;
     }
 
@@ -52,20 +53,6 @@ public class BlockSetter extends BlockFacingMachineContainer {
     	super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
 
-	@Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (!worldIn.isRemote)
-        {
-        	EnumFacing front = this.getDirection(state);
-        	this.SpawnBlock(worldIn, pos, front);
-
-            if (state.getValue(POWER))
-            {
-                this.setscheduleBlockUpdate(worldIn, pos);
-            }
-        }
-    }
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -109,6 +96,20 @@ public class BlockSetter extends BlockFacingMachineContainer {
         			itemstack.shrink(1);
         		}
         	}
+        }
+	}
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
+        if (!worldIn.isRemote)
+        {
+        	EnumFacing front = this.getDirection(state);
+        	this.SpawnBlock(worldIn, pos, front);
+
+            if (state.getValue(POWER))
+            {
+                this.setscheduleBlockUpdate(worldIn, pos);
+            }
         }
 	}
 }

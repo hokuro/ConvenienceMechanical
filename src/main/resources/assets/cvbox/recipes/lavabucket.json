@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "lava_bucket",
+  "ingredients": [
+    {
+      "item": "cvbox:lavaball"
+    },
+    {
+      "item": "minecraft:bucket"
+    }
+  ],
+  "result": {
+    "item": "minecraft:lava_bucket"
+  }
+}

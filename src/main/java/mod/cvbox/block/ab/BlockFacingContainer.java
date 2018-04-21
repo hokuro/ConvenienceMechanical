@@ -1,4 +1,4 @@
-package mod.cvbox.block;
+package mod.cvbox.block.ab;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;

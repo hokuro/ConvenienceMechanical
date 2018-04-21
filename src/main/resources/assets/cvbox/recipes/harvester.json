@@ -1,0 +1,64 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "harvester",
+  "pattern": [
+    "WDW",
+    "WRW",
+    "WKW"
+  ],
+  "key": {
+    "W":  [
+      {
+        "item": "minecraft:planks",
+        "data": 0
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 1
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 2
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 3
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 4
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 5
+      }
+    ],
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "K": [
+         {
+           "item": "cvbox:sickle_wood"
+         },
+         {
+           "item": "cvbox:sickle_stone"
+         },
+         {
+           "item": "cvbox:sickle_iron"
+         },
+         {
+           "item": "cvbox:sickle_gold"
+         },
+         {
+           "item": "cvbox:sickle_diamond"
+         }
+    ]
+  },
+  "result": {
+    "item": "cvbox:harvester",
+    "count": 1
+  }
+}

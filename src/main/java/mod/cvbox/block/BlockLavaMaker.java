@@ -1,9 +1,8 @@
 package mod.cvbox.block;
 
-import java.util.Random;
-
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.block.ab.BlockPowerMachine;
 import mod.cvbox.config.ConfigValue;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -13,14 +12,18 @@ import net.minecraft.world.World;
 
 public class BlockLavaMaker extends BlockPowerMachine {
 
-	public BlockLavaMaker(Material materialIn) {
-		super(materialIn);
+	public BlockLavaMaker() {
+		super(Material.GROUND);
 		this.nextUpdateTick = ConfigValue.LavaMaker.ExecSec * 20;
 	}
 
 	@Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
+	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
+		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick+(this.nextUpdateTick/4*(15-this.redstonePower)), 1);
+	}
+
+	@Override
+	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
 		if (!worldIn.isRemote){
 			// 周囲のブロックを溶岩に変える
 			if (BooleanUtils.toBoolean(getPower(state))){
@@ -39,10 +42,5 @@ public class BlockLavaMaker extends BlockPowerMachine {
 				setscheduleBlockUpdate(worldIn,pos);
 			}
 		}
-    }
-
-	@Override
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick+(this.nextUpdateTick/4*(15-this.redstonePower)), 1);
 	}
 }

@@ -21,6 +21,7 @@ public class ItemCore {
 	public static final String NAME_MACHINEMATTER = "machinematter";
 	public static final String NAME_WATERBALL = "waterball";
 	public static final String NAME_LAVABALL = "lavaball";
+	public static final String NAME_SPANA = "spana";
 
 	public static final String[] NAME_LIST = new String[]{
 			NAME_WOODSICKLE,
@@ -31,6 +32,7 @@ public class ItemCore {
 			NAME_MACHINEMATTER,
 			NAME_WATERBALL,
 			NAME_LAVABALL,
+			NAME_SPANA,
 	};
 
 	public static Item item_sickle_wood;
@@ -41,6 +43,7 @@ public class ItemCore {
 	public static Item item_machinematter;
 	public static Item item_waterball;
 	public static Item item_lavaball;
+	public static Item item_spana;
 
 
 	private static Map<String,Item> itemMap;
@@ -55,6 +58,11 @@ public class ItemCore {
 		item_machinematter = new Item().setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_MACHINEMATTER).setUnlocalizedName(NAME_MACHINEMATTER);
 		item_waterball = new ItemLiquidBall(Blocks.FLOWING_WATER).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_WATERBALL).setUnlocalizedName(NAME_WATERBALL);
 		item_lavaball =  new ItemLiquidBall(Blocks.FLOWING_LAVA).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_LAVABALL).setUnlocalizedName(NAME_LAVABALL);
+		item_spana = new ItemSpana()
+				.setMaxDamage(120)
+				.setMaxStackSize(1)
+				.setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_SPANA).setUnlocalizedName(NAME_SPANA);
+
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_WOODSICKLE,item_sickle_wood);}
 			{put(NAME_STONESICKLE,item_sickle_stone);}
@@ -64,6 +72,7 @@ public class ItemCore {
 			{put(NAME_MACHINEMATTER,item_machinematter);}
 			{put(NAME_WATERBALL,item_waterball);}
 			{put(NAME_LAVABALL,item_lavaball);}
+			{put(NAME_SPANA,item_spana);}
 		};
 
 
@@ -76,6 +85,7 @@ public class ItemCore {
 			{put(NAME_MACHINEMATTER,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_MACHINEMATTER, "inventory")});}
 			{put(NAME_WATERBALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WATERBALL, "inventory")});}
 			{put(NAME_LAVABALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LAVABALL, "inventory")});}
+			{put(NAME_SPANA,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_SPANA, "inventory")});}
 		};
 	}
 

@@ -1,4 +1,4 @@
-package mod.cvbox.block;
+package mod.cvbox.block.ab;
 
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
@@ -14,10 +14,10 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class BlockFacingMachineContainer extends BlockPowerMachineContainer {
+public abstract class BlockFacingMachine extends BlockPowerMachine {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
 
-	public BlockFacingMachineContainer(Material materialIn) {
+	public BlockFacingMachine(Material materialIn) {
 		super(materialIn);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWER, false));
 	}
@@ -121,7 +121,5 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     {
         return new BlockStateContainer(this, new IProperty[] {POWER,FACING});
     }
-
-
 
 }
