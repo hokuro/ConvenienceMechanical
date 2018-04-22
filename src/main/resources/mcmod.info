@@ -1,21 +1,20 @@
 [
-{
-    "modid": "ExBombs",
-    "name": "ExBombs",
-    "description": "Add some bombs ",
-    "mcversion": "$mcversion",
-    "version": "$version",
-    "url": "",
-    "updateUrl": "",
-    "authors": [
-        "OhoNou"
-    ],
-    "credits": "",
-    "logoFile": "",
-    "screenshots": [
-    ],
+  {
+    "description":"Add a few useful blocks . ",
     "parent":"",
-    "dependencies": [
-    ]
-}
+    "logoFile":"",
+    "credits":"basashi",
+    "dependencies":[],
+    "modid":"cvbox",
+    "mcversion":"1.12.2",
+    "screenshots":[],
+    "authorList":[
+      "basashi"
+    ],
+    "name":"ConvenienceBoxes",
+    "url":"",
+    "updateUrl":"",
+    "version":"$mcversion",
+    "requiredMods":["Minecraft Forge1.12.2-14.23.3.2655+"]
+  }
 ]
