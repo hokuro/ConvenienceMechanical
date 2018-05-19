@@ -7,7 +7,6 @@ import mod.cvbox.config.ConfigValue;
 import mod.cvbox.creative.CreativeTabFactBox;
 import mod.cvbox.creative.CreativeTabFarmarBox;
 import mod.cvbox.creative.CreativeWorkerBox;
-import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -60,7 +59,6 @@ public class Mod_ConvenienceBox {
 		// レシピ追加
 	//	ModRegister.RegisterRecipe();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ModGui());
-		BlockEnchantmentTable x;
 	}
 
 
