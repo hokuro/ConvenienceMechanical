@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "power=false":{ "model":"cvbox:icemaker" },
-        "power=true":{ "model":"cvbox:icemaker_on" }
-    }
-}

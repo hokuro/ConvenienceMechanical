@@ -33,7 +33,6 @@ public class BlockExpCollector extends BlockPowerMachineContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		TileEntityExpCollector ret = new TileEntityExpCollector();
-		ret.setField(TileEntityExpCollector.FIELD_POWER, meta);
 		return ret;
 	}
 

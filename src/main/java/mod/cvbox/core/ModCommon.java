@@ -44,8 +44,10 @@ public final class ModCommon {
 	public static final int GUIID_CRUSHER = 204;
 	public static final int GUIID_COMPLESSER = 205;
 	public static final int GUIID_STRAW = 206;
+	public static final int GUIID_DESTROY=207;
+	public static final int GUIID_LIQUIDMAKER = 208;
+	public static final int GUID_VACUMER = 209;
 
-	public static final int GUIID_REPAIR = 201;
 
 	// GUINAME
 	public static final String GUIID_EXENCHANTMENT = "exenchantment";
@@ -66,6 +68,9 @@ public final class ModCommon {
 	public static final int MESSID_MESSAGESTRAWAREAPUDATE = 11;
 	public static final int MESSID_MESSAGESTRAWGETALL = 12;
 	public static final int MESSID_MESSAGESTRAWCLEAR = 13;
+	public static final int MESSID_MESSAGERESET = 14;
+	public static final int MESSID_MESSAGEUPDATEDESTROY = 15;
+	public static final int MESSID_MESSAGEBOXPOWER = 201;
 
 
 
@@ -73,6 +78,11 @@ public final class ModCommon {
 	public static final int PLANTER_MAX_SLOT = 9;
 //	public static final String MOD_CHANNEL1 = "AutoPlanting1";
 //	public static final String MOD_CHANNEL2 = "AutoPlanting2";
+
+
+
+
+
 
 
 

@@ -5,8 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.block.ab.BlockPowerMachineContainer;
-import net.minecraft.block.state.IBlockState;
+import mod.cvbox.util.ModUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -26,13 +25,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class TileEntityCompresser extends TileEntity implements IInventory, ITickable, ISidedInventory{
+public class TileEntityCompresser extends TileEntity implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	public static final String NAME = "compresser";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_COUNT = 1;
@@ -42,7 +40,10 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 	public static final int FIELD_EMERALD = 5;
 	public static final int FIELD_REDSTONE = 6;
 	public static final int FIELD_LAPIS = 7;
+	public static final int FIELD_BATTERY = 8;
+	public static final int FIELD_BATTERYMAX = 9;
 
+	public static final int POWDER_OFFSET = 2;
 	public static final int POWDER_IRON = FIELD_IRON-2;
 	public static final int POWDER_GOLD = FIELD_GOLD-2;
 	public static final int POWDER_DIAM = FIELD_DIAMOND-2;
@@ -50,17 +51,16 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 	public static final int POWDER_REDS = FIELD_REDSTONE-2;
 	public static final int POWDER_LAPS = FIELD_LAPIS-2;
 
+	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(8, ItemStack.EMPTY);
+	private int[] SLOT_SIDE = new int[]{1};
+	private int[] SLOT_BOTTOM = new int[]{2,3,4,5,6,7};
+
 	private boolean power;
-
-	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(7, ItemStack.EMPTY);
-	private int[] SLOT_SIDE = new int[]{0};
-	private int[] SLOT_BOTTOM = new int[]{1,2,3,4,5,6};
-
-
 	private int[] powder;
 
 	public static final int CRUSH_TIME = 100;
 	private int crush_count;
+	private int power_count;
 	private ResourceLocation nowCrush;
 
 	private Map<ResourceLocation,Compless> maps = new HashMap<ResourceLocation,Compless>();
@@ -106,23 +106,62 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		if (isCrushing()){
 			crush_count++;
 		}
+		if (!getPower().isEmpty() && power_count == 0){
+			powerDown();
+		}
 		if (!world.isRemote){
-			if (power && !isFull()){
+			if (checkPowerOn() && !isFull()){
+				power_count++;
 				if (!isCrushing()){
-					if (maps.containsKey(stacks.get(0).getItem().getRegistryName())){
-						nowCrush = stacks.get(0).getItem().getRegistryName();
-						stacks.get(0).shrink(1);
+					if (maps.containsKey(stacks.get(1).getItem().getRegistryName())){
+						nowCrush = stacks.get(1).getItem().getRegistryName();
+						stacks.get(1).shrink(1);
 						crush_count++;
+						power_count++;
 					}
+				}else{
+					power_count++;
 				}
 				if (CRUSH_TIME < crush_count){
 					crush_block();
 					crush_count = 0;
 				}
+				if (power_count > 40){
+					power_count = 0;
+				}
 			}else{
-				crush_count = 0;
+				if (crush_count > 0){
+					crush_count--;
+				}else{
+					crush_count = 0;
+				}
+				if (!getPower().isEmpty()){
+					power_count++;
+					if (power_count > 2000){
+						power_count = 0;
+					}
+				}else{
+					power_count = 0;
+				}
+			}
+		}else{
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+				}
 			}
 		}
+	}
+
+	private boolean checkPowerOn(){
+		ItemStack st = getPower();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getPower().getItemDamage()+1;
+		getPower().setItemDamage(damage);
 	}
 
     private void crush_block()
@@ -131,70 +170,61 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
     	this.powder[POWDER_IRON] += cp.getIron();
     	while(this.powder[POWDER_IRON] >= 100){
     		this.powder[POWDER_IRON] -= 100;
-    		if (stacks.get(POWDER_IRON+1).isEmpty()){
-    			stacks.set(POWDER_IRON+1, new ItemStack(Items.IRON_INGOT,1));
+    		if (stacks.get(POWDER_IRON+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_IRON+POWDER_OFFSET, new ItemStack(Items.IRON_INGOT,1));
     		}else{
-    			stacks.get(POWDER_IRON+1).grow(1);
+    			stacks.get(POWDER_IRON+POWDER_OFFSET).grow(1);
     		}
     	}
 
     	this.powder[POWDER_GOLD] += cp.getGold();
     	while(this.powder[POWDER_GOLD] >= 100){
     		this.powder[POWDER_GOLD] -= 100;
-    		if (stacks.get(POWDER_GOLD+1).isEmpty()){
-    			stacks.set(POWDER_GOLD+1, new ItemStack(Items.GOLD_INGOT,1));
+    		if (stacks.get(POWDER_GOLD+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_GOLD+POWDER_OFFSET, new ItemStack(Items.GOLD_INGOT,1));
     		}else{
-    			stacks.get(POWDER_GOLD+1).grow(1);
+    			stacks.get(POWDER_GOLD+POWDER_OFFSET).grow(1);
     		}
     	}
 
     	this.powder[POWDER_DIAM] += cp.getDia();
     	while(this.powder[POWDER_DIAM] >= 100){
     		this.powder[POWDER_DIAM] -= 100;
-    		if (stacks.get(POWDER_DIAM+1).isEmpty()){
-    			stacks.set(POWDER_DIAM+1, new ItemStack(Items.DIAMOND,1));
+    		if (stacks.get(POWDER_DIAM+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_DIAM+POWDER_OFFSET, new ItemStack(Items.DIAMOND,1));
     		}else{
-    			stacks.get(POWDER_DIAM+1).grow(1);
+    			stacks.get(POWDER_DIAM+POWDER_OFFSET).grow(1);
     		}
     	}
     	this.powder[POWDER_EMER] += cp.getEmerald();
     	while(this.powder[POWDER_EMER] >= 100){
     		this.powder[POWDER_EMER] -= 100;
-    		if (stacks.get(POWDER_EMER+1).isEmpty()){
-    			stacks.set(POWDER_EMER+1, new ItemStack(Items.EMERALD,1));
+    		if (stacks.get(POWDER_EMER+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_EMER+POWDER_OFFSET, new ItemStack(Items.EMERALD,1));
     		}else{
-    			stacks.get(POWDER_EMER+1).grow(1);
+    			stacks.get(POWDER_EMER+POWDER_OFFSET).grow(1);
     		}
     	}
 
     	this.powder[POWDER_REDS] += cp.getRedstone();
     	while(this.powder[POWDER_REDS] >= 100){
     		this.powder[POWDER_REDS] -= 100;
-    		if (stacks.get(POWDER_IRON+1).isEmpty()){
-    			stacks.set(POWDER_REDS+1, new ItemStack(Items.REDSTONE,1));
+    		if (stacks.get(POWDER_IRON+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_REDS+POWDER_OFFSET, new ItemStack(Items.REDSTONE,1));
     		}else{
-    			stacks.get(POWDER_REDS+1).grow(1);
+    			stacks.get(POWDER_REDS+POWDER_OFFSET).grow(1);
     		}
     	}
 
     	this.powder[POWDER_LAPS] += cp.getlapis();
     	while(this.powder[POWDER_LAPS] >= 100){
     		this.powder[POWDER_LAPS] -= 100;
-    		if (stacks.get(POWDER_LAPS+1).isEmpty()){
-    			stacks.set(POWDER_LAPS+1, new ItemStack(Items.DYE,1,EnumDyeColor.BLUE.getDyeDamage()));
+    		if (stacks.get(POWDER_LAPS+POWDER_OFFSET).isEmpty()){
+    			stacks.set(POWDER_LAPS+POWDER_OFFSET, new ItemStack(Items.DYE,1,EnumDyeColor.BLUE.getDyeDamage()));
     		}else{
-    			stacks.get(POWDER_LAPS+1).grow(1);
+    			stacks.get(POWDER_LAPS+POWDER_OFFSET).grow(1);
     		}
     	}
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-    	if (newSate.getBlock() instanceof BlockPowerMachineContainer){
-    		this.setField(FIELD_POWER, ((BlockPowerMachineContainer)newSate.getBlock()).getPower(newSate));
-    	}
-        return false;
     }
 
 	@Override
@@ -203,6 +233,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		super.readFromNBT(compound);
 		power = compound.getBoolean("power");
 		crush_count=compound.getInteger("count");
+		power_count=compound.getInteger("power_count");
 
 		String res = "";
 		this.nowCrush = (res = compound.getString("res")).isEmpty()?null:new ResourceLocation(res);
@@ -228,13 +259,13 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		compound = super.writeToNBT(compound);
 		compound.setBoolean("power", power);
 		compound.setInteger("count", crush_count);
+		compound.setInteger("power_count",power_count);
 		if (nowCrush != null){
 			compound.setString("res", nowCrush.toString());
 		}
 		for ( int i = 0; i < powder.length; i++){
 			compound.setInteger("powder"+i, powder[i]);
 		}
-
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -301,7 +332,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		if (index > 0){
+		if (index > 1){
 			return true;
 		}
 		return false;
@@ -399,6 +430,12 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		case FIELD_LAPIS:
 			ret = powder[POWDER_LAPS];
 			break;
+		case FIELD_BATTERY:
+			ret = getPower().getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = getPower().getMaxDamage();
+			break;
 		}
 		return ret;
 	}
@@ -430,12 +467,15 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		case FIELD_LAPIS:
 			powder[POWDER_LAPS] = value;
 			break;
+		case FIELD_BATTERY:
+			getPower().setItemDamage(value);
+			break;
 		}
 	}
 
 	@Override
 	public int getFieldCount() {
-		return 8;
+		return 10;
 	}
 
 	@Override
@@ -508,5 +548,15 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 			}
 			return ret;
 		}
+	}
+
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
+	}
+
+	public ItemStack getPower(){
+		return this.stacks.get(0);
 	}
 }

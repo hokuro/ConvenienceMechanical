@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "battery",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": {
+      "item": "cvbox:battery_large"
+    }
+  },
+  "result": {
+    "item": "cvbox:battery_huge",
+    "count": 1
+  }
+}

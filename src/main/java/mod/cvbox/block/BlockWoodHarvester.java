@@ -1,11 +1,8 @@
 package mod.cvbox.block;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -18,7 +15,6 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -78,39 +74,7 @@ public class BlockWoodHarvester extends BlockContainer{
     }
 
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-    {
-
-		BlockPos pos2 = pos.add(0, 1, 0);
-		boolean flag = (worldIn.isBlockIndirectlyGettingPowered(pos)) > 0 ||
-				(worldIn.isBlockIndirectlyGettingPowered(pos2) > 0);
-		TileEntity te = worldIn.getTileEntity(pos);
-		if (te instanceof TileEntityWoodHarvester){
-			((TileEntityWoodHarvester)te).setField(0, BooleanUtils.toInteger(flag));
-		}
-    }
-
-	@Override
 	public int damageDropped(IBlockState state) {
 		return 0;
 	}
-
-
-	@Override
-    public boolean shouldCheckWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
-    {
-        return false;
-    }
-
-	@Deprecated
-	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-	{
-		return 0;
-	}
-
-    @Deprecated
-    public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-    {
-        return 0;
-    }
 }

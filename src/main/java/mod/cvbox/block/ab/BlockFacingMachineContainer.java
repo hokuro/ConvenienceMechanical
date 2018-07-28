@@ -19,7 +19,6 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
 
 	public BlockFacingMachineContainer(Material materialIn) {
 		super(materialIn);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWER, false));
 	}
 
 
@@ -64,7 +63,7 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
                 }
             }
 
-            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing).withProperty(POWER, Boolean.valueOf(false)), 2);
+            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing));
         }
     }
 
@@ -73,7 +72,7 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)).withProperty(POWER, false);
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
     }
 
     @Override
@@ -81,15 +80,14 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     {
     	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         worldIn.setBlockState(pos, state
-        		.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer))
-        		.withProperty(POWER, state.getValue(POWER)), 2);
+        		.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)));
     }
 
 
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(POWER, Boolean.valueOf((meta & 8) > 0));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
     }
 
     @Override
@@ -97,10 +95,6 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     {
         int i = 0;
         i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
-        if (state.getValue(POWER))
-        {
-            i |= 8;
-        }
         return i;
     }
 
@@ -119,7 +113,11 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {POWER,FACING});
+        return new BlockStateContainer(this, new IProperty[] {FACING});
+    }
+
+    public static EnumFacing getFacing(IBlockState state){
+    	return state.getValue(FACING);
     }
 
 

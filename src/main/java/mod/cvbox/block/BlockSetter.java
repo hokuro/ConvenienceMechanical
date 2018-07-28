@@ -21,7 +21,7 @@ public class BlockSetter extends BlockFacingMachineContainer {
 
 	public BlockSetter() {
 		super(Material.GROUND);
-		this.setTickRandomly(true);
+		this.setTickRandomly(false);
 		this.nextUpdateTick = 20;
 	}
 
@@ -101,15 +101,6 @@ public class BlockSetter extends BlockFacingMachineContainer {
 
 	@Override
 	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
-        if (!worldIn.isRemote)
-        {
-        	EnumFacing front = this.getDirection(state);
-        	this.SpawnBlock(worldIn, pos, front);
 
-            if (state.getValue(POWER))
-            {
-                this.setscheduleBlockUpdate(worldIn, pos);
-            }
-        }
 	}
 }

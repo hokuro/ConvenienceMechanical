@@ -1,6 +1,5 @@
 {
     "variants": {
-        "power=false":{ "model":"cvbox:crussher" },
-        "power=true":{ "model":"cvbox:crussher_on" }
+        "normal":{ "model":"cvbox:crussher" }
     }
 }

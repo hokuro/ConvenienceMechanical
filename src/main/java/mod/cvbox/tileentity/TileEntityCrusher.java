@@ -2,12 +2,10 @@ package mod.cvbox.tileentity;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.block.ab.BlockPowerMachineContainer;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -20,12 +18,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class TileEntityCrusher extends TileEntity  implements IInventory, ITickable, ISidedInventory{
+public class TileEntityCrusher extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	public static final String NAME = "crusher";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_SELECT = 1;
@@ -33,12 +30,15 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	public static final int FIELD_GRAVE = 3;
 	public static final int FIELD_SAND = 4;
 	public static final int FIELD_COUNT = 5;
+	public static final int FIELD_BATTERY = 6;
+	public static final int FIELD_BATTERYMAX =7;
+
 
 	private boolean power;
 
-	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(29, ItemStack.EMPTY);
-	private int[] SLOT_SIDE = new int[]{0,1};
-	private int[] SLOT_BOTTOM = new int[]{2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
+	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(30, ItemStack.EMPTY);
+	private int[] SLOT_SIDE = new int[]{1,2};
+	private int[] SLOT_BOTTOM = new int[]{3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};
 
 
 	private int select;
@@ -47,6 +47,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	private int powder_sand;
 	public static final int CRUSH_TIME = 100;
 	private int crush_count;
+	private int power_count;
 	private ItemStack nextDrop;
 
 	public TileEntityCrusher(){
@@ -61,7 +62,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	}
 
 	public boolean isCrushing(){
-		return this.crush_count > 0;
+		return this.crush_count > 0 && checkPowerOn();
 	}
 
 	@Override
@@ -69,24 +70,59 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		if (isCrushing()){
 			crush_count++;
 		}
+		if (!getBattery().isEmpty() && power_count == 0){
+			powerDown();
+		}
 		if (!world.isRemote){
 			if (!nextDrop.isEmpty()){
 				output(nextDrop);
-			}else if (power && select != 0){
+			}else if (checkPowerOn() && select != 0){
+				power_count++;
 				if (!isCrushing()){
-					if (!stacks.get(0).isEmpty()){
-						stacks.get(0).shrink(1);
+					if (!stacks.get(1).isEmpty()){
+						stacks.get(1).shrink(1);
 						crush_count++;
+						power_count++;
 					}
+				}else{
+					power_count++;
 				}
 				if (CRUSH_TIME < crush_count){
 					crush_block();
 					crush_count = 0;
 				}
+				if (power_count > 40){
+					power_count = 0;
+				}
 			}else{
-				crush_count = 0;
+				if (crush_count > 0){
+					crush_count--;
+				}else{
+					crush_count = 0;
+				}
+				power_count++;
+				if (power_count > 2000){
+					power_count = 0;
+				}
+			}
+		}else{
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+				}
 			}
 		}
+	}
+
+	private boolean checkPowerOn(){
+		ItemStack st = getBattery();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getBattery().getItemDamage()+1;
+		getBattery().setItemDamage(damage);
 	}
 
     private void crush_block()
@@ -96,7 +132,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     		this.powder_dirt += 25;
     		if (powder_dirt >= 100){
     			powder_dirt = 0;
-    			if (stacks.get(1).getItem() == Items.WATER_BUCKET){
+    			if (stacks.get(2).getItem() == Items.WATER_BUCKET){
     				output(new ItemStack(Items.CLAY_BALL,4,0));
     			}else{
     				output(new ItemStack(Blocks.DIRT,1,0));
@@ -121,7 +157,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     }
 
     private void output(ItemStack item){
-    	for (int i = 2; i < stacks.size(); i++){
+    	for (int i = 3; i < stacks.size(); i++){
     		ItemStack item2 = stacks.get(i);
     		if (item2.isEmpty()){
     			this.setInventorySlotContents(i, item.copy());
@@ -141,15 +177,6 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     	}
     }
 
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-    	if (newSate.getBlock() instanceof BlockPowerMachineContainer){
-    		this.setField(FIELD_POWER, ((BlockPowerMachineContainer)newSate.getBlock()).getPower(newSate));
-    	}
-        return false;
-    }
-
 	@Override
     public void readFromNBT(NBTTagCompound compound)
     {
@@ -162,6 +189,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		powder_sand=compound.getInteger("sand");
 		select=compound.getInteger("select");
 		crush_count=compound.getInteger("count");
+		power_count=compound.getInteger("power_count");
 
 		NBTTagList itemsTagList = compound.getTagList("Items",10);
 		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
@@ -186,6 +214,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		compound.setInteger("sand", powder_sand);
 		compound.setInteger("select", select);
 		compound.setInteger("count", crush_count);
+		compound.setInteger("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size()+1; slotIndex++){
@@ -254,7 +283,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		if (index >1){
+		if (index > 2){
 			return true;
 		}
 		return false;
@@ -351,6 +380,12 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		case FIELD_COUNT:
 			ret = crush_count;
 			break;
+		case FIELD_BATTERY:
+			ret = stacks.get(0).getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = stacks.get(0).getMaxDamage();
+			break;
 		}
 		return ret;
 	}
@@ -376,12 +411,16 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		case FIELD_COUNT:
 			crush_count = value;
 			break;
+
+		case FIELD_BATTERY:
+			stacks.get(0).setItemDamage(value);
+			break;
 		}
 	}
 
 	@Override
 	public int getFieldCount() {
-		return 6;
+		return 8;
 	}
 
 	@Override
@@ -394,6 +433,15 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	}
 
 	public boolean inBuket() {
-		return stacks.get(1).getItem() == Items.WATER_BUCKET;
+		return stacks.get(2).getItem() == Items.WATER_BUCKET;
+	}
+
+	private ItemStack getBattery(){
+		return stacks.get(0);
+	}
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
 	}
 }

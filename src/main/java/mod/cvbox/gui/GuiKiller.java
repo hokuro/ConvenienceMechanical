@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerKiller;
 import mod.cvbox.network.MessageKiller_UpdateAreaSize;
 import mod.cvbox.network.MessageKiller_UpdateTarget;
+import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityKiller;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -28,7 +32,7 @@ public class GuiKiller extends GuiContainer {
 	private int index;
 	private String target;
 	private List<ResourceLocation> entityNames;
-	private TileEntityKiller killer;
+	private TileEntityKiller te;
 
 	public GuiKiller(IInventory playerinv, IInventory containerinv, World world, BlockPos pos){
 		super(new ContainerKiller(playerinv, containerinv,world,pos));
@@ -43,7 +47,7 @@ public class GuiKiller extends GuiContainer {
 		xSize = 247;
     	index = 0;
     	target = EntityList.getTranslationName(entityNames.get(index));
-    	killer = (TileEntityKiller)containerinv;
+    	te = (TileEntityKiller)containerinv;
 
 
 	}
@@ -84,52 +88,52 @@ public class GuiKiller extends GuiContainer {
     		target = EntityList.getTranslationName(entityNames.get(index));
 	    break;
     	case 103:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEX) - 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEX) - 1;
     		if (size < 0){size = 0;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEX,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEX,size);
     			send=true;
     			}
     		break;
     	case 104:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEX) + 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEX) + 1;
     		if (size > 255){size = 255;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEX,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEX,size);
     			send=true;
     			}
     		break;
 
     	case 105:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEY) - 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEY) - 1;
     		if (size < 0){size = 0;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEY,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEY,size);
     			send=true;
     			}
     		break;
     	case 106:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEY) + 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEY) + 1;
     		if (size > 255){size = 255;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEY,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEY,size);
     			send=true;
     			}
     		break;
 
     	case 107:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEZ) - 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEZ) - 1;
     		if (size < 0){size = 0;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEZ,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEZ,size);
     			send=true;
     			}
     		break;
     	case 108:
-    		size = killer.getField(TileEntityKiller.FIELD_AREASIZEZ) + 1;
+    		size = te.getField(TileEntityKiller.FIELD_AREASIZEZ) + 1;
     		if (size > 255){size = 255;}
     		else{
-    			killer.setField(TileEntityKiller.FIELD_AREASIZEZ,size);
+    			te.setField(TileEntityKiller.FIELD_AREASIZEZ,size);
     			send=true;
     			}
     		break;
@@ -137,9 +141,9 @@ public class GuiKiller extends GuiContainer {
 
     	if (send){
         	Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateAreaSize(
-        	    	killer.getField(TileEntityKiller.FIELD_AREASIZEX),
-        	    	killer.getField(TileEntityKiller.FIELD_AREASIZEY),
-        	    	killer.getField(TileEntityKiller.FIELD_AREASIZEZ)
+        	    	te.getField(TileEntityKiller.FIELD_AREASIZEX),
+        	    	te.getField(TileEntityKiller.FIELD_AREASIZEY),
+        	    	te.getField(TileEntityKiller.FIELD_AREASIZEZ)
         			));
     	}
 
@@ -160,7 +164,15 @@ public class GuiKiller extends GuiContainer {
         if (l >= 0 && i1 >= 0 && l < 90 && i1 < 19)
         {
             Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateTarget(entityNames.get(this.index).toString()));
-            killer.updateTarget(entityNames.get(this.index).toString());
+            te.updateTarget(entityNames.get(this.index).toString());
+        }
+
+        l = mouseX - (i + 144);
+        i1 = mouseY - (j + 5);
+
+        if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+        {
+        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
         }
     }
 
@@ -181,10 +193,17 @@ public class GuiKiller extends GuiContainer {
 	        int j = (this.height - this.ySize) / 2;
 	        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
 
+            // COUNTER
+            this.drawTexturedModalRect(i+139, j+6, 108, 166, 2, getBatteryBaar());
+
+            if (!BooleanUtils.toBoolean(te.getField(TileEntityKiller.FIELD_POWER))){
+            	this.drawTexturedModalRect(i+144, j+6, 108, 183, 26, 18);
+            }
+
 	        int i1 = i + 60;
 	        this.zLevel = 0.0F;
 	        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	        if (killer.ContainTarget(entityNames.get(index))){
+	        if (te.ContainTarget(entityNames.get(index))){
 	        	this.drawTexturedModalRect(i+43, j+40, 0, 185, 108, 19);
 	        }
             FontRenderer fontrenderer = this.mc.fontRenderer;
@@ -192,16 +211,18 @@ public class GuiKiller extends GuiContainer {
 
 
             fontrenderer.drawString("X size", i+182, j+8, 0xFFFFFFFF);
-            String s = "" +killer.getField(TileEntityKiller.FIELD_AREASIZEX);
+            String s = "" +te.getField(TileEntityKiller.FIELD_AREASIZEX);
             fontrenderer.drawString(s, i+195, j+21, 0xFFFFFFFF);
 
             fontrenderer.drawString("Y size", i+182, j+38, 0xFFFFFFFF);
-            s = "" +killer.getField(TileEntityKiller.FIELD_AREASIZEY);
+            s = "" +te.getField(TileEntityKiller.FIELD_AREASIZEY);
             fontrenderer.drawString(s, i+195, j+52, 0xFFFFFFFF);
 
             fontrenderer.drawString("Z size", i+182, j+68, 0xFFFFFFFF);
-            s = "" +killer.getField(TileEntityKiller.FIELD_AREASIZEZ);
+            s = "" +te.getField(TileEntityKiller.FIELD_AREASIZEZ);
             fontrenderer.drawString(s, i+195, j+82, 0xFFFFFFFF);
+
+
 	    }
 
 	    /**
@@ -214,4 +235,8 @@ public class GuiKiller extends GuiContainer {
 	        super.drawScreen(mouseX, mouseY, partialTicks);
 	        this.renderHoveredToolTip(mouseX, mouseY);
 	    }
+
+		protected int getBatteryBaar(){
+			return 16-(int)(16.0F * (te.getField(TileEntityKiller.FIELD_BATTERYMAX) - te.getField(TileEntityKiller.FIELD_BATTERY))/te.getField(TileEntityKiller.FIELD_BATTERYMAX));
+		}
 }

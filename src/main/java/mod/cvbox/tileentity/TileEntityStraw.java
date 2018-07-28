@@ -1,6 +1,9 @@
 package mod.cvbox.tileentity;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import mod.cvbox.item.ItemCore;
+import mod.cvbox.util.ModUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,12 +19,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class TileEntityStraw extends TileEntity  implements IInventory, ITickable, ISidedInventory{
+public class TileEntityStraw extends TileEntity  implements IInventory, ITickable, ISidedInventory,IPowerSwitchEntity{
 	public static final String NAME = "straw";
 	public static final int MAX_TANK = 1728;
 	public static final int FIELD_TANK = 0;
@@ -32,13 +36,18 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 	public static final int FIELD_Z =5;
 	public static final int FIELD_SIZE = 6;
 	public static final int FIELD_KIND = 7;
+	public static final int FIELD_BATTERY = 8;
+	public static final int FIELD_BATTERYMAX = 9;
+	public static final int FIELD_POWER = 10;
 
 	private int tank;
-	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(1, ItemStack.EMPTY);
-	private int[] SLOT_BOTTOM = new int[]{0};
+	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
+	private int[] SLOT_BOTTOM = new int[]{1};
 
 	private static final int STRAW_TIME = 40;
+	private boolean power;
 	private int straw_count;
+	private int power_count;
 	private Item liquid;
 
 
@@ -74,22 +83,62 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		depth = 1;
 		width = 0;
 		kind = -1;
+
+
+		power = false;
+		power_count = 0;
 	}
 
 	@Override
 	public void update() {
+		if (!getPower().isEmpty() && power_count == 0){
+			powerDown();
+		}
 		if (!world.isRemote){
-			if (checkStraw()){
-				straw_count++;
-				if (STRAW_TIME < straw_count){
-					work_on();
+			if (checkPowerOn()){
+				if (checkStraw()){
+					straw_count++;
+					power_count++;
+					if (STRAW_TIME < straw_count){
+						work_on();
+						straw_count = 0;
+					}
+				}else{
 					straw_count = 0;
 				}
+				power_count++;
+				if (power_count > 40){
+					power_count = 0;
+				}
 			}else{
-				straw_count = 0;
+				if (!getPower().isEmpty()){
+					power_count++;
+					if (power_count > 2000){
+						power_count = 0;
+					}
+				}else{
+					power_count = 0;
+				}
+			}
+		}else{
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+				}
 			}
 		}
 
+	}
+
+	private boolean checkPowerOn(){
+		ItemStack st = getPower();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getPower().getItemDamage()+1;
+		getPower().setItemDamage(damage);
 	}
 
 
@@ -111,10 +160,10 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
     			((liquid == ItemCore.item_waterball &&
     			((state.getBlock() == Blocks.FLOWING_WATER && state.getBlock().getMetaFromState(state) == 0) ||
     			(state.getBlock() == Blocks.WATER && state.getBlock().getMetaFromState(state) == 0))))){
-    		if (stacks.get(0).isEmpty()){
-    			stacks.set(0, new ItemStack(liquid,1));
-    		}else if (stacks.get(0).getCount() < 64){
-    			stacks.get(0).grow(1);
+    		if (stacks.get(1).isEmpty()){
+    			stacks.set(1, new ItemStack(liquid,1));
+    		}else if (stacks.get(1).getCount() < 64){
+    			stacks.get(1).grow(1);
     		}else{
     			tank++;
     		}
@@ -187,6 +236,10 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		tank = compound.getInteger("tank");
 		straw_count = compound.getInteger("count");
 		areaSize = compound.getInteger("areaSize");
+
+
+		power = compound.getBoolean("power");
+		power_count=compound.getInteger("power_count");
 		if (areaSize != 0){
 			makeArray(areaSize);
 		}
@@ -232,6 +285,9 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		 compound.setInteger("depth",depth);
 		 compound.setInteger("width",width);
 		 compound.setInteger("kind",kind);
+
+			compound.setBoolean("power", power);
+			compound.setInteger("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -291,7 +347,10 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		return true;
+		if (index > 0){
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -301,7 +360,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 
 	@Override
 	public boolean isEmpty() {
-		return this.stacks.get(0).isEmpty();
+		return this.stacks.get(1).isEmpty() && this.stacks.get(1).isEmpty();
 	}
 
 	@Override
@@ -324,12 +383,12 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		this.stacks.set(index, stack);
 		if (tank > 0){
 			int amount = 0;
-			if (stacks.get(0).isEmpty()){
+			if (stacks.get(1).isEmpty()){
 				amount = tank>64?64:tank;
 				stacks.set(0, new ItemStack(liquid,amount));
-			}else if (stacks.get(0).getCount() < 64){
-				amount = (64 - stacks.get(0).getCount() > tank)?tank:(64 - stacks.get(0).getCount());
-				stacks.get(0).grow(amount);
+			}else if (stacks.get(1).getCount() < 64){
+				amount = (64 - stacks.get(1).getCount() > tank)?tank:(64 - stacks.get(1).getCount());
+				stacks.get(1).grow(amount);
 			}
 			tank -= amount;
 		}
@@ -389,6 +448,16 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		case FIELD_KIND:
 			ret = this.kind;
 			break;
+
+		case FIELD_POWER:
+			ret = BooleanUtils.toInteger(power);
+			break;
+		case FIELD_BATTERY:
+			ret = getPower().getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = getPower().getMaxDamage();
+			break;
 		}
 		return ret;
 	}
@@ -420,12 +489,18 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		case FIELD_KIND:
 			kind = value;
 			break;
+		case FIELD_POWER:
+			power = BooleanUtils.toBoolean(value);
+			break;
+		case FIELD_BATTERY:
+			getPower().setItemDamage(value);
+			break;
 		}
 	}
 
 	@Override
 	public int getFieldCount() {
-		return 7;
+		return 11;
 	}
 
 	@Override
@@ -451,7 +526,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 	}
 
 	private Item changeLiquid(Block kind){
-		if (this.tank == 0 && stacks.get(0).isEmpty()){
+		if (this.tank == 0 && stacks.get(1).isEmpty()){
 			if (kind == Blocks.LAVA){
 				liquid = ItemCore.item_lavaball;
 				this.kind = 0;
@@ -468,5 +543,14 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		makeArray(areaSize);
 		next_y = -1;
 		updateY = false;
+	}
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
+	}
+
+	public ItemStack getPower(){
+		return this.stacks.get(0);
 	}
 }

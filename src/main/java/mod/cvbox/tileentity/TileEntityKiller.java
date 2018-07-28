@@ -8,10 +8,8 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.mojang.authlib.GameProfile;
 
-import mod.cvbox.block.BlockCore;
-import mod.cvbox.block.BlockKiller;
 import mod.cvbox.config.ConfigValue;
-import net.minecraft.block.state.IBlockState;
+import mod.cvbox.util.ModUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,15 +30,15 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class TileEntityKiller extends TileEntity  implements IInventory, ITickable, ISidedInventory{
+public class TileEntityKiller extends TileEntity  implements IInventory, ITickable, ISidedInventory,IPowerSwitchEntity{
 	public static final String NAME = "killer";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_AREASIZEX =1;
 	public static final int FIELD_AREASIZEY =2;
 	public static final int FIELD_AREASIZEZ =3;
+	public static final int FIELD_BATTERY = 4;
+	public static final int FIELD_BATTERYMAX = 5;
 
 	private EntityPlayer playerDummy;
 	private boolean power;
@@ -48,11 +46,12 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 	private int areaSizeY;
 	private int areaSizeZ;
 	private List<String> targets;
-	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(1, ItemStack.EMPTY);
-	private int[] SLOT_SIDE = new int[]{0};
+	private NonNullList<ItemStack> stacks = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
+	private int[] SLOT_SIDE = new int[]{1};
 
 	private static final int KILLER_TIME = 10;
 	private int killer_count;
+	private int power_count;
 
 	public TileEntityKiller(){
 		super();
@@ -63,35 +62,60 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		areaSizeZ = 0;
 		targets = new ArrayList<String>();
 		killer_count = 0;
+		power_count = 0;
 	}
 
 	@Override
 	public void update() {
-		if (world.isRemote){
-			if (power){
-                double d3 = (double)pos.getX() + world.rand.nextDouble() * 0.10000000149011612D;
-                double d8 = (double)pos.getY() + world.rand.nextDouble();
-                double d13 = (double)pos.getZ() + world.rand.nextDouble();
-				world.spawnParticle(EnumParticleTypes.REDSTONE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
-			}
-		}else{
-			if (power){
+		if (!getPower().isEmpty() && power_count == 0){
+			powerDown();
+		}
+		if (!world.isRemote){
+			if (checkPowerOn()){
 				killer_count++;
 				if (KILLER_TIME < killer_count){
 					if (playerDummy == null){
 						playerDummy = new EntityPlayerDummy(this.world, new GameProfile(new UUID(0,0), "dummy"));
-						playerDummy.getAttributeMap().applyAttributeModifiers(stacks.get(0).getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
-						playerDummy.setHeldItem(EnumHand.MAIN_HAND, this.stacks.get(0));
+						playerDummy.getAttributeMap().applyAttributeModifiers(stacks.get(1).getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
+						playerDummy.setHeldItem(EnumHand.MAIN_HAND, this.stacks.get(1));
 					}
 
 					addEffectsToPlayers();
 					killer_count = 0;
+					power_count++;
+					if (power_count > 20){
+						power_count = 0;
+					}
 				}
 			}else{
 				killer_count = 0;
+				if (!getPower().isEmpty()){
+					power_count++;
+					if (power_count > 2000){
+						power_count = 0;
+					}
+				}else{
+					power_count = 0;
+				}
+			}
+		}else{
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+				}
 			}
 		}
+	}
 
+	private boolean checkPowerOn(){
+		ItemStack st = getPower();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getPower().getItemDamage()+1;
+		getPower().setItemDamage(damage);
 	}
 
     private void addEffectsToPlayers()
@@ -122,15 +146,6 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
         }
     }
 
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-    	if (newSate.getBlock() == BlockCore.block_killer){
-    		this.setField(FIELD_POWER, ((BlockKiller)newSate.getBlock()).getPower(newSate));
-    	}
-        return false;
-    }
-
 	@Override
     public void readFromNBT(NBTTagCompound compound)
     {
@@ -139,6 +154,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
         areaSizeX = compound.getInteger("sizex");
         areaSizeY = compound.getInteger("sizey");
         areaSizeZ = compound.getInteger("sizez");
+        power_count = compound.getInteger("power_count");
 		NBTTagList targetTagList = compound.getTagList("targets",10);
 		for (int tagCounter = 0; tagCounter < targetTagList.tagCount(); tagCounter++){
 			NBTTagCompound tag = targetTagList.getCompoundTagAt(tagCounter);
@@ -167,7 +183,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		compound.setInteger("sizex", areaSizeX);
 		compound.setInteger("sizey", areaSizeY);
 		compound.setInteger("sizez", areaSizeZ);
-
+		compound.setInteger("power_count",power_count);
 		NBTTagList targetTagList = new NBTTagList();
 		for (String name : targets){
 			NBTTagCompound targetName = new NBTTagCompound();
@@ -244,7 +260,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 
 	@Override
 	public boolean isEmpty() {
-		return this.stacks.get(0).isEmpty();
+		return this.stacks.get(0).isEmpty() && this.stacks.get(1).isEmpty();
 	}
 
 	@Override
@@ -267,7 +283,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		this.stacks.set(index, stack);
 		if (this.playerDummy != null){
 			playerDummy.getAttributeMap().applyAttributeModifiers(stack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
-			playerDummy.setHeldItem(EnumHand.MAIN_HAND, this.stacks.get(0));
+			playerDummy.setHeldItem(EnumHand.MAIN_HAND, this.stacks.get(1));
 		}
 
 	}
@@ -314,6 +330,12 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		case FIELD_AREASIZEZ:
 			ret = areaSizeZ;
 			break;
+		case FIELD_BATTERY:
+			ret = getPower().getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = getPower().getMaxDamage();
+			break;
 		}
 		return ret;
 	}
@@ -333,12 +355,14 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		case FIELD_AREASIZEZ:
 			areaSizeZ = value;
 			break;
+		case FIELD_BATTERY:
+			getPower().setItemDamage(value);
 		}
 	}
 
 	@Override
 	public int getFieldCount() {
-		return 4;
+		return 6;
 	}
 
 	@Override
@@ -360,5 +384,14 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		}else{
 			targets.add(entityName);
 		}
+	}
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
+	}
+
+	public ItemStack getPower(){
+		return this.stacks.get(0);
 	}
 }

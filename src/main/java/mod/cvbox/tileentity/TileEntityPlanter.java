@@ -36,15 +36,22 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class TileEntityPlanter extends TileEntity  implements IInventory, ITickable, ISidedInventory {
-	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT;
+public class TileEntityPlanter extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
+	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT + 1;
 	public static final String NAME = "AutoPlanting";
-	private final NonNullList<ItemStack> inventoryContents;
+	public static final int FIELD_POWER = 0;
+	public static final int FIELD_DELIVER = 1;
+	public static final int FIELD_BATTERY = 2;
+	public static final int FIELD_BATTERYMAX = 3;
+	public static final int FIELD_NEXT_X = 4;
+	public static final int FIELD_NEXT_Z = 5;
+	public static final int FILED_NEXTPOS = 6;
+	private final NonNullList<ItemStack> stacks;
 	private String customName;
 	private EntityPlayerDummy dummy;
 
 
-	private boolean isRun;
+	private boolean power;
 	private boolean canDeliver;
 	private int nextPos;
 	private int[] next_x;
@@ -53,18 +60,20 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	// SideInventory
     private final int[] SLOTS_TOP;
     private int timeCnt;
+	private int power_count;
 
 
 	public TileEntityPlanter(){
-		inventoryContents = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
-		isRun = false;
+		stacks = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
+		power = false;
 		SLOTS_TOP = new int[max];
-		for (int i = 0; i < max; i++){
+		for (int i = 1; i < max; i++){
 			SLOTS_TOP[i] = i;
 		}
 		makeArray();
 		nextPos = 0;
 		timeCnt = 0;
+		power_count = 0;
 	}
 
 	public boolean canDeliver() {
@@ -103,11 +112,14 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	// ITickable
 	@Override
 	public void update() {
+		if (!getPower().isEmpty() && power_count == 0){
+			powerDown();
+		}
 		if (!world.isRemote){
 			if (dummy == null){
 				dummy = new EntityPlayerDummy(this.world, new GameProfile(new UUID(0,0), "dummy"));
 			}
-			if (this.isRun){
+			if (checkPowerOn()){
 				this.timeCnt++;
 				if (timeCnt >= ConfigValue.Planter.ExecTimeSpan){
 					for (int i = 0; i < ConfigValue.Planter.OneTicPlant; i++){
@@ -117,16 +129,40 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 					}
 					timeCnt = 0;
 				}
+				power_count++;
+				if (power_count > 40){
+					power_count = 0;
+				}
+			}else{
+				if (!getPower().isEmpty()){
+					power_count++;
+					if (power_count > 2000){
+						power_count = 0;
+					}
+				}else{
+					power_count = 0;
+				}
 			}
 		}else{
-			if (isRun){
-                double d3 = (double)pos.getX() + world.rand.nextDouble() * 0.10000000149011612D;
-                double d8 = (double)pos.getY() + world.rand.nextDouble();
-                double d13 = (double)pos.getZ() + world.rand.nextDouble();
-				world.spawnParticle(EnumParticleTypes.REDSTONE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+				}
 			}
 		}
 	}
+
+	private boolean checkPowerOn(){
+		ItemStack st = getPower();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getPower().getItemDamage()+1;
+		getPower().setItemDamage(damage);
+	}
+
 
 	public ItemStack Exec(){
 		ItemStack seeds = nextItem();
@@ -195,7 +231,7 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	private boolean isFullContainer(){
 		boolean ret = false;
-		for (ItemStack item : this.inventoryContents){
+		for (ItemStack item : this.stacks){
 			if (item.isEmpty()){
 				ret = true;
 				break;
@@ -216,9 +252,10 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	@Override
 	public void readFromNBT(NBTTagCompound nbtTagCompound){
 		super.readFromNBT(nbtTagCompound);
-		isRun = nbtTagCompound.getBoolean("isrun");
+		power = nbtTagCompound.getBoolean("isrun");
 		nextPos = nbtTagCompound.getInteger("next");
 		canDeliver = nbtTagCompound.getBoolean("deliver");
+		power_count=nbtTagCompound.getInteger("power_count");
 		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
 
 		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
@@ -226,7 +263,7 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 			byte slotIndex =itemTagCompound.getByte("Slot");
 			if ((slotIndex >= 0) && (slotIndex < max)){
-				inventoryContents.set(slotIndex, new ItemStack(itemTagCompound));
+				stacks.set(slotIndex, new ItemStack(itemTagCompound));
 			}
 		}
 	}
@@ -234,17 +271,18 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound){
 		super.writeToNBT(nbtTagCompound);
-		nbtTagCompound.setBoolean("isrun", isRun);
+		nbtTagCompound.setBoolean("isrun", power);
 		nbtTagCompound.setInteger("next", nextPos);
 		nbtTagCompound.setBoolean("deliver",canDeliver);
+		nbtTagCompound.setInteger("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < max; slotIndex++){
-			if (!this.inventoryContents.get(slotIndex).isEmpty()){
+			if (!this.stacks.get(slotIndex).isEmpty()){
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.inventoryContents.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
 				itemsTagList.appendTag(itemTagCompound);
 			}
 		}
@@ -275,17 +313,17 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public ItemStack getStackInSlot(int slotIndex){
-		return this.inventoryContents.get(slotIndex);
+		return this.stacks.get(slotIndex);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slotIndex, int splitStackSize){
-		 return ItemStackHelper.getAndSplit(this.inventoryContents, slotIndex, splitStackSize);
+		 return ItemStackHelper.getAndSplit(this.stacks, slotIndex, splitStackSize);
 	}
 
 	@Override
 	public void setInventorySlotContents(int idx, ItemStack stack){
-		this.inventoryContents.set(idx, stack);
+		this.stacks.set(idx, stack);
 	}
 
 	@Override
@@ -314,7 +352,7 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(this.inventoryContents, index);
+		return ItemStackHelper.getAndRemove(this.stacks, index);
 	}
 
 	@Override
@@ -329,11 +367,28 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	public int getField(int id) {
 		int ret = 0;
 		switch(id){
-		case 0:
-			ret = BooleanUtils.toInteger(isRun);
+		case FIELD_POWER:
+			ret = BooleanUtils.toInteger(power);
 			break;
-		case 1:
+		case FIELD_DELIVER:
 			ret = BooleanUtils.toInteger(canDeliver);
+			break;
+
+		case FIELD_BATTERY:
+			ret = getPower().getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = getPower().getMaxDamage();
+			break;
+		case FIELD_NEXT_X:
+			ret = next_x[nextPos];
+			break;
+
+		case FIELD_NEXT_Z:
+			ret = next_z[nextPos];
+			break;
+		case FILED_NEXTPOS:
+			ret = nextPos;
 			break;
 		default:
 
@@ -344,12 +399,19 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 	@Override
 	public void setField(int id, int value) {
 		switch(id){
-		case 0:
-			isRun = BooleanUtils.toBoolean(value);
+		case FIELD_POWER:
+			power = BooleanUtils.toBoolean(value);
 			this.nextPos = 0;
 			break;
-		case 1:
+		case FIELD_DELIVER:
 			canDeliver = BooleanUtils.toBoolean(value);
+			break;
+
+		case FIELD_BATTERY:
+			getPower().setItemDamage(value);
+			break;
+		case FILED_NEXTPOS:
+			nextPos = value;
 			break;
 		default:
 
@@ -358,12 +420,12 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public int getFieldCount() {
-		return 2;
+		return 7;
 	}
 
 	@Override
 	public void clear() {
-		this.inventoryContents.clear();
+		this.stacks.clear();
 	}
 
 	@Override
@@ -378,7 +440,7 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventoryContents)
+        for (ItemStack itemstack : this.stacks)
         {
             if (!itemstack.isEmpty())
             {
@@ -423,8 +485,12 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		return this.isItemValidForSlot(index, itemStackIn);
+		if (index != 0){
+			return this.isItemValidForSlot(index, itemStackIn);
+		}
+		return false;
 	}
+
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
@@ -438,10 +504,10 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 			if (SlotPlant.checkExtends(stack)){
 				ItemStack itemIn = stack.copy();
 				itemIn.setCount(1);
-				for (int i = 0; i < this.inventoryContents.size(); i++){
-					ItemStack item2 = this.inventoryContents.get(i);
+				for (int i = 1; i < this.stacks.size(); i++){
+					ItemStack item2 = this.stacks.get(i);
 					if (item2.isEmpty()){
-						this.inventoryContents.set(i,itemIn);
+						this.stacks.set(i,itemIn);
 						ret = true;
 						break;
 					}else if (ModUtil.compareItemStacks(stack,item2,CompaierLevel.LEVEL_EQUAL_META) && item2.getCount() < item2.getMaxStackSize()){
@@ -453,6 +519,19 @@ public class TileEntityPlanter extends TileEntity  implements IInventory, ITicka
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
+	}
+
+	public ItemStack getPower(){
+		return this.stacks.get(0);
+	}
+
+	public void reset() {
+		nextPos = 0;
 	}
 
 }

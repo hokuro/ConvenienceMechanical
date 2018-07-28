@@ -35,14 +35,21 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class TileEntityWoodHarvester extends TileEntity  implements IInventory, ITickable, ISidedInventory {
-	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT+1;
+public class TileEntityWoodHarvester extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
+	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT+2;
 	public static final String NAME = "WoodHarvest";
-	private final NonNullList<ItemStack> inventoryContents;
+	public static final int FIELD_POWER = 0;
+	public static final int FIELD_DELIVER = 1;
+	public static final int FIELD_BATTERY = 2;
+	public static final int FIELD_BATTERYMAX = 3;
+	public static final int FIELD_NEXT_X = 4;
+	public static final int FIELD_NEXT_Z = 5;
+	public static final int FILED_NEXTPOS = 6;
+	private final NonNullList<ItemStack> stacks;
 	private String customName;
 
 
-	private boolean isRun;
+	private boolean power;
 	private int nextPos;
 	private int[] next_x;
 	private int[] next_z;
@@ -56,14 +63,15 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
     private int timeCnt;
     private int fotuneLevel;
 	private int silkLevel;
+	private int power_count;
 
 
 	public TileEntityWoodHarvester(){
-		inventoryContents = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
-		isRun = false;
-		SLOTS_TOP = new int[max-1];
-		for (int i = 0; i < max-1; i++){
-			SLOTS_TOP[i] = i;
+		stacks = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
+		power = false;
+		SLOTS_TOP = new int[max-2];
+		for (int i = 1; i < max-1; i++){
+			SLOTS_TOP[i-1] = i;
 		}
 		makeArray();
 		nextPos = 0;
@@ -71,6 +79,7 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 		planterPos = null;
 		canDeliver = false;
 		timeCnt = 0;
+		power_count = 0;
 	}
 
 	public boolean canDeliver() {
@@ -109,32 +118,63 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 	// ITickable
 	@Override
 	public void update() {
+		if (!getPower().isEmpty() && power_count == 0){
+			powerDown();
+		}
 		if (!world.isRemote){
-			if (this.isRun){
+			if (checkPowerOn()){
 				this.timeCnt++;
-				if (timeCnt >= ConfigValue.WoodHarvester.ExecTimeSpan){
+				if (timeCnt >= ConfigValue.Harvester.ExecTimeSpan){
 					if (!fullInventory()){
 
-						for (int i = 0; i < ConfigValue.WoodHarvester.OneTicPlant; i++){
+						for (int i = 0; i < ConfigValue.Harvester.OneTicPlant; i++){
 							Exec();
 						}
 					}
 
 					if (canDeliver){
 						this.deliverPlanter();
+						power_count++;
 					}
 					timeCnt = 0;
 				}
+				power_count++;
+				if (power_count > 20){
+					power_count = 0;
+				}
+			}else{
+				if (!getPower().isEmpty()){
+					power_count++;
+					if (power_count > 2000){
+						power_count = 0;
+					}
+				}else{
+					power_count = 0;
+				}
 			}
 		}else{
-			if (isRun){
-                double d3 = (double)pos.getX() + world.rand.nextDouble() * 0.10000000149011612D;
-                double d8 = (double)pos.getY() + world.rand.nextDouble();
-                double d13 = (double)pos.getZ() + world.rand.nextDouble();
-				world.spawnParticle(EnumParticleTypes.REDSTONE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
+			if (checkPowerOn()){
+				if (Math.random() > 0.7){
+					if (Math.random() > 0.7){
+						ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					}
+				}
 			}
 		}
 	}
+
+
+	private boolean checkPowerOn(){
+		ItemStack st = getPower();
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+				power);
+	}
+
+	private void powerDown(){
+		int damage = getPower().getItemDamage()+1;
+		getPower().setItemDamage(damage);
+	}
+
 
 	public void Exec(){
 		List<ItemStack> drops;
@@ -164,7 +204,7 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 							drops.add(new ItemStack(block,1,block.damageDropped(state)<4?block.damageDropped(state):block.damageDropped(state)-4));
 							if (this.harvest(drops)){
 								world.destroyBlock(plantPos2, false);
-								if (this.inventoryContents.get(max-1).attemptDamageItem(1, world.rand, null)){
+								if (this.stacks.get(max-1).attemptDamageItem(1, world.rand, null)){
 									this.setInventorySlotContents(max-1, ItemStack.EMPTY);
 								}
 							}
@@ -173,7 +213,7 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 						if (this.harvest(drops)){
 							world.destroyBlock(plantPos2, false);
 							if (fotuneLevel > 0){
-								if (this.inventoryContents.get(max-1).attemptDamageItem(1, world.rand, null)){
+								if (this.stacks.get(max-1).attemptDamageItem(1, world.rand, null)){
 									this.setInventorySlotContents(max-1, ItemStack.EMPTY);
 								}
 							}
@@ -209,9 +249,9 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 			try{
 				TileEntityWoodPlanter planter = (TileEntityWoodPlanter)te;
 				if (planter.canDeliver()){
-					for (int i = 0; i < this.inventoryContents.size()-1; i++){
-						if (planter.Deliver(this.inventoryContents.get(i))){
-							this.inventoryContents.get(i).shrink(1);
+					for (int i = 1; i < this.stacks.size()-1; i++){
+						if (planter.Deliver(this.stacks.get(i))){
+							this.stacks.get(i).shrink(1);
 							break;
 						}
 					}
@@ -273,8 +313,8 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 		boolean ret = true;
 		List<Integer> setIndex = new ArrayList<Integer>();
 		NonNullList<ItemStack> dummy_inv = NonNullList.<ItemStack>withSize(max-1,ItemStack.EMPTY);
-		for (int i = 0; i < max-1; i++){
-			dummy_inv.set(i, this.inventoryContents.get(i).copy());
+		for (int i = 1; i < max-1; i++){
+			dummy_inv.set(i-1, this.stacks.get(i).copy());
 		}
 
 		for (ItemStack d : drop){
@@ -306,8 +346,8 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 		}
 
 		if (ret){
-			for (int i = 0; i < max-1; i++){
-				inventoryContents.set(i, dummy_inv.get(i).copy());
+			for (int i = 1; i < max-1; i++){
+				stacks.set(i, dummy_inv.get(i-1).copy());
 			}
 		}
 		return ret;
@@ -315,8 +355,8 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	private boolean fullInventory(){
 		boolean ret = true;
-		for ( int i = 0; i < this.inventoryContents.size() -1; i++){
-			ItemStack stack = this.inventoryContents.get(i);
+		for ( int i = 1; i < this.stacks.size() -1; i++){
+			ItemStack stack = this.stacks.get(i);
 			if (stack.isEmpty()){
 				ret = false;
 				break;
@@ -336,9 +376,10 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 	@Override
 	public void readFromNBT(NBTTagCompound nbtTagCompound){
 		super.readFromNBT(nbtTagCompound);
-		isRun = nbtTagCompound.getBoolean("isrun");
+		power = nbtTagCompound.getBoolean("isrun");
 		nextPos = nbtTagCompound.getInteger("next");
 		canDeliver = nbtTagCompound.getBoolean("deliver");
+		power_count=nbtTagCompound.getInteger("power_count");
 		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
 
 		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
@@ -346,11 +387,11 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 			byte slotIndex =itemTagCompound.getByte("Slot");
 			if ((slotIndex >= 0) && (slotIndex < max)){
-				inventoryContents.set(slotIndex, new ItemStack(itemTagCompound));
+				stacks.set(slotIndex, new ItemStack(itemTagCompound));
 			}
 		}
-		this.fotuneLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, this.inventoryContents.get(max-1));
-		this.silkLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, this.inventoryContents.get(max-1));
+		this.fotuneLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, this.stacks.get(max-1));
+		this.silkLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, this.stacks.get(max-1));
 		findPlanter = nbtTagCompound.getBoolean("find");
 		if (findPlanter){
 			planterPos = new BlockPos(
@@ -366,16 +407,17 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound){
 		super.writeToNBT(nbtTagCompound);
-		nbtTagCompound.setBoolean("isrun", isRun);
+		nbtTagCompound.setBoolean("isrun", power);
 		nbtTagCompound.setInteger("next", nextPos);
 		nbtTagCompound.setBoolean("deliver",canDeliver);
+		nbtTagCompound.setInteger("power_count",power_count);
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < max; slotIndex++){
-			if (!this.inventoryContents.get(slotIndex).isEmpty()){
+			if (!this.stacks.get(slotIndex).isEmpty()){
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.inventoryContents.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
 				itemsTagList.appendTag(itemTagCompound);
 			}
 		}
@@ -412,17 +454,17 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	@Override
 	public ItemStack getStackInSlot(int slotIndex){
-		return this.inventoryContents.get(slotIndex);
+		return this.stacks.get(slotIndex);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slotIndex, int splitStackSize){
-		 return ItemStackHelper.getAndSplit(this.inventoryContents, slotIndex, splitStackSize);
+		 return ItemStackHelper.getAndSplit(this.stacks, slotIndex, splitStackSize);
 	}
 
 	@Override
 	public void setInventorySlotContents(int idx, ItemStack stack){
-		this.inventoryContents.set(idx, stack);
+		this.stacks.set(idx, stack);
 
 		if (idx == max -1){
 			this.fotuneLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE,stack);
@@ -457,7 +499,7 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(this.inventoryContents, index);
+		return ItemStackHelper.getAndRemove(this.stacks, index);
 	}
 
 	@Override
@@ -472,11 +514,29 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 	public int getField(int id) {
 		int ret = 0;
 		switch(id){
-		case 0:
-			ret = BooleanUtils.toInteger(isRun);
+		case FIELD_POWER:
+			ret = BooleanUtils.toInteger(power);
 			break;
-		case 1:
+		case FIELD_DELIVER:
 			ret = BooleanUtils.toInteger(canDeliver);
+			break;
+
+		case FIELD_BATTERY:
+			ret = getPower().getItemDamage();
+			break;
+		case FIELD_BATTERYMAX:
+			ret = getPower().getMaxDamage();
+			break;
+
+		case FIELD_NEXT_X:
+			ret = next_x[nextPos];
+			break;
+
+		case FIELD_NEXT_Z:
+			ret = next_z[nextPos];
+			break;
+		case FILED_NEXTPOS:
+			ret = nextPos;
 			break;
 		default:
 
@@ -487,12 +547,20 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 	@Override
 	public void setField(int id, int value) {
 		switch(id){
-		case 0:
-			isRun = BooleanUtils.toBoolean(value);
+		case FIELD_POWER:
+			power = BooleanUtils.toBoolean(value);
 			this.nextPos = 0;
 			break;
-		case 1:
+		case FIELD_DELIVER:
 			canDeliver = BooleanUtils.toBoolean(value);
+			break;
+
+		case FIELD_BATTERY:
+			getPower().setItemDamage(value);
+			break;
+
+		case FILED_NEXTPOS:
+			nextPos = value;
 			break;
 		default:
 
@@ -501,12 +569,12 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	@Override
 	public int getFieldCount() {
-		return 2;
+		return 7;
 	}
 
 	@Override
 	public void clear() {
-		this.inventoryContents.clear();
+		this.stacks.clear();
 	}
 
 	@Override
@@ -527,7 +595,7 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	@Override
 	public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventoryContents)
+        for (ItemStack itemstack : this.stacks)
         {
             if (!itemstack.isEmpty())
             {
@@ -546,13 +614,26 @@ public class TileEntityWoodHarvester extends TileEntity  implements IInventory, 
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		if (index == max-1){return false;}
+		if (index == max-1 || index == 0){return false;}
 		return true;
 	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		if (index == max-1){return false;}
+		if (index == max-1 || index == 0){return false;}
         return true;
+	}
+
+	@Override
+	public void setPower(boolean value) {
+		this.power = value;
+	}
+
+	public ItemStack getPower(){
+		return this.stacks.get(0);
+	}
+
+	public void reset() {
+		nextPos = 0;
 	}
 }

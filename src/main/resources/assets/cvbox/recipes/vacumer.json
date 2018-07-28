@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "vacumer",
+  "pattern": [
+    "K K",
+    "HRH",
+    "KHK"
+  ],
+  "key": {
+    "K": {
+      "item": "cvbox:machinematter"
+    },
+    "R": {
+      "item": "minecraft:hopper"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "cvbox:vacumer",
+    "count": 1
+  }
+}

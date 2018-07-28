@@ -30,7 +30,6 @@ public class BlockCompresser extends BlockPowerMachineContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		TileEntityCompresser ret = new TileEntityCompresser();
-		ret.setField(TileEntityCompresser.FIELD_POWER, meta);
 		return ret;
 	}
 

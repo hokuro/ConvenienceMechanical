@@ -7,7 +7,10 @@ import org.apache.commons.lang3.BooleanUtils;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerAutoPlanting;
 import mod.cvbox.network.MessageFarmer_UpdateDelivery;
+import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.network.Message_ResetWork;
 import mod.cvbox.tileentity.TileEntityPlanter;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,20 +27,43 @@ public class GuiAutoPlanting extends GuiContainer {
 	private int y1;
 	private int z1;
 	private BlockPos pos;
-	TileEntityPlanter planter;
+	private TileEntityPlanter te;
 
 
 	public GuiAutoPlanting(EntityPlayer player, TileEntityPlanter tileEntity, World world, int x, int y, int z){
 		super(new ContainerAutoPlanting(player, tileEntity, world, x, y, z));
 		ySize = 222;
-		planter = (TileEntityPlanter)tileEntity;
+		te = (TileEntityPlanter)tileEntity;
 	}
+
+	public void initGui(){
+		super.initGui();
+    	int x=(this.width - this.xSize) / 2;
+    	int y=(this.height - this.ySize) / 2;
+    	this.buttonList.clear();
+    	this.buttonList.add(new GuiButton(101,x+7,y+14,40,20,"reset"));
+	}
+
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+    	boolean send = false;
+    	int size;
+    	switch(button.id){
+    	case 101:
+    		Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_ResetWork());
+	    break;
+	    }
+    }
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j){
 		fontRenderer.drawString("AutoPlanting",8,4,4210752);
 		fontRenderer.drawString("Inventory", 8, ySize - 96, 4210752);
 		fontRenderer.drawString("Deliver", xSize/2+10, ySize - 96, 4210752);
+		int x = te.getField(TileEntityPlanter.FIELD_NEXT_X);
+		int z = te.getField(TileEntityPlanter.FIELD_NEXT_Z);
+		String nextPos = String.valueOf(x) + "," + String.valueOf(z);
+		fontRenderer.drawString(nextPos, 53, 20, 16777215);
 	}
 
    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
@@ -51,9 +77,17 @@ public class GuiAutoPlanting extends GuiContainer {
 
        if (l >= 0 && i1 >= 0 && l < 32 && 12 < 19)
        {
-    	   boolean deliver = planter.canDeliver();
-    	   Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageFarmer_UpdateDelivery(planter.getPos(), !deliver));
-    	   planter.setField(1, BooleanUtils.toInteger(!deliver));
+    	   boolean deliver = te.canDeliver();
+    	   Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageFarmer_UpdateDelivery(te.getPos(), !deliver));
+    	   te.setField(1, BooleanUtils.toInteger(!deliver));
+       }
+
+       l = mouseX - (i + 146);
+       i1 = mouseY - (j + 5);
+
+       if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+       {
+       	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))));
        }
    }
 
@@ -72,10 +106,21 @@ public class GuiAutoPlanting extends GuiContainer {
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
 
-        if (planter.canDeliver()){
-        	this.drawTexturedModalRect(i + 138, j + 126, 177, 13, 32, 12);
+        if (te.canDeliver()){
+        	this.drawTexturedModalRect(i + 138, j + 126, 176, 12, 33, 12);
         }else{
-        	this.drawTexturedModalRect(i + 138, j + 126, 177, 0, 32, 12);
+        	this.drawTexturedModalRect(i + 138, j + 126, 176, 0, 33, 12);
         }
+
+        // COUNTER
+        this.drawTexturedModalRect(i+142, j+6, 176, 24, 2, getBatteryBaar());
+
+        if (!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))){
+        	this.drawTexturedModalRect(i+146, j+5, 176, 40, 26, 18);
+        }
+	}
+
+	protected int getBatteryBaar(){
+		return 16-(int)(16.0F * (te.getField(TileEntityPlanter.FIELD_BATTERYMAX) - te.getField(TileEntityPlanter.FIELD_BATTERY))/te.getField(TileEntityPlanter.FIELD_BATTERYMAX));
 	}
 }

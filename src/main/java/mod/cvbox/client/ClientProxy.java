@@ -1,22 +1,27 @@
 package mod.cvbox.client;
 
 import mod.cvbox.core.CommonProxy;
+import mod.cvbox.render.RenderLiquidMaker;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityCrusher;
+import mod.cvbox.tileentity.TileEntityDestroyer;
 import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import mod.cvbox.tileentity.TileEntityExpCollector;
 import mod.cvbox.tileentity.TileEntityHarvester;
 import mod.cvbox.tileentity.TileEntityKiller;
+import mod.cvbox.tileentity.TileEntityLiquidMaker;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntitySetter;
 import mod.cvbox.tileentity.TileEntityStraw;
+import mod.cvbox.tileentity.TileEntityVacumer;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
 import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,10 +49,13 @@ public class ClientProxy extends CommonProxy{
 		GameRegistry.registerTileEntity(TileEntityCrusher.class, TileEntityCrusher.NAME);
 		GameRegistry.registerTileEntity(TileEntityCompresser.class, TileEntityCompresser.NAME);
 		GameRegistry.registerTileEntity(TileEntityStraw.class, TileEntityStraw.NAME);
+		GameRegistry.registerTileEntity(TileEntityDestroyer.class, TileEntityDestroyer.NAME);
+		ClientRegistry.registerTileEntity(TileEntityLiquidMaker.class, TileEntityLiquidMaker.NAME, new RenderLiquidMaker());
+		GameRegistry.registerTileEntity(TileEntityVacumer.class, TileEntityVacumer.NAME);
 	}
 
+	@Override
 	public void registerRender(){
-
 	}
 
 	@Override

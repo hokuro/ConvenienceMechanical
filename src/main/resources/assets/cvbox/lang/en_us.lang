@@ -47,6 +47,11 @@ item.sickle_diamond.name=Diamond Sickle
 item.machinematter.name=MachineMatter
 item.waterball.name=Water Ball
 item.lavaball.name=Lava Ball
+item.spana.name=Spana
+item.battery.name=battery
+item.battery_extra.name=Extra Battery
+item.battery_large.name=Large Battery
+item.battery_huge.name=Huge Battery
 gui.tile.expcollector=Exp Collector
 gui.button_all=ALL
 gui.button_get=Set Lv
@@ -54,6 +59,6 @@ gui.tile.expcollector=Exp Collector
 container.setter=setter
 config.comment.exenchant.tributeitemlevel=types of items required to enchant(1:diamond, 2:emerald, 3:nether star)
 config.comment.exenchant.tributeitemcount=number of items required to enchant(minimum 10 maximum 64)
-
-
+gui.tile.expcollector=exp collector
+tile_vacumer.name=vacumer
 

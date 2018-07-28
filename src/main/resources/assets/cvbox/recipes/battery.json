@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "battery",
+  "pattern": [
+    " C ",
+    "IAG",
+    " B "
+  ],
+  "key": {
+    "I": {
+        "item": "minecraft:iron_ingot"
+    },
+    "C": {
+        "item": "minecraft:coal",
+        "data": 0
+    },
+    "G": {
+        "item": "minecraft:gold_ingot"
+    },
+    "A": {
+        "item": "minecraft:apple"
+    },
+    "B": {
+        "item": "minecraft:bucket"
+    }
+  },
+  "result": {
+    "item": "cvbox:battery",
+    "count": 1
+  }
+}

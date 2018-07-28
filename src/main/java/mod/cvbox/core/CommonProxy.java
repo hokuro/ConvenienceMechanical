@@ -2,14 +2,17 @@ package mod.cvbox.core;
 
 import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityCrusher;
+import mod.cvbox.tileentity.TileEntityDestroyer;
 import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
 import mod.cvbox.tileentity.TileEntityExpBank;
 import mod.cvbox.tileentity.TileEntityExpCollector;
 import mod.cvbox.tileentity.TileEntityHarvester;
 import mod.cvbox.tileentity.TileEntityKiller;
+import mod.cvbox.tileentity.TileEntityLiquidMaker;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntitySetter;
 import mod.cvbox.tileentity.TileEntityStraw;
+import mod.cvbox.tileentity.TileEntityVacumer;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
 import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +40,9 @@ public class CommonProxy{
 		GameRegistry.registerTileEntity(TileEntityCrusher.class, TileEntityCrusher.NAME);
 		GameRegistry.registerTileEntity(TileEntityCompresser.class, TileEntityCompresser.NAME);
 		GameRegistry.registerTileEntity(TileEntityStraw.class, TileEntityStraw.NAME);
+		GameRegistry.registerTileEntity(TileEntityDestroyer.class, TileEntityDestroyer.NAME);
+		GameRegistry.registerTileEntity(TileEntityLiquidMaker.class, TileEntityLiquidMaker.NAME);
+		GameRegistry.registerTileEntity(TileEntityVacumer.class, TileEntityVacumer.NAME);
 	}
 
 	public void registerRender(){

@@ -22,6 +22,11 @@ public class ItemCore {
 	public static final String NAME_WATERBALL = "waterball";
 	public static final String NAME_LAVABALL = "lavaball";
 	public static final String NAME_SPANA = "spana";
+	public static final String NAME_BATTERY = "battery";
+	public static final String NAME_EXBATTERY = "battery_extra";
+	public static final String NAME_LARGEBATTERY ="battery_large";
+	public static final String NAME_HUGEBATTERY = "battery_huge";
+
 
 	public static final String[] NAME_LIST = new String[]{
 			NAME_WOODSICKLE,
@@ -33,6 +38,10 @@ public class ItemCore {
 			NAME_WATERBALL,
 			NAME_LAVABALL,
 			NAME_SPANA,
+			NAME_BATTERY,
+			NAME_EXBATTERY,
+			NAME_LARGEBATTERY,
+			NAME_HUGEBATTERY,
 	};
 
 	public static Item item_sickle_wood;
@@ -44,7 +53,10 @@ public class ItemCore {
 	public static Item item_waterball;
 	public static Item item_lavaball;
 	public static Item item_spana;
-
+	public static Item item_battery;
+	public static Item item_exbattery;
+	public static Item largebattery;
+	public static Item hugebattery;
 
 	private static Map<String,Item> itemMap;
 	private static Map<String,ModelResourceLocation[]> resourceMap;
@@ -62,6 +74,10 @@ public class ItemCore {
 				.setMaxDamage(120)
 				.setMaxStackSize(1)
 				.setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_SPANA).setUnlocalizedName(NAME_SPANA);
+		item_battery = new ItemBattery(8400).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_BATTERY).setUnlocalizedName(NAME_BATTERY);
+		item_exbattery = new ItemBattery(36000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_EXBATTERY).setUnlocalizedName(NAME_EXBATTERY);
+		largebattery = new ItemBattery(438000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_LARGEBATTERY).setUnlocalizedName(NAME_LARGEBATTERY);
+		hugebattery = new ItemBattery(4380000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_HUGEBATTERY).setUnlocalizedName(NAME_HUGEBATTERY);
 
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_WOODSICKLE,item_sickle_wood);}
@@ -73,8 +89,11 @@ public class ItemCore {
 			{put(NAME_WATERBALL,item_waterball);}
 			{put(NAME_LAVABALL,item_lavaball);}
 			{put(NAME_SPANA,item_spana);}
+			{put(NAME_BATTERY,item_battery);}
+			{put(NAME_EXBATTERY,item_exbattery);}
+			{put(NAME_LARGEBATTERY,largebattery);}
+			{put(NAME_HUGEBATTERY,hugebattery);}
 		};
-
 
 		resourceMap = new HashMap<String,ModelResourceLocation[]>(){
 			{put(NAME_WOODSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WOODSICKLE, "inventory")});}
@@ -86,6 +105,10 @@ public class ItemCore {
 			{put(NAME_WATERBALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WATERBALL, "inventory")});}
 			{put(NAME_LAVABALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LAVABALL, "inventory")});}
 			{put(NAME_SPANA,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_SPANA, "inventory")});}
+			{put(NAME_BATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_BATTERY, "inventory")});}
+			{put(NAME_EXBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_EXBATTERY, "inventory")});}
+			{put(NAME_LARGEBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LARGEBATTERY, "inventory")});}
+			{put(NAME_HUGEBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_HUGEBATTERY, "inventory")});}
 		};
 	}
 
