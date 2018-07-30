@@ -1,6 +1,5 @@
 {
     "variants": {
-        "power=false":{ "model":"cvbox:lavamaker" },
-        "power=true":{ "model":"cvbox:lavamaker_on" }
+        "normal":{ "model":"cvbox:lavamaker" }
     }
 }

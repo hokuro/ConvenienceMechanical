@@ -1,23 +1,37 @@
 package mod.cvbox.inventory;
 
+import mod.cvbox.item.ItemBattery;
 import mod.cvbox.tileentity.TileEntityExpCollector;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ContainerExpCollector extends Container {
-	private IInventory collector;
+public class ContainerExpCollector extends Container implements IPowerSwitchContainer{
+	private IInventory inventory;
+    private int power;
+    private int battery;
 
 	public ContainerExpCollector(IInventory player, IInventory collector){
 
-		this.collector = collector;
+		this.inventory = collector;
+		// バッテリー
+		addSlotToContainer(
+				new Slot(inventory, 0, 122, 8){
+				    public boolean isItemValid(ItemStack stack)
+				    {
+				        return (stack.getItem() instanceof ItemBattery);
+				    }
+			  });
 
-        this.addSlotToContainer(new Slot(collector, 0, 80,20){
+        this.addSlotToContainer(new Slot(inventory, 1, 80,20){
             public boolean isItemValid(ItemStack stack)
             {
-            	if (stack.isItemEnchantable() && stack.getItem().isDamageable()){
+            	if ((stack.isItemEnchantable() || stack.isItemEnchanted()) && stack.getItem().isDamageable()){
             		return true;
             	}
             	return false;
@@ -40,7 +54,7 @@ public class ContainerExpCollector extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return this.collector.isUsableByPlayer(playerIn);
+		return this.inventory.isUsableByPlayer(playerIn);
 	}
 
 	 @Override
@@ -54,14 +68,14 @@ public class ContainerExpCollector extends Container {
 		     ItemStack itemstack1 = slot.getStack();
 		     itemstack = itemstack1.copy();
 
-		     if (index < 1)
+		     if (index < 2)
 		     {
-		         if (!this.mergeItemStack(itemstack1, 1, 36, true))
+		         if (!this.mergeItemStack(itemstack1, 2, 37, true))
 		         {
 		             return ItemStack.EMPTY;
 		         }
 		     }
-		     else if (!this.mergeItemStack(itemstack1, 0, 1, false))
+		     else if (!this.mergeItemStack(itemstack1, 0, 2, false))
 		     {
 		         return ItemStack.EMPTY;
 		     }
@@ -86,8 +100,48 @@ public class ContainerExpCollector extends Container {
 		 return itemstack;
 	 }
 
+
+
+	 @Override
+	 public void addListener(IContainerListener listener)
+	 {
+		 super.addListener(listener);
+		 listener.sendAllWindowProperties(this, this.inventory);
+	 }
+
+	 @Override
+	 public void detectAndSendChanges()
+	 {
+	        super.detectAndSendChanges();
+
+	        TileEntityExpCollector cr = (TileEntityExpCollector)this.inventory;
+	        for (int i = 0; i < this.listeners.size(); ++i)
+	        {
+	            IContainerListener icontainerlistener = this.listeners.get(i);
+	            if (this.power != cr.getField(TileEntityExpCollector.FIELD_POWER))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityExpCollector.FIELD_POWER, cr.getField(TileEntityExpCollector.FIELD_POWER));
+	            }
+	            if (this.battery != cr.getField(TileEntityExpCollector.FIELD_BATTERY))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityExpCollector.FIELD_BATTERY, cr.getField(TileEntityExpCollector.FIELD_BATTERY));
+	            }
+
+	        }
+	        this.power = cr.getField(TileEntityExpCollector.FIELD_POWER);
+	        this.battery = cr.getField(TileEntityExpCollector.FIELD_BATTERY);
+	    }
+
+
+	    @SideOnly(Side.CLIENT)
+	    public void updateProgressBar(int id, int data)
+	    {
+	    	((TileEntityExpCollector)this.inventory).setField(id, data);
+	    }
+
+	    @Override
 	 public TileEntityExpCollector getTileEntity(){
-		 return (TileEntityExpCollector)this.collector;
+		 return (TileEntityExpCollector)this.inventory;
 	 }
 
 }

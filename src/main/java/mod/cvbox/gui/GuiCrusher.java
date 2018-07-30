@@ -2,9 +2,12 @@ package mod.cvbox.gui;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerCrusher;
 import mod.cvbox.network.MessageCrusher_ChangeSelect;
+import mod.cvbox.network.Message_BoxSwitchChange;
 import mod.cvbox.tileentity.TileEntityCrusher;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -22,13 +25,13 @@ public class GuiCrusher extends GuiContainer {
 	private static final ItemStack sand = new ItemStack(Blocks.SAND);
 	private static final ItemStack clay = new ItemStack(Items.CLAY_BALL);
 
-	private TileEntityCrusher crusher;
+	private TileEntityCrusher te;
 
 
 	public GuiCrusher(EntityPlayer player, IInventory tileEntity){
 		super(new ContainerCrusher(player.inventory, tileEntity));
 		ySize = 222;
-		crusher = (TileEntityCrusher)tileEntity;
+		te = (TileEntityCrusher)tileEntity;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class GuiCrusher extends GuiContainer {
        int i = (this.width - this.xSize) / 2;
        int j = (this.height - this.ySize) / 2;
 
-       int sel = crusher.getField(TileEntityCrusher.FIELD_SELECT);
+       int sel = te.getField(TileEntityCrusher.FIELD_SELECT);
        int sel2 = -1;
        // Dirt
        int l = mouseX - (i + 27);
@@ -71,7 +74,13 @@ public class GuiCrusher extends GuiContainer {
 
        if (sel2 >= 0){
     	   Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageCrusher_ChangeSelect(sel2));
-    	   crusher.setField(TileEntityCrusher.FIELD_SELECT, sel2);
+    	   te.setField(TileEntityCrusher.FIELD_SELECT, sel2);
+       }
+       l = mouseX - (i + 146);
+       i1 = mouseY - (j + 5);
+       if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+       {
+           Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCrusher.FIELD_POWER))));
        }
    }
 
@@ -83,7 +92,7 @@ public class GuiCrusher extends GuiContainer {
 
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        if (!crusher.inBuket()){
+        if (!te.inBuket()){
             // Dirt
             drawSlot(dirt, i+26, j+40);
         }else{
@@ -105,11 +114,11 @@ public class GuiCrusher extends GuiContainer {
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
 
-        int sel = crusher.getField(TileEntityCrusher.FIELD_SELECT);
-        int dirt = crusher.getField(TileEntityCrusher.FIELD_DIRT);
-        int grave = crusher.getField(TileEntityCrusher.FIELD_GRAVE);
-        int sand = crusher.getField(TileEntityCrusher.FIELD_SAND);
-        int count = crusher.getField(TileEntityCrusher.FIELD_COUNT);
+        int sel = te.getField(TileEntityCrusher.FIELD_SELECT);
+        int dirt = te.getField(TileEntityCrusher.FIELD_DIRT);
+        int grave = te.getField(TileEntityCrusher.FIELD_GRAVE);
+        int sand = te.getField(TileEntityCrusher.FIELD_SAND);
+        int count = te.getField(TileEntityCrusher.FIELD_COUNT);
         // DIRT
         if (sel != 1){
             this.drawTexturedModalRect(i+25, j+39, 176, 0, 18, 18);
@@ -130,17 +139,26 @@ public class GuiCrusher extends GuiContainer {
 
         // COUNTER
         this.drawTexturedModalRect(i+99, j+17, 176, 26, 2, getPlogresBar());
+
+        // COUNTER
+        this.drawTexturedModalRect(i+142, j+6, 176, 26, 2, getBatteryBaar());
+
+        if (!BooleanUtils.toBoolean(te.getField(TileEntityCrusher.FIELD_POWER))){
+        	this.drawTexturedModalRect(i+146, j+5, 176, 42, 26, 18);
+        }
 	}
 
 	protected int getDustBar(int id){
-		return (int)(20.0F * crusher.getField(id)/100.0F);
+		return (int)(20.0F * te.getField(id)/100.0F);
 	}
 
 	protected int getPlogresBar(){
-		return 16-(int)(16.0F * crusher.getField(TileEntityCrusher.FIELD_COUNT)/TileEntityCrusher.CRUSH_TIME);
+		return 16-(int)(16.0F * te.getField(TileEntityCrusher.FIELD_COUNT)/TileEntityCrusher.CRUSH_TIME);
 	}
 
-
+	protected int getBatteryBaar(){
+		return 16-(int)(16.0F * (te.getField(TileEntityCrusher.FIELD_BATTERYMAX) - te.getField(TileEntityCrusher.FIELD_BATTERY))/te.getField(TileEntityCrusher.FIELD_BATTERYMAX));
+	}
 
     protected void drawSlot(ItemStack stackin, int x, int y)
     {

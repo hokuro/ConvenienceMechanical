@@ -1,6 +1,12 @@
 package mod.cvbox.gui;
 
+import java.io.IOException;
+
+import org.apache.commons.lang3.BooleanUtils;
+
+import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerComplesser;
+import mod.cvbox.network.Message_BoxSwitchChange;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,19 +18,36 @@ public class GuiCompresser extends GuiContainer {
 	private static final ResourceLocation tex = new ResourceLocation("cvbox", "textures/gui/complesser.png");
 
 
-	private TileEntityCompresser crusher;
+	private TileEntityCompresser te;
 
 
 	public GuiCompresser(EntityPlayer player, IInventory tileEntity){
 		super(new ContainerComplesser(player.inventory, tileEntity));
-		crusher = (TileEntityCompresser)tileEntity;
+		te = (TileEntityCompresser)tileEntity;
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int i, int j){
 		fontRenderer.drawString("Complesser",8,4,4210752);
         fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
+
 	}
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+
+        int l = mouseX - (i + 146);
+        int i1 = mouseY - (j + 5);
+
+        if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+        {
+        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
+        }
+    }
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks){
@@ -51,13 +74,23 @@ public class GuiCompresser extends GuiContainer {
 
         // COUNTER
         this.drawTexturedModalRect(i+99, j+17, 176, 26, 2, getPlogresBar());
+        // COUNTER
+        this.drawTexturedModalRect(i+142, j+6, 176, 26, 2, getBatteryBaar());
+
+        if (!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))){
+        	this.drawTexturedModalRect(i+146, j+5, 176, 42, 26, 18);
+        }
 	}
 
 	protected int getDustBar(int id){
-		return (int)(20.0F * (float)crusher.getField(id)/100.0F);
+		return (int)(20.0F * (float)te.getField(id)/100.0F);
 	}
 
 	protected int getPlogresBar(){
-		return 16-(int)(16.0F * crusher.getField(TileEntityCompresser.FIELD_COUNT)/TileEntityCompresser.CRUSH_TIME);
+		return 16-(int)(16.0F * te.getField(TileEntityCompresser.FIELD_COUNT)/TileEntityCompresser.CRUSH_TIME);
+	}
+
+	protected int getBatteryBaar(){
+		return 16-(int)(16.0F * (te.getField(TileEntityCompresser.FIELD_BATTERYMAX) - te.getField(TileEntityCompresser.FIELD_BATTERY))/te.getField(TileEntityCompresser.FIELD_BATTERYMAX));
 	}
 }

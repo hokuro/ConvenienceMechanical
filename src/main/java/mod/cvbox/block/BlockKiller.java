@@ -30,7 +30,6 @@ public class BlockKiller extends BlockPowerMachineContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		TileEntityKiller ret = new TileEntityKiller();
-		ret.setField(TileEntityKiller.FIELD_POWER, meta);
 		return ret;
 	}
 

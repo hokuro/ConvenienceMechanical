@@ -31,7 +31,6 @@ public class BlockCrusher extends BlockPowerMachineContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		TileEntityCrusher ret = new TileEntityCrusher();
-		ret.setField(TileEntityCrusher.FIELD_POWER, meta);
 		return ret;
 	}
 

@@ -1,76 +1,65 @@
 package mod.cvbox.block;
 
-import org.apache.commons.lang3.BooleanUtils;
-
-import mod.cvbox.block.ab.BlockFacingMachine;
-import mod.cvbox.util.ModUtil;
-import net.minecraft.block.Block;
+import mod.cvbox.block.ab.BlockFacingContainer;
+import mod.cvbox.core.ModCommon;
+import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.tileentity.TileEntityDestroyer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockDestroyer extends BlockFacingMachine {
+public class BlockDestroyer extends BlockFacingContainer {
 
 	public BlockDestroyer() {
 		super(Material.GROUND);
-		this.setTickRandomly(false);
+		this.setCreativeTab(Mod_ConvenienceBox.tabFactory);
 	}
 
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-		// タイマーでは動かない
+
+	@Override
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return new TileEntityDestroyer();
 	}
 
 	@Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-		super.onBlockAdded(worldIn, pos, state);
-		if (!worldIn.isRemote){
-			if (BooleanUtils.toBoolean(this.getPower(state))){
-				EnumFacing front = this.getDirection(state);
-				this.DestroyBlock(worldIn,pos,front);
-			}
-		}
+        if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+            if (!worldIn.isRemote)
+            {
+            	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_DESTROY, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            	return true;
+            }
+        }
+        return false;
     }
 
-	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-    {
-		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-		if (!worldIn.isRemote){
-			try{
-				if (worldIn.getBlockState(pos).getValue(POWER)){
-					EnumFacing front = this.getDirection(state);
-					this.DestroyBlock(worldIn,pos,front);
-				}
-			}
-			catch(Exception ex){
 
-			}
-		}
+	@Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.MODEL;
     }
 
-	protected void DestroyBlock(World worldIn, BlockPos pos, EnumFacing front){
-		BlockPos pos2 = pos.offset(front);
-		IBlockState target = worldIn.getBlockState(pos2);
-		if (target.getMaterial() == Material.AIR ||
-				target.getMaterial() == Material.WATER ||
-				target.getMaterial() == Material.LAVA ||
-				target.getBlock() == Blocks.BEDROCK){return;}
-		ItemStack drop = ItemStack.EMPTY;
-		drop = target.getBlock().getItem(worldIn, pos2, target);
-		if (!drop.isEmpty()){
-			ModUtil.spawnItemStack(worldIn, pos2.getX(),pos2.getY(),pos2.getZ(), drop, RANDOM);
-			worldIn.destroyBlock(pos2, false);
-		}
-	}
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    {
+        TileEntity tileentity = worldIn.getTileEntity(pos);
 
-	@Override
-	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
-		// TODO 自動生成されたメソッド・スタブ
+        if (tileentity instanceof IInventory)
+        {
+            InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory)tileentity);
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
 
-	}
+
 }

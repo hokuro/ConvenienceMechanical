@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "icemaker",
+  "group": "liquidmaker",
   "pattern": [
     "IKI",
     "KKK",
@@ -18,7 +18,7 @@
     }
   },
   "result": {
-    "item": "cvbox:icemaker",
+    "item": "cvbox:liquidmaker",
     "count": 1
   }
 }

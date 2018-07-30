@@ -31,8 +31,7 @@ public class BlockCore{
 	private static final String NAME_WOODHARVESTER = "woodharvester";	// きこり機
 
 	// 工業系
-	public static final String NAME_ICEMAKER = "icemaker";			// 製氷機
-	public static final String NAME_LAVAMAKER = "lavamaker";		// 溶解機
+	public static final String NAME_LIQUIDMAKER = "liquidmaker";	// 製氷機
 	public static final String NAME_DESTROYER = "destroyer";		// 破砕機
 	public static final String NAME_SETTER = "setter";				// 配置機
 	public static final String NAME_KILLER = "kirer";				// 屠殺機
@@ -40,9 +39,7 @@ public class BlockCore{
 	public static final String NAME_CRUSSHER = "crussher";			// 粉砕機
 	public static final String NAME_COMPLESSER = "commpleser";		// 圧縮機
 	public static final String NAME_LIQUIDCSTRAWER = "straw";		// 給水機
-
-
-
+	public static final String NAME_VACUMER = "vacumer";			// 吸引機
 
 	public static Block block_expbank;
 	public static Block block_exenchanter;
@@ -53,8 +50,7 @@ public class BlockCore{
 	public static Block block_woodplanter;
 	public static Block block_woodharvester;
 
-	public static Block block_icemaker;
-	public static Block block_lavamaker;
+	public static Block block_liquidmaker;
 	public static Block block_destroyer;
 	public static Block block_setter;
 	public static Block block_killer;
@@ -62,6 +58,7 @@ public class BlockCore{
 	public static Block block_crusher;
 	public static Block block_compresser;
 	public static Block block_straw;
+	public static Block block_vacumer;
 
 	private static final String[] NAME_LIST = new String[]{
 			 NAME_EXPBANK,
@@ -73,8 +70,7 @@ public class BlockCore{
 			 NAME_WOODPLANTER,
 			 NAME_WOODHARVESTER,
 
-			 NAME_ICEMAKER,
-			 NAME_LAVAMAKER,
+			 NAME_LIQUIDMAKER,
 			 NAME_DESTROYER,
 			 NAME_SETTER,
 			 NAME_KILLER,
@@ -82,6 +78,7 @@ public class BlockCore{
 			 NAME_CRUSSHER,
 			 NAME_COMPLESSER,
 			 NAME_LIQUIDCSTRAWER,
+			 NAME_VACUMER,
 	};
 
 	private static Map<String,Block> blockMap;
@@ -131,14 +128,9 @@ public class BlockCore{
 				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
 
 		// 製氷機
-		block_icemaker = new BlockIceMaker()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER)
-				.setUnlocalizedName(NAME_ICEMAKER);
-
-		// 溶解機
-		block_lavamaker = new BlockLavaMaker()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER)
-				.setUnlocalizedName(NAME_LAVAMAKER);
+		block_liquidmaker = new BlockLiquidMaker()
+				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER)
+				.setUnlocalizedName(NAME_LIQUIDMAKER);
 
 		// 破砕機
 		block_destroyer = new BlockDestroyer()
@@ -173,8 +165,12 @@ public class BlockCore{
 		// ストロー
 		block_straw = new BlockStraw()
 				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER)
-				.setUnlocalizedName(NAME_LIQUIDCSTRAWER).setCreativeTab(Mod_ConvenienceBox.tabFarmer);
+				.setUnlocalizedName(NAME_LIQUIDCSTRAWER).setCreativeTab(Mod_ConvenienceBox.tabFactory);
 
+		// 吸引機
+		block_vacumer = new BlockVacumer()
+		.setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER)
+		.setUnlocalizedName(NAME_VACUMER).setCreativeTab(Mod_ConvenienceBox.tabFactory);
 
 
 		blockMap = new HashMap<String,Block>(){
@@ -187,8 +183,7 @@ public class BlockCore{
 			{put(NAME_WOODPLANTER,block_woodplanter);}
 			{put(NAME_WOODHARVESTER,block_woodharvester);}
 
-			{put(NAME_ICEMAKER,block_icemaker);}
-			{put(NAME_LAVAMAKER,block_lavamaker);}
+			{put(NAME_LIQUIDMAKER,block_liquidmaker);}
 			{put(NAME_DESTROYER,block_destroyer);}
 			{put(NAME_SETTER,block_setter);}
 			{put(NAME_KILLER,block_killer);}
@@ -196,6 +191,7 @@ public class BlockCore{
 			{put(NAME_CRUSSHER,block_crusher);}
 			{put(NAME_COMPLESSER,block_compresser);}
 			{put(NAME_LIQUIDCSTRAWER,block_straw);}
+			{put(NAME_VACUMER,block_vacumer);}
 		};
 
 		itemMap = new HashMap<String,Item>(){
@@ -208,8 +204,7 @@ public class BlockCore{
 			{put(NAME_WOODPLANTER, new ItemPlanter(block_woodplanter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER));}
 			{put(NAME_WOODHARVESTER, new ItemBlock(block_woodharvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER));}
 
-			{put(NAME_ICEMAKER, new ItemBlock(block_icemaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_ICEMAKER));}
-			{put(NAME_LAVAMAKER, new ItemBlock(block_lavamaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LAVAMAKER));}
+			{put(NAME_LIQUIDMAKER, new ItemBlock(block_liquidmaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER));}
 			{put(NAME_DESTROYER, new ItemBlock(block_destroyer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER));}
 			{put(NAME_SETTER, new ItemBlock(block_setter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER));}
 			{put(NAME_KILLER, new ItemBlock(block_killer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER));}
@@ -217,6 +212,7 @@ public class BlockCore{
 			{put(NAME_CRUSSHER, new ItemBlock(block_crusher).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
 			{put(NAME_COMPLESSER, new ItemBlock(block_compresser).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
 			{put(NAME_LIQUIDCSTRAWER, new ItemBlock(block_straw).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER));}
+			{put(NAME_VACUMER, new ItemBlock(block_vacumer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER));}
 		};
 
 
@@ -230,8 +226,7 @@ public class BlockCore{
 			{put(NAME_WOODPLANTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_WOODPLANTER)});}
 			{put(NAME_WOODHARVESTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_WOODHARVESTER)});}
 
-			{put(NAME_ICEMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_ICEMAKER)});}
-			{put(NAME_LAVAMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LAVAMAKER)});}
+			{put(NAME_LIQUIDMAKER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LIQUIDMAKER)});}
 			{put(NAME_DESTROYER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_DESTROYER)});}
 			{put(NAME_SETTER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_SETTER)});}
 			{put(NAME_KILLER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_KILLER)});}
@@ -239,6 +234,7 @@ public class BlockCore{
 			{put(NAME_CRUSSHER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_CRUSSHER)});}
 			{put(NAME_COMPLESSER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_COMPLESSER)});}
 			{put(NAME_LIQUIDCSTRAWER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_LIQUIDCSTRAWER)});}
+			{put(NAME_VACUMER, new ResourceLocation[]{new ResourceLocation(ModCommon.MOD_ID+":"+NAME_VACUMER)});}
 		};
 	}
 

@@ -1,5 +1,6 @@
 package mod.cvbox.inventory;
 
+import mod.cvbox.item.ItemBattery;
 import mod.cvbox.tileentity.TileEntityStraw;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -10,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ContainerStraw extends Container {
-	private IInventory straw;
+public class ContainerStraw extends Container implements IPowerSwitchContainer{
+	private IInventory inventory;
 
     private int tank_count;
     private int disp_x;
@@ -21,12 +22,23 @@ public class ContainerStraw extends Container {
     private int depth;
     private int width;
     private int kind;
+    private int power;
+    private int battery;
 
 	public ContainerStraw(IInventory player, IInventory st){
-		this.straw = st;
+		this.inventory = st;
+
+		// バッテリー
+		addSlotToContainer(
+				new Slot(inventory, 0, 23, 20){
+				    public boolean isItemValid(ItemStack stack)
+				    {
+				        return (stack.getItem() instanceof ItemBattery);
+				    }
+			  });
 
 		// インプット
-  	  addSlotToContainer(new Slot(st, 0, 23, 54){
+  	  addSlotToContainer(new Slot(st, 1, 23, 54){
 				    public boolean isItemValid(ItemStack stack)
 				    {
 				        return false;
@@ -49,7 +61,7 @@ public class ContainerStraw extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return this.straw.isUsableByPlayer(playerIn);
+		return this.inventory.isUsableByPlayer(playerIn);
 	}
 
 	 @Override
@@ -65,12 +77,12 @@ public class ContainerStraw extends Container {
 
 		     if (index < 1)
 		     {
-		         if (!this.mergeItemStack(itemstack1, 1, this.inventorySlots.size(), true))
+		         if (!this.mergeItemStack(itemstack1, 2, this.inventorySlots.size(), true))
 		         {
 		             return ItemStack.EMPTY;
 		         }
 		     }
-		     else if (!this.mergeItemStack(itemstack1, 0, this.inventorySlots.size(), false))
+		     else if (!this.mergeItemStack(itemstack1, 1, this.inventorySlots.size(), false))
 		     {
 		         return ItemStack.EMPTY;
 		     }
@@ -99,7 +111,7 @@ public class ContainerStraw extends Container {
 	 public void addListener(IContainerListener listener)
 	 {
 		 super.addListener(listener);
-		 listener.sendAllWindowProperties(this, this.straw);
+		 listener.sendAllWindowProperties(this, this.inventory);
 	 }
 
 	 @Override
@@ -107,7 +119,7 @@ public class ContainerStraw extends Container {
 	 {
 	        super.detectAndSendChanges();
 
-	        TileEntityStraw cr = (TileEntityStraw)this.straw;
+	        TileEntityStraw cr = (TileEntityStraw)this.inventory;
 	        for (int i = 0; i < this.listeners.size(); ++i)
 	        {
 	            IContainerListener icontainerlistener = this.listeners.get(i);
@@ -151,6 +163,14 @@ public class ContainerStraw extends Container {
 	            {
 	                icontainerlistener.sendWindowProperty(this, TileEntityStraw.FIELD_KIND, cr.getField(TileEntityStraw.FIELD_KIND));
 	            }
+	            if (this.power != cr.getField(TileEntityStraw.FIELD_POWER))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityStraw.FIELD_POWER, cr.getField(TileEntityStraw.FIELD_POWER));
+	            }
+	            if (this.battery != cr.getField(TileEntityStraw.FIELD_BATTERY))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityStraw.FIELD_BATTERY, cr.getField(TileEntityStraw.FIELD_BATTERY));
+	            }
 
 	        }
 
@@ -162,18 +182,20 @@ public class ContainerStraw extends Container {
 	        this.depth = cr.getField(TileEntityStraw.FIELD_DEPTH);
 	        this.width = cr.getField(TileEntityStraw.FIELD_WIDTH);
 	        this.kind = cr.getField(TileEntityStraw.FIELD_KIND);
+	        this.power = cr.getField(TileEntityStraw.FIELD_POWER);
+	        this.battery = cr.getField(TileEntityStraw.FIELD_BATTERY);
 	    }
 
 
 	    @SideOnly(Side.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
-	    	((TileEntityStraw)this.straw).setField(id, data);
+	    	((TileEntityStraw)this.inventory).setField(id, data);
 	    }
 
 
 	 public TileEntityStraw getTileEntity(){
-		 return (TileEntityStraw)this.straw;
+		 return (TileEntityStraw)this.inventory;
 	 }
 
 }

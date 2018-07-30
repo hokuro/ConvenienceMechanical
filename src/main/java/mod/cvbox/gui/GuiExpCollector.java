@@ -3,6 +3,7 @@ package mod.cvbox.gui;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.lwjgl.opengl.GL11;
 
 import mod.cvbox.core.ModCommon;
@@ -10,6 +11,8 @@ import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.core.PlayerExpBank;
 import mod.cvbox.inventory.ContainerExpCollector;
 import mod.cvbox.network.MessageEXPCollector_LevelUp;
+import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityExpCollector;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -36,13 +39,13 @@ public class GuiExpCollector  extends GuiContainer{
 	private int[] counterC_y = new int[this.place];
 
 	private EntityPlayer player;
-	private TileEntityExpCollector collector;
+	private TileEntityExpCollector te;
 
 	public GuiExpCollector(EntityPlayer player, IInventory collector){
 		super(new ContainerExpCollector(player.inventory, collector));
 		this.player = player;
-		this.collector = (TileEntityExpCollector)collector;
-		this.xSize = 220;
+		this.te = (TileEntityExpCollector)collector;
+		this.xSize = 219;
 	}
 
 	public static void getPacket(String name, int exp2, int exp3){
@@ -120,6 +123,22 @@ public class GuiExpCollector  extends GuiContainer{
 		this.buttonList.add(new GuiButton(22, x + 135, y + 40, 34, 20,
 				I18n.translateToLocal("gui.button_all")));
 	}
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+
+        int l = mouseX - (i + 145);
+        int i1 = mouseY - (j + 7);
+
+        if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+        {
+            Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
+        }
+    }
 
 	public void drawScreen(int p1, int p2, float p3){
 		super.drawScreen(p1, p2, p3);;
@@ -203,6 +222,13 @@ public class GuiExpCollector  extends GuiContainer{
 		drawTexturedModalRect(x + 56 + 48, y + 54, this.counterC_x[6], this.counterC_y[6], 8, 12);
 
 //		drawTexturedModalRect(x + 116, y + 42, 123, 205, 15, 12);
+
+        // COUNTER
+        this.drawTexturedModalRect(x+141, y+8, 220, 26, 2, getBatteryBaar());
+
+        if (!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))){
+        	this.drawTexturedModalRect(x+145, y+7, 220, 42, 26, 18);
+        }
 	}
 
 	public void actionPerformed(GuiButton guibutton) {
@@ -248,7 +274,7 @@ public class GuiExpCollector  extends GuiContainer{
 			return true;
 		case 21:
 			Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageEXPCollector_LevelUp(this.input_exp));
-			collector.setField(TileEntityExpCollector.FIELD_EXPVALUE, 0);
+			te.setField(TileEntityExpCollector.FIELD_EXPVALUE, 0);
 			this.input_exp = 0;
 			return true;
 		case 22:
@@ -298,7 +324,7 @@ public class GuiExpCollector  extends GuiContainer{
 	}
 
 	public void cal_counter() {
-		int exp_value = collector.getField(TileEntityExpCollector.FIELD_EXPVALUE);
+		int exp_value = te.getField(TileEntityExpCollector.FIELD_EXPVALUE);
 		this.counterA[0] = (exp_value / 1000000);
 		if (this.counterA[0] <= 0) {
 			this.counterA[0] = -1;
@@ -387,5 +413,9 @@ public class GuiExpCollector  extends GuiContainer{
 				this.counterC_y[i] = 197;
 			}
 		}
+	}
+
+	protected int getBatteryBaar(){
+		return 16-(int)(16.0F * (te.getField(TileEntityCompresser.FIELD_BATTERYMAX) - te.getField(TileEntityCompresser.FIELD_BATTERY))/te.getField(TileEntityCompresser.FIELD_BATTERYMAX));
 	}
 }

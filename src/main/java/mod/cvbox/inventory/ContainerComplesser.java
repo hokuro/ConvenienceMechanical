@@ -1,5 +1,6 @@
 package mod.cvbox.inventory;
 
+import mod.cvbox.item.ItemBattery;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,8 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ContainerComplesser extends Container {
-	private IInventory complesser;
+public class ContainerComplesser extends Container implements IPowerSwitchContainer{
+	private IInventory inventory;
 
     private int crush_count;
     private int powder_iron;
@@ -22,13 +23,24 @@ public class ContainerComplesser extends Container {
     private int powder_emerald;
     private int powder_redstone;
     private int powder_lapis;
+    private int power;
+    private int battery;
 
 	public ContainerComplesser(IInventory player, IInventory comp){
-		this.complesser = comp;
+		this.inventory = comp;
+
+		// バッテリー
+		addSlotToContainer(
+				new Slot(inventory, 0, 123, 6){
+				    public boolean isItemValid(ItemStack stack)
+				    {
+				        return (stack.getItem() instanceof ItemBattery);
+				    }
+			  });
 
 		// インプット
-  	  addSlotToContainer(
-			  new Slot(comp, 0, 80, 17){
+  	    addSlotToContainer(
+			  new Slot(inventory, 1, 80, 17){
 				    public boolean isItemValid(ItemStack stack)
 				    {
 				        return !(Block.getBlockFromItem(stack.getItem()) == Blocks.IRON_BLOCK ||
@@ -41,7 +53,7 @@ public class ContainerComplesser extends Container {
 			  });
   	    // コンテナ
   	    for (int col = 1;  col < 7; col++){
-	    	  addSlotToContainer(new Slot(comp, col, 13+27*(col-1), 40){
+	    	  addSlotToContainer(new Slot(inventory, col+1, 13+27*(col-1), 40){
 				    public boolean isItemValid(ItemStack stack)
 				    {
 				        return false;
@@ -65,7 +77,7 @@ public class ContainerComplesser extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return this.complesser.isUsableByPlayer(playerIn);
+		return this.inventory.isUsableByPlayer(playerIn);
 	}
 
 	 @Override
@@ -79,14 +91,14 @@ public class ContainerComplesser extends Container {
 		     ItemStack itemstack1 = slot.getStack();
 		     itemstack = itemstack1.copy();
 
-		     if (index < 7)
+		     if (index < 8)
 		     {
-		         if (!this.mergeItemStack(itemstack1, 7, this.inventorySlots.size(), true))
+		         if (!this.mergeItemStack(itemstack1, 8, this.inventorySlots.size(), true))
 		         {
 		             return ItemStack.EMPTY;
 		         }
 		     }
-		     else if (!this.mergeItemStack(itemstack1, 0, 1, false))
+		     else if (!this.mergeItemStack(itemstack1, 0, 2, false))
 		     {
 		         return ItemStack.EMPTY;
 		     }
@@ -115,7 +127,7 @@ public class ContainerComplesser extends Container {
 	 public void addListener(IContainerListener listener)
 	 {
 		 super.addListener(listener);
-		 listener.sendAllWindowProperties(this, this.complesser);
+		 listener.sendAllWindowProperties(this, this.inventory);
 	 }
 
 	 @Override
@@ -123,7 +135,7 @@ public class ContainerComplesser extends Container {
 	 {
 	        super.detectAndSendChanges();
 
-	        TileEntityCompresser cr = (TileEntityCompresser)this.complesser;
+	        TileEntityCompresser cr = (TileEntityCompresser)this.inventory;
 	        for (int i = 0; i < this.listeners.size(); ++i)
 	        {
 	            IContainerListener icontainerlistener = this.listeners.get(i);
@@ -156,6 +168,14 @@ public class ContainerComplesser extends Container {
 	            {
 	                icontainerlistener.sendWindowProperty(this, TileEntityCompresser.FIELD_COUNT, cr.getField(TileEntityCompresser.FIELD_COUNT));
 	            }
+	            if (this.power != cr.getField(TileEntityCompresser.FIELD_POWER))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityCompresser.FIELD_POWER, cr.getField(TileEntityCompresser.FIELD_POWER));
+	            }
+	            if (this.battery != cr.getField(TileEntityCompresser.FIELD_BATTERY))
+	            {
+	            	icontainerlistener.sendWindowProperty(this, TileEntityCompresser.FIELD_BATTERY, cr.getField(TileEntityCompresser.FIELD_BATTERY));
+	            }
 
 	        }
 
@@ -166,18 +186,20 @@ public class ContainerComplesser extends Container {
 	        this.powder_emerald = cr.getField(TileEntityCompresser.FIELD_EMERALD);
 	        this.powder_redstone = cr.getField(TileEntityCompresser.FIELD_REDSTONE);
 	        this.powder_lapis = cr.getField(TileEntityCompresser.FIELD_LAPIS);
+	        this.power = cr.getField(TileEntityCompresser.FIELD_POWER);
+	        this.battery = cr.getField(TileEntityCompresser.FIELD_BATTERY);
 	    }
 
 
 	    @SideOnly(Side.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
-	    	((TileEntityCompresser)this.complesser).setField(id, data);
+	    	((TileEntityCompresser)this.inventory).setField(id, data);
 	    }
 
-
+	    @Override
 	 public TileEntityCompresser getTileEntity(){
-		 return (TileEntityCompresser)this.complesser;
+		 return (TileEntityCompresser)this.inventory;
 	 }
 
 }
