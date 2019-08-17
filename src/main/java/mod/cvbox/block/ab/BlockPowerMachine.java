@@ -4,21 +4,20 @@ import java.util.Random;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.item.ItemCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
@@ -27,22 +26,21 @@ import net.minecraft.world.World;
 
 public abstract class BlockPowerMachine extends Block implements IPowerMachine{
 
-	protected static final PropertyBool POWER = PropertyBool.create("power");
+	protected static final BooleanProperty POWER = BooleanProperty.create("power");
 	protected int nextUpdateTick = 200;
 	protected int redstonePower = 0;
 
 	public BlockPowerMachine(){
-		this(Material.GROUND);
+		this(Block.Properties.create(Material.GROUND));
 	}
 
-	public BlockPowerMachine(Material materialIn) {
-		super(materialIn);
+	public BlockPowerMachine(Block.Properties materialIn) {
+		super(materialIn
+				.needsRandomTick()
+				.sound(SoundType.METAL)
+				);
 
-		this.setDefaultState(this.blockState.getBaseState().withProperty(this.getPowerProperty(), false));
-		this.setTickRandomly(true);
-		this.setCreativeTab(Mod_ConvenienceBox.tabFactory);
-		this.setHardness(0.5F);
-		this.setSoundType(SoundType.METAL);
+		this.setDefaultState(this.stateContainer.getBaseState().with(this.getPowerProperty(), false));
 	}
 
 	public int getRedPower(){
@@ -57,20 +55,20 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
 		this.nextUpdateTick = tick;
 	}
 
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick, 1);
-	}
+//	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
+//		worldIn.scheduleBlockUpdate(pos, this, this.nextUpdateTick, 1);
+//	}
 
 	@Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
 		boolean flag =(this.redstonePower = getRedPower(worldIn, pos))>0;
 		setPower(worldIn,pos,state,flag);
-		if (!worldIn.isRemote){
-			if (flag){
-				setscheduleBlockUpdate(worldIn,pos);
-			}
-		}
+//		if (!worldIn.isRemote){
+//			if (flag){
+//				setscheduleBlockUpdate(worldIn,pos);
+//			}
+//		}
     }
 
 	@Override
@@ -79,25 +77,19 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
 		BlockPos pos2 = pos.add(0, 1, 0);
 		boolean flag =(this.redstonePower = getRedPower(worldIn, pos))>0;
 		setPower(worldIn,pos,state,flag);
-		if (!worldIn.isRemote){
-			if (flag){
-				setscheduleBlockUpdate(worldIn,pos);
-			}
-		}
+//		if (!worldIn.isRemote){
+//			if (flag){
+//				setscheduleBlockUpdate(worldIn,pos);
+//			}
+//		}
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.withPower(this.getDefaultState(), BooleanUtils.toBoolean(meta));
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
     	ItemStack main = playerIn.getHeldItemMainhand();
     	if (main.getItem() == ItemCore.item_spana){
-        	worldIn.setBlockToAir(pos);
+        	worldIn.setBlockState(pos,Blocks.AIR.getDefaultState());
         	if (!worldIn.isRemote){
         		InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this,1));
         	}
@@ -107,7 +99,7 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
     }
 
 	@Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    public void tick(IBlockState state, World worldIn, BlockPos pos, Random rand)
     {
 		if (worldIn.getBlockState(pos).getBlock() == this){
 			onWork(worldIn, state, pos);
@@ -115,13 +107,13 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
     }
 
 	@Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    public Item getItemDropped(IBlockState state, World worldIn, BlockPos pos, int fortune)
     {
         return ItemCore.item_machinematter;
     }
 
 	@Override
-    public int quantityDropped(Random random)
+    public int quantityDropped(IBlockState state, Random random)
     {
         return random.nextInt(3) + 1;
     }
@@ -132,19 +124,13 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
         return false;
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        return this.getPower(state);
-    }
+	@Override
+	protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+	   builder.add(POWER);
+	}
 
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {POWER});
-    }
 
-    protected PropertyBool getPowerProperty()
+    protected BooleanProperty getPowerProperty()
     {
         return POWER;
     }
@@ -155,18 +141,18 @@ public abstract class BlockPowerMachine extends Block implements IPowerMachine{
 
     public int getPower(IBlockState state)
     {
-        return BooleanUtils.toInteger(state.getValue(this.getPowerProperty()));
+        return BooleanUtils.toInteger(state.get(this.getPowerProperty()));
     }
 
     public IBlockState withPower(IBlockState staet,boolean power)
     {
-        return staet.withProperty(this.getPowerProperty(), power);
+        return staet.with(this.getPowerProperty(), power);
     }
 
     protected int getRedPower(World worldIn, BlockPos pos){
 		BlockPos pos2 = pos.add(0, 1, 0);
-		int power1 = worldIn.isBlockIndirectlyGettingPowered(pos);
-		int power2 = worldIn.isBlockIndirectlyGettingPowered(pos2);
+		int power1 = worldIn.getRedstonePowerFromNeighbors(pos);
+		int power2 = worldIn.getRedstonePowerFromNeighbors(pos2);
 		return Math.max(power1, power2);
     }
 }

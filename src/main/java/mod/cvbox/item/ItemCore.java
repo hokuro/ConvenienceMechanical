@@ -3,14 +3,11 @@ package mod.cvbox.item;
 import java.util.HashMap;
 import java.util.Map;
 
-import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.item.ItemTier;
+import net.minecraftforge.event.RegistryEvent;
 
 public class ItemCore {
 	public static final String NAME_WOODSICKLE = "sickle_wood";
@@ -44,41 +41,23 @@ public class ItemCore {
 			NAME_HUGEBATTERY,
 	};
 
-	public static Item item_sickle_wood;
-	public static Item item_sickle_stone;
-	public static Item item_sickle_iron;
-	public static Item item_sickle_gold;
-	public static Item item_sickle_diamond;
-	public static Item item_machinematter;
-	public static Item item_waterball;
-	public static Item item_lavaball;
-	public static Item item_spana;
-	public static Item item_battery;
-	public static Item item_exbattery;
-	public static Item largebattery;
-	public static Item hugebattery;
+	public static Item item_sickle_wood = new ItemSickle(ItemTier.WOOD,6,-3.2F, new Item.Properties()).setRegistryName(NAME_WOODSICKLE);
+	public static Item item_sickle_stone = new ItemSickle(ItemTier.STONE,8,-3.2F,new Item.Properties()).setRegistryName(NAME_STONESICKLE);
+	public static Item item_sickle_iron = new ItemSickle(ItemTier.IRON,8,-3.1F,new Item.Properties()).setRegistryName(NAME_IRONSICKLE);
+	public static Item item_sickle_gold = new ItemSickle(ItemTier.GOLD,8,-3.0F,new Item.Properties()).setRegistryName(NAME_GOLDSICKLE);
+	public static Item item_sickle_diamond = new ItemSickle(ItemTier.DIAMOND,6,-3.0F,new Item.Properties()).setRegistryName(NAME_DIAMONDSICKLE);;
+	public static Item item_machinematter = new Item(new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_MACHINEMATTER);
+	public static Item item_waterball = new ItemLiquidBall(Blocks.WATER).setRegistryName(NAME_WATERBALL);
+	public static Item item_lavaball =  new ItemLiquidBall(Blocks.LAVA).setRegistryName(NAME_LAVABALL);
+	public static Item item_spana = new ItemSpana().setRegistryName(NAME_SPANA);
+	public static Item item_battery = new ItemBattery(8400).setRegistryName(NAME_BATTERY);
+	public static Item item_exbattery = new ItemBattery(36000).setRegistryName(NAME_EXBATTERY);
+	public static Item largebattery = new ItemBattery(438000).setRegistryName(NAME_LARGEBATTERY);
+	public static Item hugebattery = new ItemBattery(4380000).setRegistryName(NAME_HUGEBATTERY);
 
-	private static Map<String,Item> itemMap;
-	private static Map<String,ModelResourceLocation[]> resourceMap;
-
+	private static Map<String,Item> itemMap = null;
 	private static void init(){
-		item_sickle_wood = new ItemSickle(Item.ToolMaterial.WOOD).setRegistryName(NAME_WOODSICKLE).setUnlocalizedName(NAME_WOODSICKLE);
-		item_sickle_stone = new ItemSickle(Item.ToolMaterial.STONE).setRegistryName(NAME_STONESICKLE).setUnlocalizedName(NAME_STONESICKLE);
-		item_sickle_iron = new ItemSickle(Item.ToolMaterial.IRON).setRegistryName(NAME_IRONSICKLE).setUnlocalizedName(NAME_IRONSICKLE);
-		item_sickle_gold = new ItemSickle(Item.ToolMaterial.GOLD).setRegistryName(NAME_GOLDSICKLE).setUnlocalizedName(NAME_GOLDSICKLE);
-		item_sickle_diamond = new ItemSickle(Item.ToolMaterial.DIAMOND).setRegistryName(NAME_DIAMONDSICKLE).setUnlocalizedName(NAME_DIAMONDSICKLE);
-		item_machinematter = new Item().setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_MACHINEMATTER).setUnlocalizedName(NAME_MACHINEMATTER);
-		item_waterball = new ItemLiquidBall(Blocks.FLOWING_WATER).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_WATERBALL).setUnlocalizedName(NAME_WATERBALL);
-		item_lavaball =  new ItemLiquidBall(Blocks.FLOWING_LAVA).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_LAVABALL).setUnlocalizedName(NAME_LAVABALL);
-		item_spana = new ItemSpana()
-				.setMaxDamage(120)
-				.setMaxStackSize(1)
-				.setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_SPANA).setUnlocalizedName(NAME_SPANA);
-		item_battery = new ItemBattery(8400).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_BATTERY).setUnlocalizedName(NAME_BATTERY);
-		item_exbattery = new ItemBattery(36000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_EXBATTERY).setUnlocalizedName(NAME_EXBATTERY);
-		largebattery = new ItemBattery(438000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_LARGEBATTERY).setUnlocalizedName(NAME_LARGEBATTERY);
-		hugebattery = new ItemBattery(4380000).setCreativeTab(Mod_ConvenienceBox.tabFactory).setRegistryName(NAME_HUGEBATTERY).setUnlocalizedName(NAME_HUGEBATTERY);
-
+		if (itemMap != null){return;}
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_WOODSICKLE,item_sickle_wood);}
 			{put(NAME_STONESICKLE,item_sickle_stone);}
@@ -94,40 +73,12 @@ public class ItemCore {
 			{put(NAME_LARGEBATTERY,largebattery);}
 			{put(NAME_HUGEBATTERY,hugebattery);}
 		};
-
-		resourceMap = new HashMap<String,ModelResourceLocation[]>(){
-			{put(NAME_WOODSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WOODSICKLE, "inventory")});}
-			{put(NAME_STONESICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_STONESICKLE, "inventory")});}
-			{put(NAME_IRONSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_IRONSICKLE, "inventory")});}
-			{put(NAME_GOLDSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_GOLDSICKLE, "inventory")});}
-			{put(NAME_DIAMONDSICKLE,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_DIAMONDSICKLE, "inventory")});}
-			{put(NAME_MACHINEMATTER,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_MACHINEMATTER, "inventory")});}
-			{put(NAME_WATERBALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_WATERBALL, "inventory")});}
-			{put(NAME_LAVABALL,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LAVABALL, "inventory")});}
-			{put(NAME_SPANA,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_SPANA, "inventory")});}
-			{put(NAME_BATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_BATTERY, "inventory")});}
-			{put(NAME_EXBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_EXBATTERY, "inventory")});}
-			{put(NAME_LARGEBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_LARGEBATTERY, "inventory")});}
-			{put(NAME_HUGEBATTERY,new ModelResourceLocation[]{new ModelResourceLocation(ModCommon.MOD_ID + ":" + NAME_HUGEBATTERY, "inventory")});}
-		};
 	}
 
-	public static void register(FMLPreInitializationEvent event) {
+	public static void register(final RegistryEvent.Register<Item> event) {
 		init();
 		for (String key : NAME_LIST){
-			ForgeRegistries.ITEMS.register(itemMap.get(key));
+			event.getRegistry().register(itemMap.get(key));
 		}
-
-        //テクスチャ・モデル指定JSONファイル名の登録。
-        if (event.getSide().isClient()) {
-        	for (String key : NAME_LIST){
-        		//1IDで複数モデルを登録するなら、上のメソッドで登録した登録名を指定する。
-        		int cnt = 0;
-        		for (ModelResourceLocation rc : resourceMap.get(key)){
-        			ModelLoader.setCustomModelResourceLocation(itemMap.get(key), cnt, rc);
-        			cnt++;
-        		}
-        	}
-        }
 	}
 }

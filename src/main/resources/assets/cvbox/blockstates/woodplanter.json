@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:woodplanter" }
+        "":{ "model":"cvbox:block/woodplanter" }
     }
 }

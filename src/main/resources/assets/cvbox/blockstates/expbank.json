@@ -1,8 +1,8 @@
 {
     "variants": {
-        "facing=north": {"model": "cvbox:expbank"},
-        "facing=east": {"model": "cvbox:expbank","y":90},
-        "facing=south": {"model": "cvbox:expbank", "y":180},
-        "facing=west": {"model": "cvbox:expbank", "y":-90}
+        "facing=north": {"model": "cvbox:block/expbank"},
+        "facing=east": {"model": "cvbox:block/expbank","y":90},
+        "facing=south": {"model": "cvbox:block/expbank", "y":180},
+        "facing=west": {"model": "cvbox:block/expbank", "y":-90}
     }
 }

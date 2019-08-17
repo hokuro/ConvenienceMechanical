@@ -1,33 +1,38 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
-import mod.cvbox.core.Mod_ConvenienceBox;
-import mod.cvbox.inventory.ContainerExEnchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import java.util.function.Supplier;
 
-public class MessageExEnchant_ClearParameter implements IMessage, IMessageHandler<MessageExEnchant_ClearParameter, IMessage> {
+import mod.cvbox.inventory.ContainerExEnchantment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public class MessageExEnchant_ClearParameter {
 
 	public MessageExEnchant_ClearParameter(){}
 
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
+	public static void encode(MessageExEnchant_ClearParameter pkt, PacketBuffer buf)
+	{
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
+	public static MessageExEnchant_ClearParameter decode(PacketBuffer buf)
+	{
+		return new MessageExEnchant_ClearParameter();
 	}
 
-	@Override
-	public IMessage onMessage(MessageExEnchant_ClearParameter message, MessageContext ctx){
-        EntityPlayer player = Mod_ConvenienceBox.proxy.getEntityPlayerInstance();
-		if (player != null){
-			ContainerExEnchantment.updateEnchantment(-1,0,player);
+	public static class Handler
+	{
+		public static void handle(final MessageExEnchant_ClearParameter pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = Minecraft.getInstance().player;
+				if (player != null){
+					ContainerExEnchantment.updateEnchantment(-1,0,player);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
-
 }

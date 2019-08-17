@@ -1,13 +1,9 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerDestroyer;
-import mod.cvbox.network.Message_BoxSwitchChange;
-import mod.cvbox.network.Message_UpdateDestroy;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityDestroyer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -35,27 +31,60 @@ public class GuiDestroyer extends GuiContainer {
 		super.initGui();
     	int x=(this.width - this.xSize) / 2;
     	int y=(this.height - this.ySize) / 2;
-    	this.buttonList.clear();
-    	this.buttonList.add(new GuiButton(101,x+7,y+25,40,20,"mode"));
+    	this.buttons.clear();
 
-    	inc1msec =new GuiButton(102,x+148,y+25,20,20,"+");
-    	this.buttonList.add(inc1msec);
+    	GuiButton b1 = new GuiButton(101,x+7,y+25,40,20,"mode"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(b1);
 
-    	dec1msec =new GuiButton(103,x+91,y+25,20,20,"-");
-    	this.buttonList.add(dec1msec);
+    	inc1msec =new GuiButton(102,x+148,y+25,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(inc1msec);
 
-    	inc1sec =new GuiButton(104,x+148,y+46,20,20,"+");
-    	this.buttonList.add(inc1sec);
+    	dec1msec =new GuiButton(103,x+91,y+25,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(dec1msec);
 
-    	dec1sec =new GuiButton(105,x+91,y+46,20,20,"-");
-    	this.buttonList.add(dec1sec);
+    	inc1sec =new GuiButton(104,x+148,y+46,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(inc1sec);
 
-    	reset = new GuiButton(106,x+49,y+25,40,20,"reset");
-    	this.buttonList.add(reset);
+    	dec1sec =new GuiButton(105,x+91,y+46,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(dec1sec);
+
+    	reset = new GuiButton(106,x+49,y+25,40,20,"reset"){
+    		@Override
+    		public void onClick(double mouseX, double MouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	this.buttons.add(reset);
+
+    	this.children.addAll(buttons);
 	}
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
+    protected void actionPerformed(GuiButton button){
     	boolean send = false;
     	int size;
     	int mode = te.getField(TileEntityDestroyer.FIELD_MODE);
@@ -85,7 +114,8 @@ public class GuiDestroyer extends GuiContainer {
     		break;
 	    }
     	if (time < 0.1F){time = 0.1F;}
-		Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_UpdateDestroy(mode,time));
+			MessageHandler.SendMessage_UpdateDestroy(mode,time);
+			//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_UpdateDestroy(mode,time));
     }
 
 	@Override
@@ -100,32 +130,34 @@ public class GuiDestroyer extends GuiContainer {
 	}
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
 
-        int l = mouseX - (i + 146);
-        int i1 = mouseY - (j + 5);
+        double l = mouseX - (i + 146);
+        double i1 = mouseY - (j + 5);
 
         if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
         {
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityDestroyer.FIELD_POWER))));
+        	MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityDestroyer.FIELD_POWER)));
+        	//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityDestroyer.FIELD_POWER))));
         }
+        return true;
     }
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+	public void render(int mouseX, int mouseY, float partialTicks){
         this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y){
 		// 背景
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(tex);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;

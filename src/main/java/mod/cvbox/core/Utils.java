@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mod.cvbox.config.ConfigValue;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -21,15 +22,15 @@ public class Utils {
 				if(compatEnchList.containsKey(id)){
 					int value = enchList2.get(id);
 					int origVal = compatEnchList.get(id);
-					int limit = ConfigValue.ANVIL.ENCHANT_LIMITS.get(id);
+					int limit = ConfigValue.anvil.ENCHANT_LIMITS.get(id);
 					if (origVal == value && origVal < limit){
 						compatEnchList.put(id, value+1);
-						repairCost += ConfigValue.ANVIL.enchantCombineRepairCost * value;
-						repairAmount += ConfigValue.ANVIL.enchantCombineRepairBonus * value;
+						repairCost += ConfigValue.anvil.EnchantCombineRepairCost() * value;
+						repairAmount += ConfigValue.anvil.EnchantCombineRepairBonus() * value;
 					}else if(origVal < value){
 						compatEnchList.put(id, value);
-						repairCost += ConfigValue.ANVIL.enchantTransferRepairCost * value;
-						repairAmount += ConfigValue.ANVIL.enchantTransferRepairBonus * value;
+						repairCost += ConfigValue.anvil.EnchantTransferRepairCost() * value;
+						repairAmount += ConfigValue.anvil.EnchantTransferRepairBonus() * value;
 					}
 				}else if(item.getItem() == Items.ENCHANTED_BOOK || id.canApply(item)){
 					//}else if(item.getItem() == Items.enchanted_book || Enchantment.enchantmentsBookList[id].canApply(item)){
@@ -43,8 +44,8 @@ public class Utils {
 					}
 					if(!found){
 						compatEnchList.put(id, entry.getValue());
-						repairCost += ConfigValue.ANVIL.enchantTransferRepairCost * entry.getValue();
-						repairAmount += ConfigValue.ANVIL.enchantTransferRepairBonus * entry.getValue();
+						repairCost += ConfigValue.anvil.EnchantTransferRepairCost() * entry.getValue();
+						repairAmount += ConfigValue.anvil.EnchantTransferRepairBonus() * entry.getValue();
 					}
 				}else{
 					inCompatEnchList.put(id, entry.getValue());
@@ -55,7 +56,7 @@ public class Utils {
 	}
 
 	public static String getEnchName(Enchantment ench){
-		return net.minecraft.util.text.translation.I18n.translateToLocal(ench.getName());
+		return I18n.format(ench.getName());
 	}
 
 //	public static boolean contains(String[] array, String target){

@@ -2,9 +2,11 @@ package mod.cvbox.tileentity;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.item.ItemCore;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFlowingFluid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -17,13 +19,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityStraw extends TileEntity  implements IInventory, ITickable, ISidedInventory,IPowerSwitchEntity{
 	public static final String NAME = "straw";
@@ -66,7 +70,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
     private int kind;
 
 	public TileEntityStraw(){
-		super();
+		super(EntityCore.Straw);
 		straw_count = 0;
 		areaSize = 0;
 
@@ -90,7 +94,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -123,7 +127,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -132,13 +136,13 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 
@@ -153,13 +157,11 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
     	if (
     			// lava
     			(liquid == ItemCore.item_lavaball &&
-    			((state.getBlock() == Blocks.FLOWING_LAVA && state.getBlock().getMetaFromState(state) == 0) ||
-    			(state.getBlock() == Blocks.LAVA && state.getBlock().getMetaFromState(state) == 0))) ||
+    			(state.getBlock() == Blocks.LAVA && state.get(BlockFlowingFluid.LEVEL) == 0)) ||
 
     			// water
-    			((liquid == ItemCore.item_waterball &&
-    			((state.getBlock() == Blocks.FLOWING_WATER && state.getBlock().getMetaFromState(state) == 0) ||
-    			(state.getBlock() == Blocks.WATER && state.getBlock().getMetaFromState(state) == 0))))){
+    			(liquid == ItemCore.item_waterball &&
+    			(state.getBlock() == Blocks.WATER && state.get(BlockFlowingFluid.LEVEL) == 0))){
     		if (stacks.get(1).isEmpty()){
     			stacks.set(1, new ItemStack(liquid,1));
     		}else if (stacks.get(1).getCount() < 64){
@@ -167,7 +169,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
     		}else{
     			tank++;
     		}
-    		world.setBlockToAir(strawpos);
+    		world.setBlockState(strawpos,Blocks.AIR.getDefaultState());
     		updateY = false;
     	}else{
     		if (!updateY){
@@ -230,64 +232,65 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 //    }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
-		tank = compound.getInteger("tank");
-		straw_count = compound.getInteger("count");
-		areaSize = compound.getInteger("areaSize");
+		super.read(compound);
+		tank = compound.getInt("tank");
+		straw_count = compound.getInt("count");
+		areaSize = compound.getInt("areaSize");
 
 
 		power = compound.getBoolean("power");
-		power_count=compound.getInteger("power_count");
+		power_count=compound.getInt("power_count");
 		if (areaSize != 0){
 			makeArray(areaSize);
 		}
-		index_x = compound.getInteger("idx_x");
-		index_z = compound.getInteger("idx_z");
-		next_y = compound.getInteger("next_y");
+		index_x = compound.getInt("idx_x");
+		index_z = compound.getInt("idx_z");
+		next_y = compound.getInt("next_y");
 		updateY = compound.getBoolean("updateY");
-		depth = compound.getInteger("depth");
-		width = compound.getInteger("width");
-		kind = compound.getInteger("kind");
+		depth = compound.getInt("depth");
+		width = compound.getInt("width");
+		kind = compound.getInt("kind");
 		if (kind == 0){
 			liquid = ItemCore.item_lavaball;
 		}else if (kind == 1){
 			liquid = ItemCore.item_waterball;
 		}
 
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
-
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
-		compound.setInteger("tank",  tank);
-		compound.setInteger("count", straw_count);
+		compound = super.write(compound);
+		compound.setInt("tank",  tank);
+		compound.setInt("count", straw_count);
 
-		compound.setInteger("areaSize",areaSize);
-		compound.setInteger("idx_x",index_x);
-		compound.setInteger("idx_z",index_z);
-		compound.setInteger("next_y",next_y);
+		compound.setInt("areaSize",areaSize);
+		compound.setInt("idx_x",index_x);
+		compound.setInt("idx_z",index_z);
+		compound.setInt("next_y",next_y);
 		compound.setBoolean("updateY",updateY);
 
-		 compound.setInteger("depth",depth);
-		 compound.setInteger("width",width);
-		 compound.setInteger("kind",kind);
+		 compound.setInt("depth",depth);
+		 compound.setInt("width",width);
+		 compound.setInt("kind",kind);
 
 			compound.setBoolean("power", power);
-			compound.setInteger("power_count",power_count);
+			compound.setInt("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -295,8 +298,8 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
-				itemsTagList.appendTag(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
+				itemsTagList.add(itemTagCompound);
 			}
 		}
 		compound.setTag("Items",itemsTagList);
@@ -308,26 +311,26 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.straw";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.straw");
 	}
 
 	@Override
@@ -453,7 +456,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 			ret = BooleanUtils.toInteger(power);
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -493,7 +496,7 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 			power = BooleanUtils.toBoolean(value);
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -516,9 +519,9 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 		boolean ret = false;
 		if (tank < MAX_TANK){
 			IBlockState state =this.world.getBlockState(pos.offset(EnumFacing.DOWN));
-			if ((state.getBlock() == Blocks.LAVA || state.getBlock() == Blocks.FLOWING_LAVA) && (changeLiquid(Blocks.LAVA) == ItemCore.item_lavaball)){
+			if ((state.getBlock() == Blocks.LAVA || state.getBlock() == Blocks.LAVA) && (changeLiquid(Blocks.LAVA) == ItemCore.item_lavaball)){
 				ret = true;
-			}else if ((state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.FLOWING_WATER) && (changeLiquid(Blocks.WATER) == ItemCore.item_waterball)){
+			}else if ((state.getBlock() == Blocks.WATER || state.getBlock() == Blocks.WATER) && (changeLiquid(Blocks.WATER) == ItemCore.item_waterball)){
 				ret = true;
 			}
 		}
@@ -552,5 +555,23 @@ public class TileEntityStraw extends TileEntity  implements IInventory, ITickabl
 
 	public ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

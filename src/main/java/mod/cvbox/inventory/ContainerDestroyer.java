@@ -8,8 +8,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerDestroyer extends Container implements IPowerSwitchContainer{
 	private IInventory inventory;
@@ -24,7 +24,7 @@ public class ContainerDestroyer extends Container implements IPowerSwitchContain
 		this.inventory = comp;
 
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 123, 6){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -36,13 +36,13 @@ public class ContainerDestroyer extends Container implements IPowerSwitchContain
         {
             for (int i1 = 0; i1 < 9; ++i1)
             {
-                this.addSlotToContainer(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l)
         {
-            this.addSlotToContainer(new Slot(player, l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player, l, 8 + l * 18, 142));
         }
 	}
 
@@ -141,7 +141,7 @@ public class ContainerDestroyer extends Container implements IPowerSwitchContain
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityDestroyer)this.inventory).setField(id, data);

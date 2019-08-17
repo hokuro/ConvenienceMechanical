@@ -1,14 +1,13 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
-import mod.cvbox.block.BlockExpBank;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import java.util.function.Supplier;
 
-public class MessageExpBank_ExecExperience implements IMessage, IMessageHandler<MessageExpBank_ExecExperience, IMessage> {
+import mod.cvbox.block.BlockExpBank;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public class MessageExpBank_ExecExperience {
 	private int mode;
 	private int x;
 	private int y;
@@ -25,35 +24,36 @@ public class MessageExpBank_ExecExperience implements IMessage, IMessageHandler<
 		this.exp = exp;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		// TODO 自動生成されたメソッド・スタブ
-		mode = buf.readInt();
-		x = buf.readInt();
-		y = buf.readInt();
-		z = buf.readInt();
-		exp = buf.readInt();
+	public static void encode(MessageExpBank_ExecExperience pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.mode);
+		buf.writeInt(pkt.x);
+		buf.writeInt(pkt.y);
+		buf.writeInt(pkt.z);
+		buf.writeInt(pkt.exp);
+
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		// TODO 自動生成されたメソッド・スタブ
-		buf.writeInt(mode);
-		buf.writeInt(x);
-		buf.writeInt(y);
-		buf.writeInt(z);
-		buf.writeInt(exp);
+	public static MessageExpBank_ExecExperience decode(PacketBuffer buf)
+	{
+		return new MessageExpBank_ExecExperience(buf.readInt(),buf.readInt(),
+				buf.readInt(),buf.readInt(),
+				buf.readInt());
 	}
 
-	@Override
-	public IMessage onMessage(MessageExpBank_ExecExperience message, MessageContext ctx){
-		EntityPlayer entityPlayer = ctx.getServerHandler().player;
-
-		BlockPos pos = new BlockPos(message.x, message.y, message.z);
-		if (entityPlayer != null){
-			BlockExpBank.update_exp(ctx.getServerHandler().player.world,  pos,  message.mode, message.exp, entityPlayer);
+	public static class Handler
+	{
+		public static void handle(final MessageExpBank_ExecExperience pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				BlockPos pos = new BlockPos(pkt.x, pkt.y, pkt.z);
+				if (ctx.get().getSender() != null){
+					BlockExpBank.update_exp(ctx.get().getSender().world,  pos,  pkt.mode, pkt.exp, ctx.get().getSender());
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
+
 
 }

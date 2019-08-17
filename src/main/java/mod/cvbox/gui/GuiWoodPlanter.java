@@ -4,11 +4,8 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerWoodPlanter;
-import mod.cvbox.network.MessageFarmer_UpdateDelivery;
-import mod.cvbox.network.Message_BoxSwitchChange;
-import mod.cvbox.network.Message_ResetWork;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.client.gui.GuiButton;
@@ -38,8 +35,16 @@ public class GuiWoodPlanter extends GuiContainer {
 		super.initGui();
     	int x=(this.width - this.xSize) / 2;
     	int y=(this.height - this.ySize) / 2;
-    	this.buttonList.clear();
-    	this.buttonList.add(new GuiButton(101,x+7,y+14,40,20,"reset"));
+    	this.buttons.clear();
+    	GuiButton b1 = new GuiButton(101,x+7,y+14,40,20,"reset"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			MessageHandler.SendMessage_RestWork();
+        		//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_ResetWork());
+    		}
+    	};
+    	this.buttons.add(b1);
+    	this.children.addAll(buttons);
 	}
 
     protected void actionPerformed(GuiButton button) throws IOException
@@ -48,7 +53,7 @@ public class GuiWoodPlanter extends GuiContainer {
     	int size;
     	switch(button.id){
     	case 101:
-    		Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_ResetWork());
+    		//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_ResetWork());
 	    break;
 	    }
     }
@@ -64,60 +69,65 @@ public class GuiWoodPlanter extends GuiContainer {
 		fontRenderer.drawString(nextPos, 53, 20, 16777215);
 	}
 
-   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-   {
-       super.mouseClicked(mouseX, mouseY, mouseButton);
-       int i = (this.width - this.xSize) / 2;
-       int j = (this.height - this.ySize) / 2;
-
-       int l = mouseX - (i + 138);
-       int i1 = mouseY - (j + 126);
-
-       if (l >= 0 && i1 >= 0 && l < 32 && 12 < 19)
-       {
-    	   boolean deliver = te.canDeliver();
-    	   Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageFarmer_UpdateDelivery(te.getPos(), !deliver));
-    	   te.setField(1, BooleanUtils.toInteger(!deliver));
-       }
-
-       l = mouseX - (i + 146);
-       i1 = mouseY - (j + 5);
-
-       if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
-       {
-       	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))));
-       }
-   }
-
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks){
-        this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+	   public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+	   {
+	       super.mouseClicked(mouseX, mouseY, mouseButton);
+	       int i = (this.width - this.xSize) / 2;
+	       int j = (this.height - this.ySize) / 2;
+
+	       double l = mouseX - (i + 138);
+	       double i1 = mouseY - (j + 126);
+
+	       if (l >= 0 && i1 >= 0 && l < 32 && i1 < 19)
+	       {
+	    	   boolean deliver = te.canDeliver();
+	    	   MessageHandler.SendMessage_Farmer_UpdateDelivery(te.getPos(), !deliver);
+	    	   //Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageFarmer_UpdateDelivery(te.getPos(), !deliver));
+	    	   te.setField(1, BooleanUtils.toInteger(!deliver));
+	       }
+
+	       l = mouseX - (i + 146);
+	       i1 = mouseY - (j + 5);
+
+	       if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
+	       {
+	    	   MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER)));
+	       		//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))));
+	       }
+	       return true;
+	   }
+
+		@Override
+		public void render(int mouseX, int mouseY, float partialTicks){
+	        this.drawDefaultBackground();
+	        super.render(mouseX, mouseY, partialTicks);
+	        this.renderHoveredToolTip(mouseX, mouseY);
+		}
+
+		@Override
+		protected void drawGuiContainerBackgroundLayer(float f, int x, int y){
+	        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+	        this.mc.getTextureManager().bindTexture(tex);
+	        int i = (this.width - this.xSize) / 2;
+	        int j = (this.height - this.ySize) / 2;
+	        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
+
+	        if (te.canDeliver()){
+	        	this.drawTexturedModalRect(i + 138, j + 126, 176, 12, 33, 12);
+	        }else{
+	        	this.drawTexturedModalRect(i + 138, j + 126, 176, 0, 33, 12);
+	        }
+
+	        // COUNTER
+	        this.drawTexturedModalRect(i+142, j+6, 176, 24, 2, getBatteryBaar());
+
+	        if (!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))){
+	        	this.drawTexturedModalRect(i+146, j+5, 176, 40, 26, 18);
+	        }
+		}
+
+		protected int getBatteryBaar(){
+			return 16-(int)(16.0F * (te.getField(TileEntityPlanter.FIELD_BATTERYMAX) - te.getField(TileEntityPlanter.FIELD_BATTERY))/te.getField(TileEntityPlanter.FIELD_BATTERYMAX));
+		}
 	}
-
-	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int x, int y){
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(tex);
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
-
-        if (te.canDeliver()){
-        	this.drawTexturedModalRect(i + 138, j + 126, 176, 12, 33, 12);
-        }else{
-        	this.drawTexturedModalRect(i + 138, j + 126, 176, 0, 33, 12);
-        }
-        // COUNTER
-        this.drawTexturedModalRect(i+142, j+6, 176, 24, 2, getBatteryBaar());
-
-        if (!BooleanUtils.toBoolean(te.getField(TileEntityPlanter.FIELD_POWER))){
-        	this.drawTexturedModalRect(i+146, j+5, 176, 40, 26, 18);
-        }
-	}
-
-	protected int getBatteryBaar(){
-		return 16-(int)(16.0F * (te.getField(TileEntityPlanter.FIELD_BATTERYMAX) - te.getField(TileEntityPlanter.FIELD_BATTERY))/te.getField(TileEntityPlanter.FIELD_BATTERYMAX));
-	}
-}

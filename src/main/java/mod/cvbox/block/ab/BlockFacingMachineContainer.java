@@ -1,13 +1,13 @@
 package mod.cvbox.block.ab;
 
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -15,30 +15,30 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BlockFacingMachineContainer extends BlockPowerMachineContainer {
-    public static final PropertyDirection FACING = BlockDirectional.FACING;
+	public static final DirectionProperty FACING =  BlockStateProperties.FACING;
 
-	public BlockFacingMachineContainer(Material materialIn) {
+	public BlockFacingMachineContainer(Block.Properties materialIn) {
 		super(materialIn);
 	}
 
 
 	@Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    public void onBlockAdded(IBlockState state, World worldIn, BlockPos pos, IBlockState oldState)
     {
-        super.onBlockAdded(worldIn, pos, state);
+        super.onBlockAdded(state, worldIn, pos, oldState);
         this.setDefaultDirection(worldIn, pos, state);
     }
 
 	public EnumFacing getDirection(IBlockState state){
-		return state.getValue(FACING);
+		return state.get(FACING);
 	}
     private void setDefaultDirection(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote)
         {
-            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
-            boolean flag = worldIn.getBlockState(pos.north()).isFullBlock();
-            boolean flag1 = worldIn.getBlockState(pos.south()).isFullBlock();
+            EnumFacing enumfacing = (EnumFacing)state.get(FACING);
+            boolean flag = worldIn.getBlockState(pos.north()).isFullCube();
+            boolean flag1 = worldIn.getBlockState(pos.south()).isFullCube();
 
             if (enumfacing == EnumFacing.NORTH && flag && !flag1)
             {
@@ -50,8 +50,8 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
             }
             else
             {
-                boolean flag2 = worldIn.getBlockState(pos.west()).isFullBlock();
-                boolean flag3 = worldIn.getBlockState(pos.east()).isFullBlock();
+                boolean flag2 = worldIn.getBlockState(pos.west()).isFullCube();
+                boolean flag3 = worldIn.getBlockState(pos.east()).isFullCube();
 
                 if (enumfacing == EnumFacing.WEST && flag2 && !flag3)
                 {
@@ -63,16 +63,16 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
                 }
             }
 
-            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing));
+            worldIn.setBlockState(pos, state.with(FACING, enumfacing));
         }
     }
 
 
 
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(BlockItemUseContext context)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+        return this.getDefaultState().with(FACING,  context.getNearestLookingDirection().getOpposite());
     }
 
     @Override
@@ -80,45 +80,30 @@ public abstract class BlockFacingMachineContainer extends BlockPowerMachineConta
     {
     	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         worldIn.setBlockState(pos, state
-        		.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)));
+        		.with(FACING, state.get(FACING)));
     }
 
 
     @Override
-    public IBlockState getStateFromMeta(int meta)
+    public IBlockState rotate(IBlockState state, Rotation rot)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
+        return state.with(FACING, rot.rotate((EnumFacing)state.get(FACING)));
     }
 
     @Override
-    public int getMetaFromState(IBlockState state)
+    public IBlockState mirror(IBlockState state, Mirror mirrorIn)
     {
-        int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
-        return i;
-    }
-
-    @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-    }
-
-    @Override
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING});
+        return state.rotate(mirrorIn.toRotation((EnumFacing)state.get(FACING)));
     }
 
     public static EnumFacing getFacing(IBlockState state){
-    	return state.getValue(FACING);
+    	return state.get(FACING);
     }
+
+	@Override
+	protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+	   builder.add(FACING);
+	}
 
 
 

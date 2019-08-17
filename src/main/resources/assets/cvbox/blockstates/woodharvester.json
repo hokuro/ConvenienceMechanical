@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:woodharvester" }
+        "":{ "model":"cvbox:block/woodharvester" }
     }
 }

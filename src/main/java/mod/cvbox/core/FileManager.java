@@ -10,15 +10,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class FileManager {
+
 	public FileManager(){
 	}
 
 	public static void read_file(String user_name){
-		String parent = "/saves/"+FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName() + "/ExpBankSave";
+		String parent = "/saves/"+ServerLifecycleHooks.getCurrentServer().getFolderName() + "/ExpBankSave";
 		String chiled = "/" + user_name + ".dat";
 		String path = "";
 		for (int n = 0; n < PlayerExpBank.player_name.size(); n++){
@@ -30,9 +32,9 @@ public class FileManager {
 			}
 		}
 
-		if (FMLCommonHandler.instance().getSide().isClient()){
-			path = FMLClientHandler.instance().getClient().mcDataDir + parent;
-		}else if (FMLCommonHandler.instance().getSide().isServer()){
+		if (!FMLEnvironment.dist.isDedicatedServer()){
+			path = Minecraft.getInstance().gameDir + parent;
+		}else if (FMLEnvironment.dist.isDedicatedServer()){
 			path = "./config/ExpBox/saves/";
 		}
 		File folder = new File(path);
@@ -78,13 +80,13 @@ public class FileManager {
 	}
 
 	public static void save_file(String user_name) {
-		String parent = "/saves/" + FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName()
+		String parent = "/saves/" + ServerLifecycleHooks.getCurrentServer().getFolderName()
 				+ "/ExpBankSave";
 		String chiled = "/" + user_name + ".dat";
 		String path = "";
-		if (FMLCommonHandler.instance().getSide().isClient()) {
-			path = FMLClientHandler.instance().getClient().mcDataDir + parent + chiled;
-		} else if (FMLCommonHandler.instance().getSide().isServer()) {
+		if (!FMLEnvironment.dist.isDedicatedServer()) {
+			path = Minecraft.getInstance().gameDir + parent + chiled;
+		} else if (FMLEnvironment.dist.isDedicatedServer()) {
 			path = "./config/ExPCotainerMod/saves" + chiled;
 		}
 		try {

@@ -8,10 +8,9 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.mojang.authlib.GameProfile;
 
-import mod.cvbox.config.ConfigValue;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -23,13 +22,15 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityKiller extends TileEntity  implements IInventory, ITickable, ISidedInventory,IPowerSwitchEntity{
 	public static final String NAME = "killer";
@@ -54,7 +55,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 	private int power_count;
 
 	public TileEntityKiller(){
-		super();
+		super(EntityCore.Killer);
 		playerDummy = null;
 		power = false;
 		areaSizeX = 0;
@@ -66,7 +67,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -101,7 +102,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -109,86 +110,92 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
     private void addEffectsToPlayers()
     {
-    	Entity[] list = new Entity[this.world.getLoadedEntityList().size()];
+    	Entity[] list = new Entity[this.world.loadedEntityList.size()];
     	for (int i = 0; i < list.length; i++){
-    		list[i] = this.world.getLoadedEntityList().get(i);
+    		list[i] = this.world.loadedEntityList.get(i);
     	}
-    	int x1 = pos.add(-ConfigValue.ExpCollector.AreaSize,0,0).getX();
-    	int x2 = pos.add(ConfigValue.ExpCollector.AreaSize+1,0,0).getX();
-    	int y1 = pos.add(0,-ConfigValue.ExpCollector.AreaSize,0).getY();
-    	int y2 = pos.add(0,ConfigValue.ExpCollector.AreaSize+1,0).getY();
-    	int z1 = pos.add(0,0,-ConfigValue.ExpCollector.AreaSize).getZ();
-    	int z2 = pos.add(0,0,ConfigValue.ExpCollector.AreaSize+1).getZ();
+//    	int x1 = pos.add(-ConfigValue.expcollector.AreaSize(),0,0).getX();
+//    	int x2 = pos.add(ConfigValue.expcollector.AreaSize()+1,0,0).getX();
+//    	int y1 = pos.add(0,-ConfigValue.expcollector.AreaSize(),0).getY();
+//    	int y2 = pos.add(0,ConfigValue.expcollector.AreaSize()+1,0).getY();
+//    	int z1 = pos.add(0,0,-ConfigValue.expcollector.AreaSize()).getZ();
+//    	int z2 = pos.add(0,0,ConfigValue.expcollector.AreaSize()+1).getZ();
+
+    	int x1 = pos.add(-areaSizeX,0,0).getX();
+    	int x2 = pos.add(areaSizeX+1,0,0).getX();
+    	int y1 = pos.add(0,-areaSizeY,0).getY();
+    	int y2 = pos.add(0,areaSizeY+1,0).getY();
+    	int z1 = pos.add(0,0,-areaSizeZ).getZ();
+    	int z2 = pos.add(0,0,areaSizeZ+1).getZ();
         for (Entity ent : list){
         	if (ent != null && ent instanceof EntityLivingBase){
         		if ((x1 > ent.posX || x2 < ent.posX) &&
             		    (y1 > ent.posY || y2 < ent.posY) &&
             		    (z1 > ent.posZ || z2 < ent.posZ)){continue;}
 
-            	if (EntityList.getKey(ent.getClass()) != null){
-            		String name = EntityList.getKey(ent.getClass()).toString();
-                	if (targets.contains(name)){
-                    	playerDummy.attackTargetEntityWithCurrentItem(ent);
-                	}
+        		String name = ent.getEntityString();// ent.getName().getFormattedText();// I18n.format(ent.getDisplayName().toString());
+            	if (targets.contains(name)){
+                	playerDummy.attackTargetEntityWithCurrentItem(ent);
             	}
         	}
         }
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-        areaSizeX = compound.getInteger("sizex");
-        areaSizeY = compound.getInteger("sizey");
-        areaSizeZ = compound.getInteger("sizez");
-        power_count = compound.getInteger("power_count");
-		NBTTagList targetTagList = compound.getTagList("targets",10);
-		for (int tagCounter = 0; tagCounter < targetTagList.tagCount(); tagCounter++){
-			NBTTagCompound tag = targetTagList.getCompoundTagAt(tagCounter);
+        areaSizeX = compound.getInt("sizex");
+        areaSizeY = compound.getInt("sizey");
+        areaSizeZ = compound.getInt("sizez");
+        power_count = compound.getInt("power_count");
+		NBTTagList targetTagList = compound.getList("targets",10);
+		for (int tagCounter = 0; tagCounter < targetTagList.size(); tagCounter++){
+			NBTTagCompound tag = targetTagList.getCompound(tagCounter);
 			String name = tag.getString("name");
-			if (EntityList.getClassFromName(name) != null){
 				targets.add(name);
-			}
 		}
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("sizex", areaSizeX);
-		compound.setInteger("sizey", areaSizeY);
-		compound.setInteger("sizez", areaSizeZ);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("sizex", areaSizeX);
+		compound.setInt("sizey", areaSizeY);
+		compound.setInt("sizez", areaSizeZ);
+		compound.setInt("power_count",power_count);
 		NBTTagList targetTagList = new NBTTagList();
 		for (String name : targets){
 			NBTTagCompound targetName = new NBTTagCompound();
 			targetName.setString("name", name);
-			targetTagList.appendTag(targetName);
+			targetTagList.add(targetName);
 		}
 		compound.setTag("targets",targetTagList);
 
@@ -198,8 +205,8 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
-				itemsTagList.appendTag(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
+				itemsTagList.add(itemTagCompound);
 			}
 		}
 		compound.setTag("Items",itemsTagList);
@@ -211,26 +218,26 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.kirer";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.kirer");
 	}
 
 	@Override
@@ -331,7 +338,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 			ret = areaSizeZ;
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -356,7 +363,7 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 			areaSizeZ = value;
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 		}
 	}
 
@@ -393,5 +400,23 @@ public class TileEntityKiller extends TileEntity  implements IInventory, ITickab
 
 	public ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

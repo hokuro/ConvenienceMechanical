@@ -8,19 +8,19 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerExpCollector extends Container implements IPowerSwitchContainer{
 	private IInventory inventory;
     private int power;
     private int battery;
 
-	public ContainerExpCollector(IInventory player, IInventory collector){
+	public ContainerExpCollector(IInventory player, IInventory comp){
 
-		this.inventory = collector;
+		this.inventory = comp;
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 122, 8){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -28,10 +28,10 @@ public class ContainerExpCollector extends Container implements IPowerSwitchCont
 				    }
 			  });
 
-        this.addSlotToContainer(new Slot(inventory, 1, 80,20){
+        this.addSlot(new Slot(inventory, 1, 80,20){
             public boolean isItemValid(ItemStack stack)
             {
-            	if ((stack.isItemEnchantable() || stack.isItemEnchanted()) && stack.getItem().isDamageable()){
+            	if ((stack.isEnchantable() || stack.isEnchanted()) && stack.getItem().isDamageable()){
             		return true;
             	}
             	return false;
@@ -42,13 +42,13 @@ public class ContainerExpCollector extends Container implements IPowerSwitchCont
         {
             for (int i1 = 0; i1 < 9; ++i1)
             {
-                this.addSlotToContainer(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l)
         {
-            this.addSlotToContainer(new Slot(player, l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player, l, 8 + l * 18, 142));
         }
 	}
 
@@ -133,7 +133,7 @@ public class ContainerExpCollector extends Container implements IPowerSwitchCont
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityExpCollector)this.inventory).setField(id, data);

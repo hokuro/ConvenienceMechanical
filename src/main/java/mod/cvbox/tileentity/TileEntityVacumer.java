@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.inventory.ContainerVacumer;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
@@ -16,13 +17,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 public class TileEntityVacumer extends TileEntity implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
@@ -45,7 +48,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 
 
 	public TileEntityVacumer(){
-		super();
+		super(EntityCore.Vacumer);
 		power = false;
 		crush_count = 0;
 		SLOT_BOTTOM =new int[ContainerVacumer.ROW_SLOT * ContainerVacumer.COL_SLOT];
@@ -60,7 +63,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -89,7 +92,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -97,13 +100,13 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
     private void crush_block()
@@ -114,10 +117,10 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
         		ItemStack itemstack = entityitem.getItem().copy();
         		for (int i = 1; i < stacks.size(); i++){
         			ItemStack st = stacks.get(i);
-        			if (st.isEmpty() || (ModUtil.compareItemStacks(st, itemstack, CompaierLevel.LEVEL_EQUAL_META) && st.getCount()<st.getMaxStackSize())){
+        			if (st.isEmpty() || (ModUtil.compareItemStacks(st, itemstack, CompaierLevel.LEVEL_EQUAL_ITEM) && st.getCount()<st.getMaxStackSize())){
         				if (st.isEmpty()){
         					stacks.set(i, itemstack);
-        					entityitem.setDead();
+        					entityitem.remove();
         					break;
         				}else{
         					int size = itemstack.getCount();
@@ -125,7 +128,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
         					if (size2+size <= st.getMaxStackSize()){
         						st.grow(size);
         						stacks.set(i, st);
-            					entityitem.setDead();
+            					entityitem.remove();
             					break;
         					}else{
         						st.setCount(st.getMaxStackSize());
@@ -146,31 +149,34 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-		crush_count=compound.getInteger("count");
-		power_count=compound.getInteger("power_count");
+		crush_count=compound.getInt("count");
+		power_count=compound.getInt("power_count");
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("count", crush_count);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("count", crush_count);
+		compound.setInt("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -178,9 +184,9 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 
 			itemTagCompound.setByte("Slot",(byte)slotIndex);
 			if (stacks.size()>slotIndex){
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
 			}
-			itemsTagList.appendTag(itemTagCompound);
+			itemsTagList.add(itemTagCompound);
 		}
 		compound.setTag("Items",itemsTagList);
 
@@ -191,26 +197,26 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.vacumer";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.vacumer");
 	}
 
 	@Override
@@ -237,7 +243,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		if (index > 1){
+		if (index >= 1){
 			return true;
 		}
 		return false;
@@ -318,7 +324,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 			ret = crush_count;
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -337,7 +343,7 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 			crush_count = value;
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -359,5 +365,23 @@ public class TileEntityVacumer extends TileEntity implements IInventory, ITickab
 
 	public ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

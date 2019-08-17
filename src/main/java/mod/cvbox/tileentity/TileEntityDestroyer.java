@@ -3,6 +3,7 @@ package mod.cvbox.tileentity;
 import org.apache.commons.lang3.BooleanUtils;
 
 import mod.cvbox.block.BlockDestroyer;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -14,12 +15,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityDestroyer extends TileEntity implements IInventory, ITickable, IPowerSwitchEntity{
 	public static final String NAME = "destroyer";
@@ -45,7 +48,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 	private IBlockState beforeState;
 
 	public TileEntityDestroyer(){
-		super();
+		super(EntityCore.Destroyer);
 		power = false;
 		time_base = 0.1F;
 		time_value = 0.1F;
@@ -56,7 +59,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (checkPowerOn()){
 			time_count++;
 		}
@@ -79,7 +82,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 					if (time_count >= 2){
 						time_count = 0;
 						IBlockState state = world.getBlockState(pos);
-						EnumFacing face = state.getValue(BlockDestroyer.FACING);
+						EnumFacing face = state.get(BlockDestroyer.FACING);
 						state = world.getBlockState(pos.offset(face));
 						if (state.getMaterial() != Material.AIR ||
 								state.getMaterial() != Material.LAVA ||
@@ -108,7 +111,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -116,18 +119,18 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 	private void exec(){
 		IBlockState state = world.getBlockState(pos);
-		EnumFacing face = state.getValue(BlockDestroyer.FACING);
+		EnumFacing face = state.get(BlockDestroyer.FACING);
 		BlockPos pos2 = pos.offset(face);
 		state = world.getBlockState(pos2);
 		ItemStack drop = state.getBlock().getItem(this.world, pos2, state);
@@ -138,39 +141,41 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 	}
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-		power_count=compound.getInteger("power_count");
-		mode=compound.getInteger("mode");
+		power_count=compound.getInt("power_count");
+		mode=compound.getInt("mode");
 		time_base=compound.getFloat("time_base");
 		time_value=compound.getFloat("time_value");
-		time_count=compound.getInteger("time_count");
+		time_count=compound.getInt("time_count");
 
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
-
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("power_count",power_count);
 
-		compound.setInteger("mode",mode);
+		compound.setInt("mode",mode);
 		compound.setFloat("time_base",time_base);
 		compound.setFloat("time_value",time_value);
-		compound.setInteger("time_count",time_count);
+		compound.setInt("time_count",time_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -178,9 +183,9 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 
 			itemTagCompound.setByte("Slot",(byte)slotIndex);
 			if (stacks.size()>slotIndex){
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
 			}
-			itemsTagList.appendTag(itemTagCompound);
+			itemsTagList.add(itemTagCompound);
 		}
 		compound.setTag("Items",itemsTagList);
 
@@ -191,26 +196,26 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.compresser";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.compresser");
 	}
 
 	@Override
@@ -291,7 +296,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 			ret = BooleanUtils.toInteger(power);
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -317,7 +322,7 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 			power = BooleanUtils.toBoolean(value);
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		case FIELD_TIME:
 			this.time_value=(float)(value/10.0F);
@@ -366,5 +371,23 @@ public class TileEntityDestroyer extends TileEntity implements IInventory, ITick
 			time_value = time;
 		}
 		time_count = 0;
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

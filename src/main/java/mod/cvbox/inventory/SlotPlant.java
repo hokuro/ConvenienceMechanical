@@ -22,7 +22,7 @@ public class SlotPlant extends Slot {
     }
 
     public static boolean checkExtends(ItemStack stack){
-    	return ModUtil.containItemStack(stack, ConfigValue.Planter.getItems(), CompaierLevel.LEVEL_EQUAL_META);
+    	return ModUtil.containItemStack(stack, ConfigValue.planter.getItems(), CompaierLevel.LEVEL_EQUAL_ITEM);
     }
 
 }

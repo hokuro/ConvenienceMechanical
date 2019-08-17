@@ -3,6 +3,7 @@ package mod.cvbox.tileentity;
 import org.apache.commons.lang3.BooleanUtils;
 
 import mod.cvbox.config.ConfigValue;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -15,11 +16,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityExpCollector extends TileEntity  implements IInventory, ITickable, ISidedInventory,IPowerSwitchEntity{
 	public static final String NAME = "expcollector";
@@ -38,7 +41,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 	private int power_count;;
 
 	public TileEntityExpCollector(){
-		super();
+		super(EntityCore.ExpCollector);
 		power = false;
 		expvalue = 0;
 		search_count = 0;
@@ -46,7 +49,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -58,7 +61,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 					collect_exp();
 					mending();
 					try{
-						((TileEntityExpCollector)Minecraft.getMinecraft().world.getTileEntity(pos)).setField(FIELD_EXPVALUE, this.expvalue);
+						((TileEntityExpCollector)Minecraft.getInstance().world.getTileEntity(pos)).setField(FIELD_EXPVALUE, this.expvalue);
 					}catch(Exception ex){}
 					search_count = 0;
 				}
@@ -80,7 +83,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -88,27 +91,27 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
     private void collect_exp()
     {
-    	Entity[] list = new Entity[this.world.getLoadedEntityList().size()];
+    	Entity[] list = new Entity[this.world.loadedEntityList.size()];
     	for (int i = 0; i < list.length; i++){
-    		list[i] = this.world.getLoadedEntityList().get(i);
+    		list[i] = this.world.loadedEntityList.get(i);
     	}
-    	int x1 = pos.add(-ConfigValue.ExpCollector.AreaSize,0,0).getX();
-    	int x2 = pos.add(ConfigValue.ExpCollector.AreaSize+1,0,0).getX();
-    	int y1 = pos.add(0,-ConfigValue.ExpCollector.AreaSize,0).getY();
-    	int y2 = pos.add(0,ConfigValue.ExpCollector.AreaSize+1,0).getY();
-    	int z1 = pos.add(0,0,-ConfigValue.ExpCollector.AreaSize).getZ();
-    	int z2 = pos.add(0,0,ConfigValue.ExpCollector.AreaSize+1).getZ();
+    	int x1 = pos.add(-ConfigValue.expcollector.AreaSize(),0,0).getX();
+    	int x2 = pos.add(ConfigValue.expcollector.AreaSize()+1,0,0).getX();
+    	int y1 = pos.add(0,-ConfigValue.expcollector.AreaSize(),0).getY();
+    	int y2 = pos.add(0,ConfigValue.expcollector.AreaSize()+1,0).getY();
+    	int z1 = pos.add(0,0,-ConfigValue.expcollector.AreaSize()).getZ();
+    	int z2 = pos.add(0,0,ConfigValue.expcollector.AreaSize()+1).getZ();
 
         for (Entity ent : list){
         	if (ent != null){
@@ -120,11 +123,11 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
             		if (Integer.MAX_VALUE - ((EntityXPOrb)ent).getXpValue() >= expvalue){
             			//　タンク内よゆーあり
             			expvalue += ((EntityXPOrb)ent).getXpValue();
-            			ent.setDead();
+            			ent.remove();
             		}else if (Integer.MAX_VALUE != expvalue){
             			// ぴったんこまで入れる
             			expvalue = Integer.MAX_VALUE;
-            			ent.setDead();
+            			ent.remove();
             			break;
             		}else{
             			// よゆーないからもう探さない
@@ -137,38 +140,40 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 
     private void mending(){
     	ItemStack item = stacks.get(1);
-    	if (item.isItemDamaged() && expvalue >= 10){
-    		item.setItemDamage(item.getItemDamage()-1);
+    	if (item.isDamaged() && expvalue >= 10){
+    		item.setDamage(item.getDamage()-1);
     		this.expvalue -= 10;
     	}
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-        expvalue = compound.getInteger("exp");
-        power_count = compound.getInteger("power_count");
+        expvalue = compound.getInt("exp");
+        power_count = compound.getInt("power_count");
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
-
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("exp", expvalue);
-        compound.setInteger("power_count",power_count);
+		compound.setInt("exp", expvalue);
+        compound.setInt("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -176,8 +181,8 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
-				itemsTagList.appendTag(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
+				itemsTagList.add(itemTagCompound);
 			}
 		}
 		compound.setTag("Items",itemsTagList);
@@ -189,26 +194,26 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.expcollector";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.expcollector");
 	}
 
 	@Override
@@ -223,12 +228,12 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-		return itemStackIn.isItemEnchantable();
+		return itemStackIn.isEnchantable();
 	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-		return !stack.isItemEnchantable();
+		return !stack.isEnchantable();
 	}
 
 	@Override
@@ -284,7 +289,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		return stack.isItemEnchantable();
+		return stack.isEnchantable();
 	}
 
 	@Override
@@ -298,7 +303,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 			ret = expvalue;
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -317,7 +322,7 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 			expvalue = value;
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -339,5 +344,23 @@ public class TileEntityExpCollector extends TileEntity  implements IInventory, I
 
 	private ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

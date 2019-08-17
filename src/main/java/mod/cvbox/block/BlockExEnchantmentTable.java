@@ -1,32 +1,32 @@
 package mod.cvbox.block;
 
-import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.intaractionobject.IntaractionObjectExEnchantment;
 import mod.cvbox.tileentity.TileEntityExEnchantmentTable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockExEnchantmentTable extends BlockContainer {
 
 
     protected BlockExEnchantmentTable()
     {
-        super(Material.ROCK, MapColor.RED);
-        this.setLightOpacity(0);
-        this.setCreativeTab(Mod_ConvenienceBox.tabWorker);
-        this.setHardness(5.0F);
-        this.setResistance(2000.0F);
+        super(Block.Properties.create(Material.ROCK)
+        		.lightValue(0)
+        		.hardnessAndResistance(0.5F,2000F));
     }
 
     @Override
@@ -36,14 +36,13 @@ public class BlockExEnchantmentTable extends BlockContainer {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public TileEntity createNewTileEntity(IBlockReader worldIn)
     {
         return new TileEntityExEnchantmentTable();
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
+    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote)
         {
             return true;
@@ -54,7 +53,14 @@ public class BlockExEnchantmentTable extends BlockContainer {
 
             if (tileentity instanceof TileEntityExEnchantmentTable)
             {
-                playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXENCHANTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            	NetworkHooks.openGui((EntityPlayerMP)playerIn,
+            			new IntaractionObjectExEnchantment(),
+            			(buf)->{
+    						buf.writeInt(pos.getX());
+    						buf.writeInt(pos.getY());
+    						buf.writeInt(pos.getZ());
+    					});
+            	//playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXENCHANTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
 
             return true;
@@ -72,8 +78,9 @@ public class BlockExEnchantmentTable extends BlockContainer {
 
             if (tileentity instanceof TileEntityExEnchantmentTable)
             {
-                ((TileEntityExEnchantmentTable)tileentity).setCustomName(stack.getDisplayName());
+                ((TileEntityExEnchantmentTable)tileentity).setCustomName(stack.getDisplayName().toString());
             }
         }
     }
+
 }

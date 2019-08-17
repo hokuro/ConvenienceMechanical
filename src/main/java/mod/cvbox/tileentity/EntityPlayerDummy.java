@@ -22,9 +22,11 @@ public class EntityPlayerDummy extends EntityPlayer {
 	}
 
 	@Override
-	public void readEntityFromNBT(NBTTagCompound compound){}
+	public void read(NBTTagCompound compound){}
 
-	@Override
-	public void writeEntityToNBT(NBTTagCompound compound){}
+//	@Override
+//	public void write(NBTTagCompound compound){
+//		s
+//	}
 
 }

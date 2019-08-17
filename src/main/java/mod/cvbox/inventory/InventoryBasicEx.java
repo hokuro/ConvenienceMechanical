@@ -12,12 +12,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class InventoryBasicEx implements IInventory {
-	    private String inventoryTitle;
+	    private ITextComponent inventoryTitle;
 	    private final int slotsCount;
 	    private final NonNullList<ItemStack> inventoryContents;
 	    /** Listeners notified when any item in this inventory is changed. */
@@ -27,7 +26,7 @@ public class InventoryBasicEx implements IInventory {
 
 	    public InventoryBasicEx(String title, boolean customName, int slotCount, int[] detectChangeSlot)
 	    {
-	        this.inventoryTitle = title;
+	        this.inventoryTitle = new TextComponentString(title);
 	        this.hasCustomName = customName;
 	        this.slotsCount = slotCount;
 	        this.inventoryContents = NonNullList.<ItemStack>withSize(slotCount, ItemStack.EMPTY);
@@ -37,10 +36,10 @@ public class InventoryBasicEx implements IInventory {
 	    	}
 	    }
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public InventoryBasicEx(ITextComponent title, int slotCount, int[] detectChangeSlot)
 	    {
-	        this(title.getUnformattedText(), true, slotCount, detectChangeSlot);
+	        this(title.getFormattedText(), true, slotCount, detectChangeSlot);
 	    }
 
 
@@ -132,9 +131,9 @@ public class InventoryBasicEx implements IInventory {
 	    }
 
 	    @Override
-	    public String getName()
+	    public ITextComponent getName()
 	    {
-	        return this.inventoryTitle;
+	        return inventoryTitle;
 	    }
 
 	    @Override
@@ -146,13 +145,13 @@ public class InventoryBasicEx implements IInventory {
 	    public void setCustomName(String inventoryTitleIn)
 	    {
 	        this.hasCustomName = true;
-	        this.inventoryTitle = inventoryTitleIn;
+	        this.inventoryTitle = new TextComponentString( inventoryTitleIn);
 	    }
 
 	    @Override
 	    public ITextComponent getDisplayName()
 	    {
-	        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+	        return (this.hasCustomName() ? this.getName() : this.getCustomName());
 	    }
 
 	    @Override
@@ -217,4 +216,10 @@ public class InventoryBasicEx implements IInventory {
 	    {
 	        this.inventoryContents.clear();
 	    }
+
+		@Override
+		public ITextComponent getCustomName() {
+			// TODO 自動生成されたメソッド・スタブ
+			return this.inventoryTitle;
+		}
 }

@@ -17,8 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerWoodPlanter extends Container  implements IPowerSwitchContainer{
 	public final static int ROW_SLOT = 5;
@@ -48,7 +48,7 @@ public class ContainerWoodPlanter extends Container  implements IPowerSwitchCont
 		zCoord = z;
 
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 123, 6){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -59,7 +59,7 @@ public class ContainerWoodPlanter extends Container  implements IPowerSwitchCont
 		// コンテナインベントリ
 	    for (int row = 0; row < ROW_SLOT; row++) {
 		      for (int col = 0; col < COL_SLOT; col++) {
-		    	  addSlotToContainer(
+		    	  addSlot(
 		    			  new Slot((IInventory)te,
 		    			  1+col + (row * COL_SLOT), 	// インデックス
 		    			  8 + col * 18,
@@ -77,7 +77,7 @@ public class ContainerWoodPlanter extends Container  implements IPowerSwitchCont
 		int OFFSET = 74;
 		for (int rows = 0; rows < 3; rows++){
 			for ( int slotIndex = 0; slotIndex < 9; slotIndex++){
-				addSlotToContainer(new Slot(playerInventory,
+				addSlot(new Slot(playerInventory,
 						slotIndex + (rows * 9) + 9,
 						8 + slotIndex * 18,
 						139 + rows * 18));
@@ -86,7 +86,7 @@ public class ContainerWoodPlanter extends Container  implements IPowerSwitchCont
 
 		// メインインベントリ
 		for (int slotIndex = 0; slotIndex < ModCommon.PLANTER_MAX_SLOT; slotIndex++){
-			addSlotToContainer(new Slot(this.playerInventory,
+			addSlot(new Slot(this.playerInventory,
 					slotIndex,
 					8 + slotIndex * 18,
 					197));
@@ -198,7 +198,7 @@ public class ContainerWoodPlanter extends Container  implements IPowerSwitchCont
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityWoodPlanter)this.inventory).setField(id, data);

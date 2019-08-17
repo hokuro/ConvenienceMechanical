@@ -3,75 +3,123 @@ package mod.cvbox.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mod.cvbox.block.BlockCore;
+import mod.cvbox.client.ClientProcess;
 import mod.cvbox.config.ConfigValue;
 import mod.cvbox.creative.CreativeTabFactBox;
 import mod.cvbox.creative.CreativeTabFarmarBox;
 import mod.cvbox.creative.CreativeWorkerBox;
-import net.minecraft.block.BlockEnchantmentTable;
+import mod.cvbox.entity.EntityCore;
+import mod.cvbox.event.McEventHandler;
+import mod.cvbox.item.ItemCore;
+import mod.cvbox.network.MessageHandler;
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 
-@Mod(modid = ModCommon.MOD_ID,
-name = ModCommon.MOD_NAME,
-version = ModCommon.MOD_VERSION,
-acceptedMinecraftVersions = ModCommon.MOD_ACCEPTED_MC_VERSIONS)
+@Mod(ModCommon.MOD_ID)
 public class Mod_ConvenienceBox {
-	@Mod.Instance(ModCommon.MOD_ID)
-	public static Mod_ConvenienceBox instance;
-	@SidedProxy(clientSide = ModCommon.MOD_PACKAGE + ModCommon.MOD_CLIENT_SIDE, serverSide = ModCommon.MOD_PACKAGE + ModCommon.MOD_SERVER_SIDE)
-	public static CommonProxy proxy;
-	public static final SimpleNetworkWrapper Net_Instance = NetworkRegistry.INSTANCE.newSimpleChannel(ModCommon.MOD_CHANEL);
-	public static final ModGui guiInstance = new ModGui();
+
 	// タブ
 	public static final CreativeWorkerBox tabWorker = new CreativeWorkerBox("WorkerBox");
 	public static final CreativeTabFarmarBox tabFarmer = new CreativeTabFarmarBox("FarmerBox");
 	public static final CreativeTabFactBox tabFactory = new CreativeTabFactBox("FactoryBox");
 
-
 	public static List<Enchantment> encList = new ArrayList<Enchantment>();
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		// コンフィグ読み込み
-		ConfigValue.init(event);
-
-		// ブロック登録
-		ModRegister.RegisterBlock(event);
-		// アイテム登録
-		ModRegister.RegisterItem(event);
-
-		// エンティティ設定
-		ModRegister.RegisterEntity(proxy);
-		// レンダー設定
-		ModRegister.RegisterRender(proxy);
-	}
-
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		// メッセージ登録
-		ModRegister.RegisterMessage();
-		// レシピ追加
-	//	ModRegister.RegisterRecipe();
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ModGui());
-		BlockEnchantmentTable x;
-	}
+	public static ClientProcess proxy;
+	public McEventHandler handler = new McEventHandler();
 
 
+    public Mod_ConvenienceBox() {
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event){
-		// コンフィグ初期設定
-		ConfigValue.setting();
+        // コンフィグ読み込み
+    	ModLoadingContext.get().
+        registerConfig(
+        		net.minecraftforge.fml.config.ModConfig.Type.COMMON,
+        		ConfigValue.spec);
+        // Register ourselves for server and other game events we are interested in
+    	// メッセージ登録
+    	MessageHandler.register();
+    	// サウンド登録
+    	// イベントバス登録
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(handler);
+    }
 
-		for (Enchantment enc : Enchantment.REGISTRY){
-			encList.add(enc);
-		}
-	}
+    private void setup(final FMLCommonSetupEvent event)
+    {
+    	IRegistry.field_212628_q.forEach((enc)->{
+    		encList.add(enc);
+    	});
+    }
+
+    private void doClientStuff(final FMLClientSetupEvent event) {
+    	proxy = new ClientProcess();
+    	// エンティティレンダー登録(なし)
+    	// タイルエンティティレンダー登録(なし)
+    	proxy.registerEntityRender();
+
+    	// GUI登録
+    	proxy.guiHandler();
+    }
+
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
+            // register a new block here
+        	BlockCore.registerBlock(blockRegistryEvent);
+        }
+
+        @SubscribeEvent
+        public static void onItemRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
+            BlockCore.registerItemBlock(itemRegistryEvent);
+            ItemCore.register(itemRegistryEvent);
+        }
+
+        @SubscribeEvent
+        public static void onEntityRegistry(final RegistryEvent.Register<EntityType<?>> etRegistryEvent){
+        	EntityCore.register(etRegistryEvent);
+        }
+
+        @SubscribeEvent
+        public static void onTERegistyr(final RegistryEvent.Register<TileEntityType<?>> teRegistryEvent){
+        	EntityCore.registerTE(teRegistryEvent);
+        	//Mod_ExBombs.proxy.registerCompnents(teRegistryEvent);
+
+        }
+
+        @SubscribeEvent
+        public static void onSoundRegistyr(final RegistryEvent.Register<SoundEvent> teRegistryEvent){
+        }
+    }
+
+
+
+//	@EventHandler
+//	public void postInit(FMLPostInitializationEvent event){
+////		// コンフィグ初期設定
+////		ConfigValue.setting();
+////
+//		for (Enchantment enc : Enchantment.REGISTRY){
+//			encList.add(enc);
+//		}
+//	}
 }

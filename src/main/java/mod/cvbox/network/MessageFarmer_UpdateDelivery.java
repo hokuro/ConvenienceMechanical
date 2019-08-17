@@ -1,8 +1,9 @@
 package mod.cvbox.network;
 
+import java.util.function.Supplier;
+
 import org.apache.commons.lang3.BooleanUtils;
 
-import io.netty.buffer.ByteBuf;
 import mod.cvbox.inventory.ContainerAutoHarvest;
 import mod.cvbox.inventory.ContainerAutoPlanting;
 import mod.cvbox.inventory.ContainerWoodHarvester;
@@ -12,14 +13,13 @@ import mod.cvbox.tileentity.TileEntityPlanter;
 import mod.cvbox.tileentity.TileEntityWoodHarvester;
 import mod.cvbox.tileentity.TileEntityWoodPlanter;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageFarmer_UpdateDelivery implements IMessage, IMessageHandler<MessageFarmer_UpdateDelivery, IMessage> {
+public class MessageFarmer_UpdateDelivery {
 	private BlockPos pos;
 	private Boolean deliver;
 
@@ -32,55 +32,58 @@ public class MessageFarmer_UpdateDelivery implements IMessage, IMessageHandler<M
 
 	public boolean Deliver(){return deliver;}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		pos = new BlockPos(buf.readInt(),
-				buf.readInt(),
-				buf.readInt());
-		deliver = buf.readBoolean();
+	public static void encode(MessageFarmer_UpdateDelivery pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.pos.getX());
+		buf.writeInt(pkt.pos.getY());
+		buf.writeInt(pkt.pos.getZ());
+		buf.writeBoolean(pkt.deliver);
+
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(pos.getX());
-		buf.writeInt(pos.getY());
-		buf.writeInt(pos.getZ());
-		buf.writeBoolean(deliver);
+	public static MessageFarmer_UpdateDelivery decode(PacketBuffer buf)
+	{
+		BlockPos p = new BlockPos(buf.readInt(),buf.readInt(),buf.readInt());
+		return new MessageFarmer_UpdateDelivery(p,buf.readBoolean());
 	}
 
-	@Override
-	public IMessage onMessage(MessageFarmer_UpdateDelivery message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		if ( player.openContainer instanceof ContainerAutoPlanting){
-			((ContainerAutoPlanting)player.openContainer).setDeliverMode(message.deliver);
-			World world = ((ContainerAutoPlanting)player.openContainer).getWorld();
-			TileEntity ent = world.getTileEntity(message.pos);
-			if ( ent instanceof TileEntityPlanter){
-				((TileEntityPlanter)ent).setField(1, BooleanUtils.toInteger(message.deliver));
-			}
-		}else if (player.openContainer instanceof ContainerAutoHarvest){
-			((ContainerAutoHarvest)player.openContainer).setDeliverMode(message.deliver);
-			World world = ((ContainerAutoHarvest)player.openContainer).getWorld();
-			TileEntity ent = world.getTileEntity(message.pos);
-			if ( ent instanceof TileEntityHarvester){
-				((TileEntityHarvester)ent).setField(1, BooleanUtils.toInteger(message.deliver));
-			}
-		}else if (player.openContainer instanceof ContainerWoodPlanter){
-			((ContainerWoodPlanter)player.openContainer).setDeliverMode(message.deliver);
-			World world = ((ContainerWoodPlanter)player.openContainer).getWorld();
-			TileEntity ent = world.getTileEntity(message.pos);
-			if ( ent instanceof TileEntityWoodPlanter){
-				((TileEntityWoodPlanter)ent).setField(1, BooleanUtils.toInteger(message.deliver));
-			}
-		}else if (player.openContainer instanceof ContainerWoodHarvester){
-			((ContainerWoodHarvester)player.openContainer).setDeliverMode(message.deliver);
-			World world = ((ContainerWoodHarvester)player.openContainer).getWorld();
-			TileEntity ent = world.getTileEntity(message.pos);
-			if ( ent instanceof TileEntityWoodHarvester){
-				((TileEntityWoodHarvester)ent).setField(1, BooleanUtils.toInteger(message.deliver));
-			}
+	public static class Handler
+	{
+		public static void handle(final MessageFarmer_UpdateDelivery pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerAutoPlanting){
+					((ContainerAutoPlanting)player.openContainer).setDeliverMode(pkt.deliver);
+					World world = ((ContainerAutoPlanting)player.openContainer).getWorld();
+					TileEntity ent = world.getTileEntity(pkt.pos);
+					if ( ent instanceof TileEntityPlanter){
+						((TileEntityPlanter)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
+					}
+				}else if (player.openContainer instanceof ContainerAutoHarvest){
+					((ContainerAutoHarvest)player.openContainer).setDeliverMode(pkt.deliver);
+					World world = ((ContainerAutoHarvest)player.openContainer).getWorld();
+					TileEntity ent = world.getTileEntity(pkt.pos);
+					if ( ent instanceof TileEntityHarvester){
+						((TileEntityHarvester)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
+					}
+				}else if (player.openContainer instanceof ContainerWoodPlanter){
+					((ContainerWoodPlanter)player.openContainer).setDeliverMode(pkt.deliver);
+					World world = ((ContainerWoodPlanter)player.openContainer).getWorld();
+					TileEntity ent = world.getTileEntity(pkt.pos);
+					if ( ent instanceof TileEntityWoodPlanter){
+						((TileEntityWoodPlanter)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
+					}
+				}else if (player.openContainer instanceof ContainerWoodHarvester){
+					((ContainerWoodHarvester)player.openContainer).setDeliverMode(pkt.deliver);
+					World world = ((ContainerWoodHarvester)player.openContainer).getWorld();
+					TileEntity ent = world.getTileEntity(pkt.pos);
+					if ( ent instanceof TileEntityWoodHarvester){
+						((TileEntityWoodHarvester)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
+					}
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-
-		return null;
 	}
 }

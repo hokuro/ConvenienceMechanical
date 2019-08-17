@@ -1,27 +1,24 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerKiller;
-import mod.cvbox.network.MessageKiller_UpdateAreaSize;
-import mod.cvbox.network.MessageKiller_UpdateTarget;
-import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityKiller;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityList;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.World;
 
 public class GuiKiller extends GuiContainer {
@@ -39,36 +36,88 @@ public class GuiKiller extends GuiContainer {
 		this.pos = pos;;
 		this.world = world;
 		entityNames = new ArrayList<ResourceLocation>();
-		for (ResourceLocation name : EntityList.getEntityNameList()){
-			if (EntityList.createEntityByIDFromName(name, world) instanceof EntityLivingBase){
-				entityNames.add(name);
+		IRegistry.field_212629_r.forEach((ent)->{
+			if (ent.create(world) instanceof EntityLivingBase){
+				entityNames.add(ent.getRegistryName());
 			}
-		}
+		});
 		xSize = 247;
     	index = 0;
-    	target = EntityList.getTranslationName(entityNames.get(index));
+    	target = IRegistry.field_212629_r.func_212608_b(entityNames.get(index)).getEntityClass().getSimpleName();
     	te = (TileEntityKiller)containerinv;
 
 
 	}
 
+	@Override
 	public void initGui(){
 		super.initGui();
     	int x=(this.width - this.xSize) / 2;
     	int y=(this.height - this.ySize) / 2;
-    	this.buttonList.clear();
-    	this.buttonList.add(new GuiButton(101,x+22,y+40,20,20,"←"));
-    	this.buttonList.add(new GuiButton(102,x+135,y+40,20,20,"→"));
-    	this.buttonList.add(new GuiButton(103,x+172, y+16,20,20,"-"));
-    	this.buttonList.add(new GuiButton(104,x+219, y+16,20,20,"+"));
-    	this.buttonList.add(new GuiButton(105,x+172, y+46,20,20,"-"));
-    	this.buttonList.add(new GuiButton(106,x+219, y+46,20,20,"+"));
-    	this.buttonList.add(new GuiButton(107,x+172, y+77,20,20,"-"));
-    	this.buttonList.add(new GuiButton(108,x+219, y+77,20,20,"+"));
+    	this.buttons.clear();
+    	GuiButton b1 = new GuiButton(101,x+22,y+40,20,20,"←"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b2 = new GuiButton(102,x+135,y+40,20,20,"→"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b3 = new GuiButton(103,x+172, y+16,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b4 = new GuiButton(104,x+219, y+16,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b5 = new GuiButton(105,x+172, y+46,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b6 = new GuiButton(106,x+219, y+46,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b7 = new GuiButton(107,x+172, y+77,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b8 = new GuiButton(108,x+219, y+77,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+
+
+    	this.buttons.add(b1);
+    	this.buttons.add(b2);
+    	this.buttons.add(b3);
+    	this.buttons.add(b4);
+    	this.buttons.add(b5);
+    	this.buttons.add(b6);
+    	this.buttons.add(b7);
+    	this.buttons.add(b8);
+    	this.children.addAll(buttons);
 
 	}
 
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(GuiButton button)
     {
     	boolean send = false;
     	int size;
@@ -78,14 +127,14 @@ public class GuiKiller extends GuiContainer {
     		if (index < 0){
     			index = entityNames.size()-1;
     		}
-    		target = EntityList.getTranslationName(entityNames.get(index));
+    		target =  I18n.format(IRegistry.field_212629_r.func_212608_b(entityNames.get(index)).getTranslationKey());
 	    break;
     	case 102:
     		index++;
     		if (index >=entityNames.size()){
     			index = 0;
     		}
-    		target = EntityList.getTranslationName(entityNames.get(index));
+    		target = I18n.format(IRegistry.field_212629_r.func_212608_b(entityNames.get(index)).getTranslationKey());
 	    break;
     	case 103:
     		size = te.getField(TileEntityKiller.FIELD_AREASIZEX) - 1;
@@ -140,11 +189,15 @@ public class GuiKiller extends GuiContainer {
     	}
 
     	if (send){
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateAreaSize(
-        	    	te.getField(TileEntityKiller.FIELD_AREASIZEX),
+    		MessageHandler.SendMessage_Killer_UpdateAreaSize(
+    				te.getField(TileEntityKiller.FIELD_AREASIZEX),
         	    	te.getField(TileEntityKiller.FIELD_AREASIZEY),
-        	    	te.getField(TileEntityKiller.FIELD_AREASIZEZ)
-        			));
+        	    	te.getField(TileEntityKiller.FIELD_AREASIZEZ));
+//        	Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateAreaSize(
+//        	    	te.getField(TileEntityKiller.FIELD_AREASIZEX),
+//        	    	te.getField(TileEntityKiller.FIELD_AREASIZEY),
+//        	    	te.getField(TileEntityKiller.FIELD_AREASIZEZ)
+//        			));
     	}
 
     }
@@ -152,18 +205,19 @@ public class GuiKiller extends GuiContainer {
 
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
 
-        int l = mouseX - (i + 43);
-        int i1 = mouseY - (j + 40);
+        double l = mouseX - (i + 43);
+        double i1 = mouseY - (j + 40);
 
         if (l >= 0 && i1 >= 0 && l < 90 && i1 < 19)
         {
-            Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateTarget(entityNames.get(this.index).toString()));
+        	MessageHandler.sendMessage_Killer_UpdateTarget(entityNames.get(this.index).toString());
+            //Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageKiller_UpdateTarget(entityNames.get(this.index).toString()));
             te.updateTarget(entityNames.get(this.index).toString());
         }
 
@@ -172,22 +226,22 @@ public class GuiKiller extends GuiContainer {
 
         if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
         {
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
+        	MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER)));
+        	//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
         }
+        return true;
     }
-
+    	@Override
 	    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	    {
 	        this.fontRenderer.drawString("Killer", 12, 5, 4210752);
 	        this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
 	    }
 
-	    /**
-	     * Draws the background layer of this container (behind the items).
-	     */
+	    @Override
 	    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
 	    {
-	        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	        this.mc.getTextureManager().bindTexture(TEXTURE);
 	        int i = (this.width - this.xSize) / 2;
 	        int j = (this.height - this.ySize) / 2;
@@ -202,7 +256,7 @@ public class GuiKiller extends GuiContainer {
 
 	        int i1 = i + 60;
 	        this.zLevel = 0.0F;
-	        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	        if (te.ContainTarget(entityNames.get(index))){
 	        	this.drawTexturedModalRect(i+43, j+40, 0, 185, 108, 19);
 	        }
@@ -225,14 +279,12 @@ public class GuiKiller extends GuiContainer {
 
 	    }
 
-	    /**
-	     * Draws the screen and all the components in it.
-	     */
-	    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	   @Override
+	    public void render(int mouseX, int mouseY, float partialTicks)
 	    {
 	        partialTicks = this.mc.getTickLength();
 	        this.drawDefaultBackground();
-	        super.drawScreen(mouseX, mouseY, partialTicks);
+	        super.render(mouseX, mouseY, partialTicks);
 	        this.renderHoveredToolTip(mouseX, mouseY);
 	    }
 

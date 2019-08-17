@@ -10,8 +10,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerComplesser extends Container implements IPowerSwitchContainer{
 	private IInventory inventory;
@@ -30,7 +30,7 @@ public class ContainerComplesser extends Container implements IPowerSwitchContai
 		this.inventory = comp;
 
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 123, 6){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -39,7 +39,7 @@ public class ContainerComplesser extends Container implements IPowerSwitchContai
 			  });
 
 		// インプット
-  	    addSlotToContainer(
+		addSlot(
 			  new Slot(inventory, 1, 80, 17){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -53,7 +53,7 @@ public class ContainerComplesser extends Container implements IPowerSwitchContai
 			  });
   	    // コンテナ
   	    for (int col = 1;  col < 7; col++){
-	    	  addSlotToContainer(new Slot(inventory, col+1, 13+27*(col-1), 40){
+  	    	addSlot(new Slot(inventory, col+1, 13+27*(col-1), 40){
 				    public boolean isItemValid(ItemStack stack)
 				    {
 				        return false;
@@ -65,13 +65,13 @@ public class ContainerComplesser extends Container implements IPowerSwitchContai
         {
             for (int i1 = 0; i1 < 9; ++i1)
             {
-                this.addSlotToContainer(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l)
         {
-            this.addSlotToContainer(new Slot(player, l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player, l, 8 + l * 18, 142));
         }
 	}
 
@@ -191,7 +191,7 @@ public class ContainerComplesser extends Container implements IPowerSwitchContai
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityCompresser)this.inventory).setField(id, data);

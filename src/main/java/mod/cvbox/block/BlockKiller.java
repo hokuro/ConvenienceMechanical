@@ -1,12 +1,13 @@
 package mod.cvbox.block;
 
 import mod.cvbox.block.ab.BlockPowerMachineContainer;
-import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.intaractionobject.IntaractionObjectKiller;
 import mod.cvbox.tileentity.TileEntityKiller;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.tileentity.TileEntity;
@@ -14,32 +15,36 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockKiller extends BlockPowerMachineContainer {
 
 	public BlockKiller() {
-		super(Material.GROUND);
-		this.setTickRandomly(false);
+		super(Block.Properties.create(Material.GROUND));
 	}
 
 	@Override
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-	}
-
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(IBlockReader worldIn) {
 		TileEntityKiller ret = new TileEntityKiller();
 		return ret;
 	}
 
 	@Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos,  EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+		if (!super.onBlockActivated(state, worldIn, pos, playerIn, hand, facing, hitX, hitY, hitZ)){
 	        if (!worldIn.isRemote)
 	        {
-	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_KILLER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	        	NetworkHooks.openGui((EntityPlayerMP)playerIn,
+	        			new IntaractionObjectKiller(pos),
+	        			(buf)->{
+							buf.writeInt(pos.getX());
+							buf.writeInt(pos.getY());
+							buf.writeInt(pos.getZ());
+						});
+	        	//playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_KILLER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 	        }
 		}
         return true;
@@ -53,7 +58,7 @@ public class BlockKiller extends BlockPowerMachineContainer {
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -62,7 +67,7 @@ public class BlockKiller extends BlockPowerMachineContainer {
             InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory)tileentity);
             worldIn.updateComparatorOutputLevel(pos, this);
         }
-        super.breakBlock(worldIn, pos, state);
+        super.onReplaced(state, worldIn, pos, newState, isMoving);
     }
 
 	@Override

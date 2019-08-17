@@ -1,25 +1,22 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.lwjgl.opengl.GL11;
 
 import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.core.PlayerExpBank;
 import mod.cvbox.inventory.ContainerExpCollector;
-import mod.cvbox.network.MessageEXPCollector_LevelUp;
-import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import mod.cvbox.tileentity.TileEntityExpCollector;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 
 public class GuiExpCollector  extends GuiContainer{
 
@@ -95,60 +92,145 @@ public class GuiExpCollector  extends GuiContainer{
 		int button_width = 20;
 		int button_height = 20;
 
-		this.buttonList.add(new GuiButton(1, x + 172, y + 7, button_width, button_height,
-				I18n.translateToLocal("gui.button_1")));
-		this.buttonList.add(new GuiButton(2, x + 172, y + 29, button_width, button_height,
-				I18n.translateToLocal("gui.button_2")));
-		this.buttonList.add(new GuiButton(3, x + 172, y + 51, button_width, button_height,
-				I18n.translateToLocal("gui.button_3")));
-		this.buttonList.add(new GuiButton(4, x + 172, y + 73, button_width, button_height,
-				I18n.translateToLocal("gui.button_4")));
-		this.buttonList.add(new GuiButton(5, x + 172, y + 94, button_width, button_height,
-				I18n.translateToLocal("gui.button_5")));
-		this.buttonList.add(new GuiButton(6, x + 193, y + 7, button_width, button_height,
-				I18n.translateToLocal("gui.button_6")));
-		this.buttonList.add(new GuiButton(7, x + 193, y + 29, button_width, button_height,
-				I18n.translateToLocal("gui.button_7")));
-		this.buttonList.add(new GuiButton(8, x + 193, y + 51, button_width, button_height,
-				I18n.translateToLocal("gui.button_8")));
-		this.buttonList.add(new GuiButton(9, x + 193, y + 73, button_width, button_height,
-				I18n.translateToLocal("gui.button_9")));
-		this.buttonList.add(new GuiButton(0, x + 193, y + 94, button_width, button_height,
-				I18n.translateToLocal("gui.button_0")));
+		GuiButton b1 = new GuiButton(1, x + 172, y + 7, button_width, button_height,
+				I18n.format("gui.button_1")){
+			@Override
+			public void onClick(double mouseX, double mouseY){
+				actionPerformed(this);
+			}
+		};
+				GuiButton b2 = new GuiButton(2, x + 172, y + 29, button_width, button_height,
+				I18n.format("gui.button_2")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b3 = new GuiButton(3, x + 172, y + 51, button_width, button_height,
+				I18n.format("gui.button_3")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b4 = new GuiButton(4, x + 172, y + 73, button_width, button_height,
+				I18n.format("gui.button_4")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b5 = new GuiButton(5, x + 172, y + 94, button_width, button_height,
+				I18n.format("gui.button_5")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b6 = new GuiButton(6, x + 193, y + 7, button_width, button_height,
+				I18n.format("gui.button_6")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b7 = new GuiButton(7, x + 193, y + 29, button_width, button_height,
+				I18n.format("gui.button_7")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b8 = new GuiButton(8, x + 193, y + 51, button_width, button_height,
+				I18n.format("gui.button_8")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b9 = new GuiButton(9, x + 193, y + 73, button_width, button_height,
+				I18n.format("gui.button_9")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b10 = new GuiButton(0, x + 193, y + 94, button_width, button_height,
+				I18n.format("gui.button_0")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
 
-		this.buttonList.add(new GuiButton(20, x + 172, y + 119, 41,
-				button_height, I18n.translateToLocal("gui.button_del")));
-		this.buttonList.add(new GuiButton(21, x + 172, y + 141, 41, button_height,
-				I18n.translateToLocal("gui.button_get")));
-		this.buttonList.add(new GuiButton(22, x + 135, y + 40, 34, 20,
-				I18n.translateToLocal("gui.button_all")));
+				GuiButton b11 = new GuiButton(20, x + 172, y + 119, 41,
+				button_height, I18n.format("gui.button_del")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b12 = new GuiButton(21, x + 172, y + 141, 41, button_height,
+				I18n.format("gui.button_get")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+				GuiButton b13 = new GuiButton(22, x + 135, y + 40, 34, 20,
+				I18n.format("gui.button_all")){
+					@Override
+					public void onClick(double mouseX, double mouseY){
+						actionPerformed(this);
+					}
+				};
+
+
+		this.buttons.add(b1);
+		this.buttons.add(b2);
+		this.buttons.add(b3);
+		this.buttons.add(b4);
+		this.buttons.add(b5);
+		this.buttons.add(b6);
+		this.buttons.add(b7);
+		this.buttons.add(b8);
+		this.buttons.add(b9);
+		this.buttons.add(b10);
+
+		this.buttons.add(b11);
+		this.buttons.add(b12);
+		this.buttons.add(b13);
+
+		this.children.addAll(buttons);
 	}
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
 
-        int l = mouseX - (i + 145);
-        int i1 = mouseY - (j + 7);
+        double l = mouseX - (i + 145);
+        double i1 = mouseY - (j + 7);
 
         if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
         {
-            Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
+        	MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER)));
+            //Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
         }
+        return true;
     }
 
-	public void drawScreen(int p1, int p2, float p3){
-		super.drawScreen(p1, p2, p3);;
+    @Override
+	public void render(int p1, int p2, float p3){
+		super.render(p1, p2, p3);;
 	}
 
-	public void keyTyped(char p1, int p2){
-		try{
-			super.keyTyped(p1, p2);
-		}catch(IOException e){
-		}
+	@Override
+	public boolean charTyped(char p1, int p2){
+			super.charTyped(p1, p2);
+
 		if (PlayerExpBank.use_keyboard){
 			if ((p2 == 11) || (p2 == 82)) {
 				push_exp(0);
@@ -184,19 +266,22 @@ public class GuiExpCollector  extends GuiContainer{
 				this.input_exp = 0;
 			}
 		}
+		return true;
 	}
 
+	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		this.fontRenderer.drawString(I18n.translateToLocal("gui.title.expcollector"), 8, 4, 4210752);
+		this.fontRenderer.drawString(I18n.format("gui.title.expcollector"), 8, 4, 4210752);
 	}
 
 
 
+	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		ResourceLocation GUI_RESOURCE_LOCATION = new ResourceLocation(ModCommon.MOD_ID+":"+"textures/gui/expcollector.png");
-		this.mc.renderEngine.bindTexture(GUI_RESOURCE_LOCATION);
+		this.mc.getTextureManager().bindTexture(GUI_RESOURCE_LOCATION);
 		int x = ((this.width - xSize) / 2);
 		int y = ((this.height - ySize) / 2);
 		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
@@ -273,12 +358,14 @@ public class GuiExpCollector  extends GuiContainer{
 			this.input_exp = 0;
 			return true;
 		case 21:
-			Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageEXPCollector_LevelUp(this.input_exp));
+			MessageHandler.SendMessage_ExpCollector_LevelUp(this.input_exp);
+			//Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageEXPCollector_LevelUp(this.input_exp));
 			te.setField(TileEntityExpCollector.FIELD_EXPVALUE, 0);
 			this.input_exp = 0;
 			return true;
 		case 22:
-			Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageEXPCollector_LevelUp(-1));
+			MessageHandler.SendMessage_ExpCollector_LevelUp(-1);
+			//Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageEXPCollector_LevelUp(-1));
 			this.input_exp = 0;
 			return true;
 		}

@@ -3,7 +3,7 @@ package mod.cvbox.inventory;
 import mod.cvbox.block.BlockCore;
 import mod.cvbox.config.ConfigValue;
 import mod.cvbox.core.Mod_ConvenienceBox;
-import mod.cvbox.network.MessageExEnchant_ClearParameter;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -21,12 +21,11 @@ import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.stats.StatList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerExEnchantment extends Container {
     /** SlotEnchantmentTable object with ItemStack to be enchanted */
@@ -43,7 +42,7 @@ public class ContainerExEnchantment extends Container {
     public int enc_level;
 
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ContainerExEnchantment(InventoryPlayer playerInv, World worldIn)
     {
         this(playerInv, worldIn, BlockPos.ORIGIN);
@@ -74,7 +73,7 @@ public class ContainerExEnchantment extends Container {
             }
         };
 
-        this.addSlotToContainer(new Slot(this.tableInventory, 0, 15, 25)
+        this.addSlot(new Slot(this.tableInventory, 0, 15, 25)
         {
             /**
              * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
@@ -92,11 +91,11 @@ public class ContainerExEnchantment extends Container {
                 return 1;
             }
         });
-        this.addSlotToContainer(new Slot(this.tableInventory, 1, 35, 26)
+        this.addSlot(new Slot(this.tableInventory, 1, 35, 26)
         {
             public boolean isItemValid(ItemStack stack)
             {
-            	return ModUtil.compareItemStacks(level[ConfigValue.ExEnchant.TributeItemLevel-1], stack, CompaierLevel.LEVEL_EQUAL_ITEM);
+            	return ModUtil.compareItemStacks(level[ConfigValue.exenchatn.TributeItemLevel()-1], stack, CompaierLevel.LEVEL_EQUAL_ITEM);
             }
 
             public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
@@ -114,13 +113,13 @@ public class ContainerExEnchantment extends Container {
         {
             for (int j = 0; j < 9; ++j)
             {
-                this.addSlotToContainer(new Slot(playerInv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                this.addSlot(new Slot(playerInv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
 
         for (int k = 0; k < 9; ++k)
         {
-            this.addSlotToContainer(new Slot(playerInv, k, 8 + k * 18, 142));
+            this.addSlot(new Slot(playerInv, k, 8 + k * 18, 142));
         }
     }
 
@@ -140,7 +139,8 @@ public class ContainerExEnchantment extends Container {
             if (inventoryIn == this.tableInventory)
             {
             	if (ModUtil.compareItemStacks(before_sucrifice, this.tableInventory.getStackInSlot(1), CompaierLevel.LEVEL_EQUAL_ALL)){
-            		Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExEnchant_ClearParameter(), (EntityPlayerMP)player);
+    				MessageHandler.SendMessage_ExEnchant_ClearParameter((EntityPlayerMP) player);
+    				//Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExEnchant_ClearParameter(), (EntityPlayerMP) player);
             	}
             	before_sucrifice = this.tableInventory.getStackInSlot(1).copy();
             }
@@ -168,7 +168,7 @@ public class ContainerExEnchantment extends Container {
     {
         if (this.worldPointer.getBlockState(this.position).getBlock() != BlockCore.block_exenchanter)
         {
-            return false;
+            return true;
         }
         else
         {
@@ -204,7 +204,7 @@ public class ContainerExEnchantment extends Container {
                     return ItemStack.EMPTY;
                 }
             }
-            else if (itemstack1.getItem() == level[ConfigValue.ExEnchant.TributeItemLevel-1].getItem())
+            else if (itemstack1.getItem() == level[ConfigValue.exenchatn.TributeItemLevel()-1].getItem())
             {
                 if (!this.mergeItemStack(itemstack1, 1, 2, true))
                 {
@@ -218,14 +218,14 @@ public class ContainerExEnchantment extends Container {
                     return ItemStack.EMPTY;
                 }
 
-                if (itemstack1.hasTagCompound() && itemstack1.getCount() == 1)
+                if (itemstack1.hasTag() && itemstack1.getCount() == 1)
                 {
                     ((Slot)this.inventorySlots.get(0)).putStack(itemstack1.copy());
                     itemstack1.setCount(0);
                 }
                 else if (!itemstack1.isEmpty())
                 {
-                    ((Slot)this.inventorySlots.get(0)).putStack(new ItemStack(itemstack1.getItem(), 1, itemstack1.getMetadata()));
+                    ((Slot)this.inventorySlots.get(0)).putStack(new ItemStack(itemstack1.getItem(), 1));
                     itemstack1.shrink(1);
                 }
             }
@@ -253,7 +253,7 @@ public class ContainerExEnchantment extends Container {
     private boolean chktret = false;
     public boolean checkTributeItemCnt(){
     	ItemStack item = this.tableInventory.getStackInSlot(1);
-    	if (!item.isEmpty() && item.getCount() >= ConfigValue.ExEnchant.TrubuteItemCount){
+    	if (!item.isEmpty() && item.getCount() >= ConfigValue.exenchatn.TrubuteItemCount()){
     		return true;
     	}else{
     		return false;
@@ -313,10 +313,10 @@ public class ContainerExEnchantment extends Container {
 
 	protected Enchantment[] readEnchant(ItemStack stack){
 		NBTTagList encs = stack.getEnchantmentTagList();
-		Enchantment[] ret = new Enchantment[encs.tagCount()];
+		Enchantment[] ret = new Enchantment[encs.size()];
 
 		for (int i = 0; i < ret.length; i++){
-			NBTTagCompound nbt = encs.getCompoundTagAt(i);
+			NBTTagCompound nbt = encs.getCompound(i);
 			short id = nbt.getShort("id");
 			ret[i] = Enchantment.getEnchantmentByID(id);
 		}
@@ -334,13 +334,13 @@ public class ContainerExEnchantment extends Container {
     {
         ItemStack itemstack = this.tableInventory.getStackInSlot(0);
         ItemStack itemstack1 = this.tableInventory.getStackInSlot(1);
-        int itemCnt = ConfigValue.ExEnchant.TrubuteItemCount;
+        int itemCnt = ConfigValue.exenchatn.TrubuteItemCount();
 
-        if ((itemstack1.isEmpty() || itemstack1.getCount() < itemCnt) && !playerIn.capabilities.isCreativeMode)
+        if ((itemstack1.isEmpty() || itemstack1.getCount() < itemCnt) && !playerIn.abilities.isCreativeMode)
         {
             return false;
         }
-        else if (!itemstack.isEmpty() && (playerIn.experienceLevel >= getNeedLevel() || playerIn.capabilities.isCreativeMode))
+        else if (!itemstack.isEmpty() && (playerIn.experienceLevel >= getNeedLevel() || playerIn.abilities.isCreativeMode))
         {
             if (!this.worldPointer.isRemote)
             {
@@ -363,7 +363,7 @@ public class ContainerExEnchantment extends Container {
                     itemstack.addEnchantment(enc, enc_level);
                 }
 
-                if (!playerIn.capabilities.isCreativeMode)
+                if (!playerIn.abilities.isCreativeMode)
                 {
                     itemstack1.shrink(itemCnt);
 
@@ -372,7 +372,6 @@ public class ContainerExEnchantment extends Container {
                         this.tableInventory.setInventorySlotContents(1, ItemStack.EMPTY);
                     }
                 }
-                playerIn.addStat(StatList.ITEM_ENCHANTED);
 
                 if (playerIn instanceof EntityPlayerMP)
                 {
@@ -399,7 +398,8 @@ public class ContainerExEnchantment extends Container {
 	public static void execEnchant(EntityPlayer player) {
 		if (player.openContainer instanceof ContainerExEnchantment){
 			if (((ContainerExEnchantment)player.openContainer).enchantItem(player)){
-				Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExEnchant_ClearParameter(), (EntityPlayerMP) player);
+				MessageHandler.SendMessage_ExEnchant_ClearParameter((EntityPlayerMP) player);
+				//Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExEnchant_ClearParameter(), (EntityPlayerMP) player);
 			}
 		}
 	}

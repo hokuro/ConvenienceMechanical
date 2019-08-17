@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:planter" }
+        "":{ "model":"cvbox:block/planter" }
     }
 }

@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:liquidmaker" }
+        "":{ "model":"cvbox:block/liquidmaker" }
     }
 }

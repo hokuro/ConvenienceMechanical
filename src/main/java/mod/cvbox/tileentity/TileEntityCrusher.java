@@ -2,6 +2,7 @@ package mod.cvbox.tileentity;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
 import net.minecraft.block.Block;
@@ -16,11 +17,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityCrusher extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	public static final String NAME = "crusher";
@@ -51,7 +54,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	private ItemStack nextDrop;
 
 	public TileEntityCrusher(){
-		super();
+		super(EntityCore.Crusher);
 		power = false;
 		powder_dirt = 0;
 		powder_grave = 0;
@@ -66,7 +69,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (isCrushing()){
 			crush_count++;
 		}
@@ -108,7 +111,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -116,13 +119,13 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 
 	private boolean checkPowerOn(){
 		ItemStack st = getBattery();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getBattery().getItemDamage()+1;
-		getBattery().setItemDamage(damage);
+		int damage = getBattery().getDamage()+1;
+		getBattery().setDamage(damage);
 	}
 
     private void crush_block()
@@ -133,9 +136,9 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     		if (powder_dirt >= 100){
     			powder_dirt = 0;
     			if (stacks.get(2).getItem() == Items.WATER_BUCKET){
-    				output(new ItemStack(Items.CLAY_BALL,4,0));
+    				output(new ItemStack(Items.CLAY_BALL,4));
     			}else{
-    				output(new ItemStack(Blocks.DIRT,1,0));
+    				output(new ItemStack(Blocks.DIRT,1));
     			}
     		}
     		break;
@@ -143,14 +146,14 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     		this.powder_grave += 20;
     		if (powder_grave >= 100){
     			powder_grave = 0;
-    			output(new ItemStack(Blocks.GRAVEL,1,0));
+    			output(new ItemStack(Blocks.GRAVEL,1));
     		}
     		break;
     	case 3:
     		this.powder_sand += 10;
     		if (powder_sand >= 100){
     			powder_sand = 0;
-    			output(new ItemStack(Blocks.SAND,1,0));
+    			output(new ItemStack(Blocks.SAND,1));
     		}
     		break;
     	}
@@ -163,7 +166,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     			this.setInventorySlotContents(i, item.copy());
     			item = ItemStack.EMPTY;
     			break;
-    		}else if (ModUtil.compareItemStacks(item2, item, CompaierLevel.LEVEL_EQUAL_META)){
+    		}else if (ModUtil.compareItemStacks(item2, item, CompaierLevel.LEVEL_EQUAL_ITEM)){
     			if (item2.getCount()+item.getCount() <= item.getMaxStackSize()){
     				item2.grow(item.getCount());
     				item.shrink(item.getCount());
@@ -178,43 +181,46 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
 
 
-		powder_dirt=compound.getInteger("dirt");
-		powder_grave=compound.getInteger("grave");
-		powder_sand=compound.getInteger("sand");
-		select=compound.getInteger("select");
-		crush_count=compound.getInteger("count");
-		power_count=compound.getInteger("power_count");
+		powder_dirt=compound.getInt("dirt");
+		powder_grave=compound.getInt("grave");
+		powder_sand=compound.getInt("sand");
+		select=compound.getInt("select");
+		crush_count=compound.getInt("count");
+		power_count=compound.getInt("power_count");
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}else{
-				nextDrop = new ItemStack(itemTagCompound);
-			}
-		}
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}else{
+//				nextDrop = new ItemStack(itemTagCompound);
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("dirt", powder_dirt);
-		compound.setInteger("grave", powder_grave);
-		compound.setInteger("sand", powder_sand);
-		compound.setInteger("select", select);
-		compound.setInteger("count", crush_count);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("dirt", powder_dirt);
+		compound.setInt("grave", powder_grave);
+		compound.setInt("sand", powder_sand);
+		compound.setInt("select", select);
+		compound.setInt("count", crush_count);
+		compound.setInt("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size()+1; slotIndex++){
@@ -222,11 +228,11 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 
 			itemTagCompound.setByte("Slot",(byte)slotIndex);
 			if (stacks.size()>slotIndex){
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
 			}else{
-				nextDrop.writeToNBT(itemTagCompound);
+				nextDrop.write(itemTagCompound);
 			}
-			itemsTagList.appendTag(itemTagCompound);
+			itemsTagList.add(itemTagCompound);
 		}
 		compound.setTag("Items",itemsTagList);
 
@@ -237,26 +243,26 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.crusher";
+	public ITextComponent getName() {
+		return  new TextComponentTranslation("tileentity.crusher");
 	}
 
 	@Override
@@ -277,7 +283,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 		if (direction == EnumFacing.DOWN){
 			return false;
 		}else{
-			return Block.getBlockFromItem(itemStackIn.getItem()).getStateFromMeta(itemStackIn.getMetadata()).getMaterial() == Material.ROCK;
+			return Block.getBlockFromItem(itemStackIn.getItem()).getMaterial(Block.getBlockFromItem(itemStackIn.getItem()).getDefaultState()) == Material.ROCK;
 		}
 	}
 
@@ -351,7 +357,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
 		if (index == 0){
-			return Block.getBlockFromItem(stack.getItem()).getStateFromMeta(stack.getMetadata()).getMaterial() == Material.ROCK;
+			return Block.getBlockFromItem(stack.getItem()).getMaterial(Block.getBlockFromItem(stack.getItem()).getDefaultState()) == Material.ROCK;
 		}else if (index == 1){
 			return Items.WATER_BUCKET == stack.getItem();
 		}
@@ -381,7 +387,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 			ret = crush_count;
 			break;
 		case FIELD_BATTERY:
-			ret = stacks.get(0).getItemDamage();
+			ret = stacks.get(0).getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = stacks.get(0).getMaxDamage();
@@ -413,7 +419,7 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 			break;
 
 		case FIELD_BATTERY:
-			stacks.get(0).setItemDamage(value);
+			stacks.get(0).setDamage(value);
 			break;
 		}
 	}
@@ -443,5 +449,23 @@ public class TileEntityCrusher extends TileEntity  implements IInventory, ITicka
 	@Override
 	public void setPower(boolean value) {
 		this.power = value;
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

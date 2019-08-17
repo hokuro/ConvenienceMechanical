@@ -7,6 +7,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.mojang.authlib.GameProfile;
 
 import mod.cvbox.config.ConfigValue;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.inventory.ContainerAutoPlanting;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
@@ -19,23 +20,23 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityWoodPlanter extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT+1;
-	public static final String NAME = "WoodPlanting";
+	public static final String NAME = "woodplanting";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_DELIVER = 1;
 	public static final int FIELD_BATTERY = 2;
@@ -43,7 +44,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 	public static final int FIELD_NEXT_X = 4;
 	public static final int FIELD_NEXT_Z = 5;
 	public static final int FILED_NEXTPOS = 6;
-	private final NonNullList<ItemStack> stacks;
+	private NonNullList<ItemStack> stacks;
 	private String customName;
 	private EntityPlayerDummy dummy;
 
@@ -61,6 +62,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 
 
 	public TileEntityWoodPlanter(){
+		super(EntityCore.WoodPlanter);
 		stacks = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
 		power = false;
 		SLOTS_TOP = new int[max];
@@ -78,11 +80,11 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 	}
 
 	public void makeArray(){
-		int size = (ConfigValue.WoodPlanter.MaxDistance * 2 + 1) * (ConfigValue.WoodPlanter.MaxDistance * 2 + 1) -1;
+		int size = (ConfigValue.woodplanter.MaxDistance() * 2 + 1) * (ConfigValue.woodplanter.MaxDistance() * 2 + 1) -1;
 		next_x = new int[size];
 		next_z = new int[size];
 
-		int maxLp = ConfigValue.WoodPlanter.MaxDistance * 4 + 1;
+		int maxLp = ConfigValue.woodplanter.MaxDistance() * 4 + 1;
 		int len = 0;
 		int x = 0;
 		int z = 0;
@@ -108,7 +110,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 	/////////////////////////////////////////////////////////////////////////////////
 	// ITickable
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -118,8 +120,8 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 			}
 			if (checkPowerOn()){
 				this.timeCnt++;
-				if (timeCnt >= ConfigValue.Planter.ExecTimeSpan){
-					for (int i = 0; i < ConfigValue.Planter.OneTicPlant; i++){
+				if (timeCnt >= ConfigValue.woodplanter.ExecTimeSpan()){
+					for (int i = 0; i < ConfigValue.woodplanter.OneTicPlant(); i++){
 						if (Exec().isEmpty()){
 							break;
 						}
@@ -143,7 +145,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -151,13 +153,13 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 
@@ -165,7 +167,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 		ItemStack seeds = nextItem();
 		if (!seeds.isEmpty()){
 			dummy.setHeldItem(EnumHand.MAIN_HAND, seeds);
-			for (int y = -ConfigValue.WoodPlanter.MaxHeight; y <= ConfigValue.WoodPlanter.MaxHeight; y++){
+			for (int y = -ConfigValue.woodplanter.MaxHeight(); y <= ConfigValue.woodplanter.MaxHeight(); y++){
 				BlockPos plantPos = new BlockPos(this.pos.add(
 						next_x[nextPos],
 						y,
@@ -175,7 +177,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 				if (state.getMaterial() == Material.AIR){continue;}
 
 				// 植樹
-				seeds.onItemUse(dummy, world, plantPos, EnumHand.MAIN_HAND, EnumFacing.UP, 1.0f, 1.0f, 1.0f);
+				seeds.onItemUse(new ItemUseContext(dummy, seeds, plantPos, EnumFacing.UP, 1.0f, 1.0f, 1.0f));
 				if (seeds.getCount() <= 0 || seeds.isEmpty()){
 					break;
 				}
@@ -205,7 +207,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 				ret = true;
 				break;
 			}
-			if (item.getCount() >= item.getItem().getItemStackLimit()){
+			if (item.getCount() >= item.getItem().getMaxStackSize()){
 				ret = true;
 				break;
 			}
@@ -219,31 +221,34 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbtTagCompound){
-		super.readFromNBT(nbtTagCompound);
+	public void read(NBTTagCompound nbtTagCompound){
+		super.read(nbtTagCompound);
 		power = nbtTagCompound.getBoolean("isrun");
-		nextPos = nbtTagCompound.getInteger("next");
+		nextPos = nbtTagCompound.getInt("next");
 		canDeliver = nbtTagCompound.getBoolean("deliver");
-		power_count=nbtTagCompound.getInteger("power_count");
-		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
+		power_count=nbtTagCompound.getInt("power_count");
 
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
-
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < max)){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(nbtTagCompound, this.stacks);
+//		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
+//
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < max)){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound){
-		super.writeToNBT(nbtTagCompound);
+	public NBTTagCompound write(NBTTagCompound nbtTagCompound){
+		super.write(nbtTagCompound);
 		nbtTagCompound.setBoolean("isrun", power);
-		nbtTagCompound.setInteger("next", nextPos);
+		nbtTagCompound.setInt("next", nextPos);
 		nbtTagCompound.setBoolean("deliver",canDeliver);
-		nbtTagCompound.setInteger("power_count",power_count);
+		nbtTagCompound.setInt("power_count",power_count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < max; slotIndex++){
@@ -251,8 +256,8 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
-				itemsTagList.appendTag(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
+				itemsTagList.add(itemTagCompound);
 			}
 		}
 		nbtTagCompound.setTag("Items",itemsTagList);
@@ -263,21 +268,21 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
@@ -310,8 +315,8 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 
 
 	@Override
-	public String getName() {
-		return this.hasCustomName() ? this.customName : "container.TileEntityAutoPlanting";
+	public ITextComponent getName() {
+		return this.hasCustomName() ? new TextComponentTranslation(this.customName) : new TextComponentTranslation("container.TileEntityAutoPlanting");
 	}
 
 	@Override
@@ -344,7 +349,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 			break;
 
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -377,7 +382,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 			break;
 
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		case FILED_NEXTPOS:
 			nextPos = value;
@@ -404,7 +409,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 
 	@Override
 	public ITextComponent getDisplayName() {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+        return (this.hasCustomName() ? this.getName() : this.getName());
 	}
 
 	@Override
@@ -478,7 +483,7 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 						this.stacks.set(i,itemIn);
 						ret = true;
 						break;
-					}else if (ModUtil.compareItemStacks(stack,item2,CompaierLevel.LEVEL_EQUAL_META) && item2.getCount() < item2.getMaxStackSize()){
+					}else if (ModUtil.compareItemStacks(stack,item2,CompaierLevel.LEVEL_EQUAL_ITEM) && item2.getCount() < item2.getMaxStackSize()){
 						item2.grow(1);
 						ret = true;
 						break;
@@ -500,6 +505,24 @@ public class TileEntityWoodPlanter extends TileEntity  implements IInventory, IT
 
 	public void reset() {
 		nextPos = 0;
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

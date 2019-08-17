@@ -1,13 +1,13 @@
 package mod.cvbox.block;
 
 import mod.cvbox.block.ab.BlockFacingMachineContainer;
-import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.intaractionobject.IntaractionObjectSetter;
 import mod.cvbox.tileentity.TileEntitySetter;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,26 +15,33 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockSetter extends BlockFacingMachineContainer {
 
 	public BlockSetter() {
-		super(Material.GROUND);
-		this.setTickRandomly(false);
-		this.nextUpdateTick = 20;
+		super(Block.Properties.create(Material.GROUND));
 	}
 
 	@Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+		if (!super.onBlockActivated(state, worldIn, pos, playerIn, hand, facing, hitX, hitY, hitZ)){
 	        if (worldIn.isRemote)
 	        {
 	        }
 	        else
 	        {
-	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_SETTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	        	NetworkHooks.openGui((EntityPlayerMP)playerIn,
+            			new IntaractionObjectSetter(pos),
+            			(buf)->{
+    						buf.writeInt(pos.getX());
+    						buf.writeInt(pos.getY());
+    						buf.writeInt(pos.getZ());
+    					});
+            	//playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_SETTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 
 	        }
 		}
@@ -42,9 +49,9 @@ public class BlockSetter extends BlockFacingMachineContainer {
     }
 
 	@Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    public void onBlockAdded(IBlockState state, World worldIn, BlockPos pos, IBlockState oldState)
     {
-		super.onBlockAdded(worldIn, pos, state);
+		super.onBlockAdded(state, worldIn, pos, oldState);
     }
 
 	@Override
@@ -55,7 +62,7 @@ public class BlockSetter extends BlockFacingMachineContainer {
 
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(IBlockReader world) {
 		return new TileEntitySetter();
 	}
 
@@ -66,7 +73,7 @@ public class BlockSetter extends BlockFacingMachineContainer {
     }
 
 	@Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newstate, boolean isMoving)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -76,7 +83,7 @@ public class BlockSetter extends BlockFacingMachineContainer {
             worldIn.updateComparatorOutputLevel(pos, this);
         }
 
-        super.breakBlock(worldIn, pos, state);
+        super.onReplaced(state, worldIn, pos, newstate, isMoving);
     }
 
 	protected void SpawnBlock(World worldIn, BlockPos pos, EnumFacing front){
@@ -92,7 +99,7 @@ public class BlockSetter extends BlockFacingMachineContainer {
         	if (i >= 0){
         		ItemStack itemstack = seter.getStackInSlot(i);
         		Block setBlock = Block.getBlockFromItem(itemstack.getItem());
-        		if (worldIn.setBlockState(pos2, setBlock.getStateFromMeta(itemstack.getMetadata()))){
+        		if (worldIn.setBlockState(pos2, setBlock.getDefaultState())){
         			itemstack.shrink(1);
         		}
         	}

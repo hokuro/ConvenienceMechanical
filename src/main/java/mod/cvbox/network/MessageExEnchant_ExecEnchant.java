@@ -1,32 +1,37 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import mod.cvbox.inventory.ContainerExEnchantment;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageExEnchant_ExecEnchant  implements IMessage, IMessageHandler<MessageExEnchant_ExecEnchant, IMessage> {
+public class MessageExEnchant_ExecEnchant {
 
 	public MessageExEnchant_ExecEnchant(){}
 
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
+	public static void encode(MessageExEnchant_ExecEnchant pkt, PacketBuffer buf)
+	{
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
+	public static MessageExEnchant_ExecEnchant decode(PacketBuffer buf)
+	{
+		return new MessageExEnchant_ExecEnchant();
 	}
 
-	@Override
-	public IMessage onMessage(MessageExEnchant_ExecEnchant message, MessageContext ctx){
-        EntityPlayer player = ctx.getServerHandler().player;
-		if (player != null){
-			ContainerExEnchantment.execEnchant(player);
+	public static class Handler
+	{
+		public static void handle(final MessageExEnchant_ExecEnchant pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if (player != null){
+					ContainerExEnchantment.execEnchant(player);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
-
 }

@@ -1,13 +1,13 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
-import mod.cvbox.gui.GuiExpBank;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import java.util.function.Supplier;
 
-public class MessageExpBank_ExperienceInfo implements IMessage, IMessageHandler<MessageExpBank_ExperienceInfo, IMessage> {
+import mod.cvbox.gui.GuiExpBank;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public class MessageExpBank_ExperienceInfo {
 	private int player_exp;
 	private int box_exp;
 
@@ -20,21 +20,28 @@ public class MessageExpBank_ExperienceInfo implements IMessage, IMessageHandler<
 		this.box_exp = box_exp;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		player_exp = buf.readInt();
-		box_exp = buf.readInt();
+	public static void encode(MessageExpBank_ExperienceInfo pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.player_exp);
+		buf.writeInt(pkt.box_exp);
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(player_exp);
-		buf.writeInt(box_exp);
+	public static MessageExpBank_ExperienceInfo decode(PacketBuffer buf)
+	{
+		int pexp = buf.readInt();
+		int bexp = buf.readInt();
+		return new MessageExpBank_ExperienceInfo(pexp,bexp);
 	}
 
-	public IMessage onMessage(MessageExpBank_ExperienceInfo message, MessageContext ctx){
-		GuiExpBank.getPacket(FMLClientHandler.instance().getClient().player.getPersistentID().toString(),message.box_exp, message.player_exp);
-		return null;
+	public static class Handler
+	{
+		public static void handle(final MessageExpBank_ExperienceInfo pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				String uname = Minecraft.getInstance().player.getUniqueID().toString();
+				GuiExpBank.getPacket(uname, pkt.box_exp, pkt.player_exp);
+			});
+			ctx.get().setPacketHandled(true);
+		}
 	}
-
 }

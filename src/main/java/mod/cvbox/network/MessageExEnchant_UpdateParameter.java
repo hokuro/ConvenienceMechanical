@@ -1,13 +1,13 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
-import mod.cvbox.inventory.ContainerExEnchantment;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import java.util.function.Supplier;
 
-public class MessageExEnchant_UpdateParameter implements IMessage, IMessageHandler<MessageExEnchant_UpdateParameter, IMessage> {
+import mod.cvbox.inventory.ContainerExEnchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+public class MessageExEnchant_UpdateParameter{
 
 	private int enc_index;
 	private int enc_level;
@@ -22,24 +22,29 @@ public class MessageExEnchant_UpdateParameter implements IMessage, IMessageHandl
 	public int getIndex(){return enc_index;}
 	public int getLevel(){return enc_level;}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		enc_index = buf.readInt();
-		enc_level = buf.readInt();
+	public static void encode(MessageExEnchant_UpdateParameter pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.enc_index);
+		buf.writeInt(pkt.enc_level);
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(enc_index);
-		buf.writeInt(enc_level);
+	public static MessageExEnchant_UpdateParameter decode(PacketBuffer buf)
+	{
+		return new MessageExEnchant_UpdateParameter(buf.readInt(),buf.readInt());
 	}
 
-	@Override
-	public IMessage onMessage(MessageExEnchant_UpdateParameter message, MessageContext ctx){
-		EntityPlayerMP entityPlayer = ctx.getServerHandler().player;
-		if (entityPlayer != null){
-			ContainerExEnchantment.updateEnchantment(message.getIndex(),message.getLevel(),entityPlayer);
+	public static class Handler
+	{
+		public static void handle(final MessageExEnchant_UpdateParameter pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if (player != null){
+					ContainerExEnchantment.updateEnchantment(pkt.getIndex(),pkt.getLevel(),player);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
+
 }

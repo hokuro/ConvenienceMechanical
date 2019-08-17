@@ -1,14 +1,14 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import mod.cvbox.inventory.ContainerDestroyer;
 import mod.cvbox.tileentity.TileEntityDestroyer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class Message_UpdateDestroy  implements IMessage, IMessageHandler<Message_UpdateDestroy, IMessage> {
+public class Message_UpdateDestroy  {
 
 	private int mode;
 	private float time;
@@ -20,25 +20,30 @@ public class Message_UpdateDestroy  implements IMessage, IMessageHandler<Message
 		time = itime;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		mode = buf.readInt();
-		time = buf.readFloat();
+	public static void encode(Message_UpdateDestroy pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.mode);
+		buf.writeFloat(pkt.time);
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(mode);
-		buf.writeFloat(time);
+	public static Message_UpdateDestroy decode(PacketBuffer buf)
+	{
+
+		return new Message_UpdateDestroy(buf.readInt(),buf.readFloat());
 	}
 
-	@Override
-	public IMessage onMessage(Message_UpdateDestroy message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		if ( player.openContainer instanceof ContainerDestroyer){
-			TileEntityDestroyer destroyer = (TileEntityDestroyer)((ContainerDestroyer) player.openContainer).getTileEntity();
-			destroyer.updateValues(message.mode,message.time);
+	public static class Handler
+	{
+		public static void handle(final Message_UpdateDestroy pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerDestroyer){
+					TileEntityDestroyer destroyer = (TileEntityDestroyer)((ContainerDestroyer) player.openContainer).getTileEntity();
+					destroyer.updateValues(pkt.mode,pkt.time);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
 }

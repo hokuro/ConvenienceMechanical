@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.BooleanUtils;
 
 import mod.cvbox.config.ConfigValue;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.inventory.ContainerAutoPlanting;
 import mod.cvbox.item.ItemSickle;
 import mod.cvbox.util.ModUtil;
@@ -15,6 +16,7 @@ import net.minecraft.block.BlockBeetroot;
 import net.minecraft.block.BlockCarrot;
 import net.minecraft.block.BlockCocoa;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockMelon;
 import net.minecraft.block.BlockNetherWart;
 import net.minecraft.block.BlockPotato;
 import net.minecraft.block.material.Material;
@@ -23,7 +25,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -31,19 +32,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityHarvester extends TileEntity  implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	private final static int max = ContainerAutoPlanting.ROW_SLOT * ContainerAutoPlanting.COL_SLOT+2;
-	public static final String NAME = "AutoHarvest";
+	public static final String NAME = "autoharvester";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_DELIVER = 1;
 	public static final int FIELD_BATTERY = 2;
@@ -52,7 +52,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	public static final int FIELD_NEXT_Z = 5;
 	public static final int FILED_NEXTPOS = 6;
 
-	private final NonNullList<ItemStack> stacks;
+	private NonNullList<ItemStack> stacks;
 	private String customName;
 
 
@@ -73,6 +73,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	private int power_count;
 
 	public TileEntityHarvester(){
+		super(EntityCore.Harvester);
 		stacks = NonNullList.<ItemStack>withSize(max, ItemStack.EMPTY);
 		power = false;
 		SLOTS_TOP = new int[max-2];
@@ -92,11 +93,11 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	}
 
 	public void makeArray(){
-		int size = (ConfigValue.Harvester.MaxDistance * 2 + 1) * (ConfigValue.Harvester.MaxDistance * 2 + 1) -1;
+		int size = (ConfigValue.harvester.MaxDistance() * 2 + 1) * (ConfigValue.harvester.MaxDistance() * 2 + 1) -1;
 		next_x = new int[size];
 		next_z = new int[size];
 
-		int maxLp = ConfigValue.Harvester.MaxDistance * 4 + 1;
+		int maxLp = ConfigValue.harvester.MaxDistance() * 4 + 1;
 		int len = 0;
 		int x = 0;
 		int z = 0;
@@ -122,17 +123,17 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	/////////////////////////////////////////////////////////////////////////////////
 	// ITickable
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
 		if (!world.isRemote){
 			if (checkPowerOn()){
 				this.timeCnt++;
-				if (timeCnt >= ConfigValue.Harvester.ExecTimeSpan){
+				if (timeCnt >= ConfigValue.harvester.ExecTimeSpan()){
 					if (!fullInventory()){
 
-						for (int i = 0; i < ConfigValue.Harvester.OneTicPlant; i++){
+						for (int i = 0; i < ConfigValue.harvester.OneTicPlant(); i++){
 							Exec();
 						}
 					}
@@ -161,7 +162,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
 					if (Math.random() > 0.7){
-						ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+						ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 					}
 				}
 			}
@@ -170,19 +171,20 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 
 	public void Exec(){
-		List<ItemStack> drops;
-		for (int y = -ConfigValue.Harvester.MaxHeight; y <= ConfigValue.Harvester.MaxHeight; y++){
+		//List<ItemStack> drops = new ArrayList<ItemStack>();
+		NonNullList<ItemStack> drops = NonNullList.create();
+		for (int y = -ConfigValue.harvester.MaxHeight(); y <= ConfigValue.harvester.MaxHeight(); y++){
 			boolean canhavest = false;
 			BlockPos plantPos = new BlockPos(this.pos.add(
 					next_x[nextPos],
@@ -195,34 +197,45 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 
 			if (block == Blocks.WHEAT &&
 					((BlockCrops)block).isMaxAge(state)){
-				drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				//drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel).asItem()));
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.POTATOES &&
 					((BlockPotato)block).isMaxAge(state)){
-				drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				//drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel).asItem()));
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.CARROTS &&
 					((BlockCarrot)block).isMaxAge(state)){
-				drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				//drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel).asItem()));
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.BEETROOTS &&
 					((BlockBeetroot)block).isMaxAge(state)){
-						drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+						//drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel).asItem()));
 						if (this.harvest(drops)){
 							world.destroyBlock(plantPos, false);
 						}
 			}else if (block == Blocks.NETHER_WART &&
-					((BlockNetherWart)block).getMetaFromState(state) >= 3){
-				drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+					(state).get(BlockNetherWart.AGE) >= 3){
+				//drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel).asItem()));
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
@@ -230,51 +243,58 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 			}else if (block == Blocks.CACTUS &&
 					world.getBlockState(plantPos.offset(EnumFacing.DOWN)).getBlock() == Blocks.CACTUS &&
 					world.getBlockState(plantPos.offset(EnumFacing.UP)).getBlock() != Blocks.CACTUS){
-				drops = new ArrayList(){
-					{add(new ItemStack(Blocks.CACTUS,1));}
-				};
+				//drops.add(new ItemStack(Blocks.CACTUS,1));
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
-			}else if (block == Blocks.REEDS &&
-					world.getBlockState(plantPos.offset(EnumFacing.DOWN)).getBlock() == Blocks.REEDS &&
-					world.getBlockState(plantPos.offset(EnumFacing.UP)).getBlock() != Blocks.REEDS){
-				drops = new ArrayList(){
-					{add(new ItemStack(Items.REEDS,1));}
-				};
+			}else if (block == Blocks.SUGAR_CANE &&
+					world.getBlockState(plantPos.offset(EnumFacing.DOWN)).getBlock() == Blocks.SUGAR_CANE &&
+					world.getBlockState(plantPos.offset(EnumFacing.UP)).getBlock() != Blocks.SUGAR_CANE){
+				//drops.add(new ItemStack(Blocks.SUGAR_CANE,1));
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
-			}else if (block == Blocks.MELON_BLOCK){
-				drops = new ArrayList(){
-					{add(new ItemStack(Items.MELON,8));}
-				};
+			}else if (block == Blocks.MELON){
+				BlockMelon blk = (BlockMelon)block;
+
+				drops.add(new ItemStack(blk.getItemDropped(state, world, plantPos, this.fotuneLevel),
+						blk.quantityDropped(state, world.rand)));
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.PUMPKIN){
-				drops = new ArrayList(){
-					{add(new ItemStack(Blocks.PUMPKIN,1));}
-				};
+//				drops = new ArrayList(){
+//					{add(new ItemStack(Blocks.PUMPKIN,1));}
+//				};
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.COCOA  &&
 					!((BlockCocoa)block).canGrow(this.world,plantPos,state,false)){
-				drops = block.getDrops(this.world, plantPos, state, this.fotuneLevel);
+				//drops.add(new ItemStack(block.getItemDropped(state, this.world, plantPos, this.fotuneLevel)));
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
 				}
 			}else if (block == Blocks.CHORUS_FLOWER &&
 					world.getBlockState(plantPos.offset(EnumFacing.DOWN)).getBlock() != Blocks.END_STONE){
-				drops = new ArrayList(){
-					{add(new ItemStack(Blocks.CHORUS_FLOWER));}
-				};
+//				drops = new ArrayList(){
+//					{add(new ItemStack(Blocks.CHORUS_FLOWER));}
+//				};
+
+				block.getDrops(state, drops, world, plantPos, this.fotuneLevel);
 				if (this.harvest(drops)){
 					world.destroyBlock(plantPos, false);
 					canhavest = true;
@@ -333,8 +353,8 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 
 	private BlockPos searchPlanter(){
 		BlockPos ret = null;
-		int size = (ConfigValue.Harvester.SearchPlanter * 2 + 1) * (ConfigValue.Harvester.SearchPlanter * 2 + 1) -1;
-		int maxLp = ConfigValue.Harvester.SearchPlanter * 4 + 1;
+		int size = (ConfigValue.harvester.SearchPlanter() * 2 + 1) * (ConfigValue.harvester.SearchPlanter() * 2 + 1) -1;
+		int maxLp = ConfigValue.harvester.SearchPlanter() * 4 + 1;
 		int len = 0;
 		int x = 0;
 		int z = 0;
@@ -343,7 +363,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 		for (int i = 0; i < maxLp && !findPlanter; i ++){
 			if (i%2 == 0 && i != maxLp-1){len++;}
 			for (int j = 0; j < len; j++){
-				for (int y = -ConfigValue.Harvester.SearchPlanter; y < ConfigValue.Harvester.SearchPlanter+1 && !findPlanter; y++){
+				for (int y = -ConfigValue.harvester.SearchPlanter(); y < ConfigValue.harvester.SearchPlanter()+1 && !findPlanter; y++){
 
 					TileEntity te = world.getTileEntity(this.pos.add(x,y,z));
 					if (te instanceof TileEntityPlanter){
@@ -359,7 +379,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 				case 3: z--;break;
 				}
 			}
-			for (int y = -ConfigValue.Harvester.SearchPlanter; y < ConfigValue.Harvester.SearchPlanter+1 && !findPlanter; y++){
+			for (int y = -ConfigValue.harvester.SearchPlanter(); y < ConfigValue.harvester.SearchPlanter()+1 && !findPlanter; y++){
 				TileEntity te = world.getTileEntity(this.pos.add(x,y,z));
 				if (te instanceof TileEntityPlanter){
 					if (((TileEntityPlanter)te).canDeliver())
@@ -372,7 +392,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 		return ret;
 	}
 
-	private boolean harvest(List<ItemStack> drop){
+	private boolean harvest(NonNullList<ItemStack> drop){
 		boolean ret = true;
 		List<Integer> setIndex = new ArrayList<Integer>();
 		NonNullList<ItemStack> dummy_inv = NonNullList.<ItemStack>withSize(max-1,ItemStack.EMPTY);
@@ -388,7 +408,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 					dummy_inv.set(i, d.copy());
 					collectNum = 0;
 					break;
-				}else if (ModUtil.compareItemStacks(d, stack, CompaierLevel.LEVEL_EQUAL_META)){
+				}else if (ModUtil.compareItemStacks(d, stack, CompaierLevel.LEVEL_EQUAL_ITEM)){
 					if (stack.getCount() < stack.getMaxStackSize()){
 						if (stack.getCount() + collectNum < stack.getMaxStackSize()){
 							dummy_inv.get(i).grow(collectNum);
@@ -437,29 +457,32 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbtTagCompound){
-		super.readFromNBT(nbtTagCompound);
+	public void read(NBTTagCompound nbtTagCompound){
+		super.read(nbtTagCompound);
 		power = nbtTagCompound.getBoolean("isrun");
-		nextPos = nbtTagCompound.getInteger("next");
+		nextPos = nbtTagCompound.getInt("next");
 		canDeliver = nbtTagCompound.getBoolean("deliver");
-		power_count=nbtTagCompound.getInteger("power_count");
-		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
+		power_count=nbtTagCompound.getInt("power_count");
 
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(nbtTagCompound, this.stacks);
 
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < max)){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+//		NBTTagList itemsTagList = nbtTagCompound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < max)){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
 		this.fotuneLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, this.stacks.get(max-1));
 		findPlanter = nbtTagCompound.getBoolean("find");
 		if (findPlanter){
 			planterPos = new BlockPos(
-					nbtTagCompound.getInteger("px"),
-					nbtTagCompound.getInteger("py"),
-					nbtTagCompound.getInteger("pz"));
+					nbtTagCompound.getInt("px"),
+					nbtTagCompound.getInt("py"),
+					nbtTagCompound.getInt("pz"));
 		}else{
 			planterPos = null;
 		}
@@ -467,28 +490,28 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound){
-		super.writeToNBT(nbtTagCompound);
+	public NBTTagCompound write(NBTTagCompound nbtTagCompound){
+		super.write(nbtTagCompound);
 		nbtTagCompound.setBoolean("isrun", power);
-		nbtTagCompound.setInteger("next", nextPos);
+		nbtTagCompound.setInt("next", nextPos);
 		nbtTagCompound.setBoolean("deliver",canDeliver);
-		nbtTagCompound.setInteger("power_count",power_count);
+		nbtTagCompound.setInt("power_count",power_count);
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < max; slotIndex++){
 			if (!this.stacks.get(slotIndex).isEmpty()){
 				NBTTagCompound itemTagCompound = new NBTTagCompound();
 
 				itemTagCompound.setByte("Slot",(byte)slotIndex);
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
-				itemsTagList.appendTag(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
+				itemsTagList.add(itemTagCompound);
 			}
 		}
 		nbtTagCompound.setTag("Items",itemsTagList);
 		nbtTagCompound.setBoolean("find", this.findPlanter);
 		if (findPlanter){
-			nbtTagCompound.setInteger("px", planterPos.getX());
-			nbtTagCompound.setInteger("py", planterPos.getY());
-			nbtTagCompound.setInteger("pz", planterPos.getZ());
+			nbtTagCompound.setInt("px", planterPos.getX());
+			nbtTagCompound.setInt("py", planterPos.getY());
+			nbtTagCompound.setInt("pz", planterPos.getZ());
 		}
 		return nbtTagCompound;
 	}
@@ -497,21 +520,21 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
@@ -549,8 +572,8 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 
 
 	@Override
-	public String getName() {
-		return this.hasCustomName() ? this.customName : "container.TileEntityAutoHarvest";
+	public ITextComponent getName() {
+		return this.hasCustomName() ? new TextComponentTranslation(this.customName) : new TextComponentTranslation("container.TileEntityAutoHarvest");
 	}
 
 	@Override
@@ -583,7 +606,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 			break;
 
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -617,7 +640,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 			break;
 
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 
 		case FILED_NEXTPOS:
@@ -651,7 +674,7 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 
 	@Override
 	public ITextComponent getDisplayName() {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+        return (this.hasCustomName() ? this.getName() : this.getName());
 	}
 
 	@Override
@@ -698,6 +721,23 @@ public class TileEntityHarvester extends TileEntity  implements IInventory, ITic
 		nextPos = 0;
 	}
 
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 
 
 }

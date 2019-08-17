@@ -3,6 +3,7 @@ package mod.cvbox.tileentity;
 import java.util.Random;
 
 import mod.cvbox.core.ModCommon;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.inventory.ContainerExEnchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,11 +11,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IInteractionObject;
 
 public class TileEntityExEnchantmentTable extends TileEntity implements IInteractionObject {
+
 	public static final String NAME = "exenchantmenttable";
 
 
@@ -30,10 +31,15 @@ public class TileEntityExEnchantmentTable extends TileEntity implements IInterac
 
     private String customName;
 
+	public TileEntityExEnchantmentTable() {
+		super(EntityCore.ExEnchantmentTable);
+		// TODO 自動生成されたコンストラクター・スタブ
+	}
+
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-        super.writeToNBT(compound);
+        super.write(compound);
 
         if (this.hasCustomName())
         {
@@ -44,11 +50,11 @@ public class TileEntityExEnchantmentTable extends TileEntity implements IInterac
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-        super.readFromNBT(compound);
+        super.read(compound);
 
-        if (compound.hasKey("CustomName", 8))
+        if (compound.hasKey("CustomName"))
         {
             this.customName = compound.getString("CustomName");
         }
@@ -56,9 +62,9 @@ public class TileEntityExEnchantmentTable extends TileEntity implements IInterac
 
 
     @Override
-    public String getName()
+    public ITextComponent getName()
     {
-        return this.hasCustomName() ? this.customName : "container.exenchant";
+        return  new TextComponentTranslation( "container.exenchant");
     }
 
 
@@ -77,7 +83,7 @@ public class TileEntityExEnchantmentTable extends TileEntity implements IInterac
     @Override
     public ITextComponent getDisplayName()
     {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+        return getName();
     }
 
     @Override
@@ -89,6 +95,24 @@ public class TileEntityExEnchantmentTable extends TileEntity implements IInterac
     @Override
     public String getGuiID()
     {
-        return ModCommon.MOD_ID + ":" + ModCommon.GUIID_EXENCHANTMENT;
+        return ModCommon.MOD_ID + ":" + ModCommon.GUIID_EXENCHANTER;
     }
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 }

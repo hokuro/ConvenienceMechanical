@@ -1,14 +1,15 @@
 package mod.cvbox.block;
 
 import mod.cvbox.block.ab.BlockPowerMachineContainer;
-import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
+import mod.cvbox.intaractionobject.IntaractionObjectExpCollector;
 import mod.cvbox.tileentity.TileEntityExpCollector;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.tileentity.TileEntity;
@@ -17,32 +18,38 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockExpCollector extends BlockPowerMachineContainer {
 
 	public BlockExpCollector() {
-		super(Material.GROUND);
-		this.setTickRandomly(false);
+		super(Block.Properties.create(Material.GROUND));
 	}
 
-	@Override
-	public void setscheduleBlockUpdate(World worldIn, BlockPos pos){
-	}
+
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(IBlockReader worldIn) {
 		TileEntityExpCollector ret = new TileEntityExpCollector();
 		return ret;
 	}
 
 	@Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-		if (!super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)){
+	public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+
+		if (!super.onBlockActivated(state, worldIn, pos, playerIn, hand, facing, hitX, hitY, hitZ)){
 	        if (!worldIn.isRemote)
 	        {
-	        	playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXPCOLLECTOR, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	        	NetworkHooks.openGui((EntityPlayerMP)playerIn,
+	        			new IntaractionObjectExpCollector(pos),
+	        			(buf)->{
+							buf.writeInt(pos.getX());
+							buf.writeInt(pos.getY());
+							buf.writeInt(pos.getZ());
+						});
+	        	//playerIn.openGui(Mod_ConvenienceBox.instance, ModCommon.GUIID_EXPCOLLECTOR, worldIn, pos.getX(), pos.getY(), pos.getZ());
 	        	return true;
 	        }
 		}
@@ -57,7 +64,7 @@ public class BlockExpCollector extends BlockPowerMachineContainer {
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -87,13 +94,12 @@ public class BlockExpCollector extends BlockPowerMachineContainer {
             	}
             }
         }
-        super.breakBlock(worldIn, pos, state);
+        super.onReplaced(state, worldIn, pos, newState, isMoving);
     }
 
 
 	@Override
 	public void onWork(World worldIn, IBlockState state, BlockPos pos) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 }

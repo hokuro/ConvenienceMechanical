@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:kirer" }
+        "":{ "model":"cvbox:block/kirer" }
     }
 }

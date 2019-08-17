@@ -2,6 +2,7 @@ package mod.cvbox.inventory;
 
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentString;
 
 public class InventoryRepair extends InventoryBasic {
 
@@ -9,7 +10,7 @@ public class InventoryRepair extends InventoryBasic {
     private final mod.cvbox.inventory.ContainerExRepair theContainer;
 
     public InventoryRepair(mod.cvbox.inventory.ContainerExRepair containerRepairBA, String inventoryTitle, boolean isLocalized, int slotCount) {
-        super(inventoryTitle, isLocalized, slotCount);
+        super(new TextComponentString( inventoryTitle), slotCount);
         this.theContainer = containerRepairBA;
     }
 

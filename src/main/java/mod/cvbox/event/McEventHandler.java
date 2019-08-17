@@ -1,26 +1,22 @@
 package mod.cvbox.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mod.cvbox.gui.GuiExRepair;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class McEventHandler{
 
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void anvilGui(AnvilUpdateEvent e){
 
 	}
 
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void onButtonPress(ActionPerformedEvent.Pre e){
 		if (e.getGui() instanceof GuiExRepair){
@@ -33,12 +29,12 @@ public class McEventHandler{
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void addButtons(InitGuiEvent.Post e){
 		if(e.getGui() instanceof GuiExRepair){
-			final List<GuiButton> list = new ArrayList<GuiButton>();
-			e.getButtonList().addAll(list);
+//			final List<GuiButton> list = new ArrayList<GuiButton>();
+//			e.getButtonList().addAll(list);
 		}
 	}
 }

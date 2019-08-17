@@ -1,10 +1,10 @@
 {
     "variants": {
-        "facing=down":  { "model": "cvbox:destroyer_vertical", "x": 180 },
-        "facing=up":    { "model": "cvbox:destroyer_vertical" },
-        "facing=north": { "model": "cvbox:destroyer" },
-        "facing=south": { "model": "cvbox:destroyer", "y": 180 },
-        "facing=west":  { "model": "cvbox:destroyer", "y": 270 },
-        "facing=east":  { "model": "cvbox:destroyer", "y": 90 }
+        "facing=down":  { "model": "cvbox:block/destroyer_vertical", "x": 180 },
+        "facing=up":    { "model": "cvbox:block/destroyer_vertical" },
+        "facing=north": { "model": "cvbox:block/destroyer" },
+        "facing=south": { "model": "cvbox:block/destroyer", "y": 180 },
+        "facing=west":  { "model": "cvbox:block/destroyer", "y": 270 },
+        "facing=east":  { "model": "cvbox:block/destroyer", "y": 90 }
     }
 }

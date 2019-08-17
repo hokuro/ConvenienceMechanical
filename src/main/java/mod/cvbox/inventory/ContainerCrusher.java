@@ -13,8 +13,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerCrusher extends Container implements IPowerSwitchContainer{
 	private IInventory inventory;
@@ -27,29 +27,29 @@ public class ContainerCrusher extends Container implements IPowerSwitchContainer
     private int power;
     private int battery;
 
-	public ContainerCrusher(IInventory player, IInventory crusher){
-		this.inventory = crusher;
+	public ContainerCrusher(IInventory player, IInventory comp){
+		this.inventory = comp;
 
 		// バッテリー
-				addSlotToContainer(
-						new Slot(crusher, 0, 123, 6){
+				addSlot(
+						new Slot(comp, 0, 123, 6){
 						    public boolean isItemValid(ItemStack stack)
 						    {
 						        return (stack.getItem() instanceof ItemBattery);
 						    }
 					  });
 		// インプット
-  	  addSlotToContainer(
-			  new Slot(crusher, 1,
+				addSlot(
+			  new Slot(comp, 1,
 			  80,17){
 				    public boolean isItemValid(ItemStack stack)
 				    {
-				        return (Block.getBlockFromItem(stack.getItem()).getStateFromMeta(stack.getMetadata()).getMaterial() == Material.ROCK);
+				        return ( Block.getBlockFromItem(stack.getItem()).getMaterial(Block.getBlockFromItem(stack.getItem()).getDefaultState()) == Material.ROCK);
 				    }
 			  });
   	  // バケツ
-	  addSlotToContainer(
-			  new Slot(crusher, 2,
+				addSlot(
+			  new Slot(comp, 2,
 			  45, 40){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -60,8 +60,8 @@ public class ContainerCrusher extends Container implements IPowerSwitchContainer
 		// コンテナインベントリ
 	    for (int row = 0; row < 3; row++) {
 		      for (int col = 0; col < 9; col++) {
-		    	  addSlotToContainer(
-		    			  new Slot(crusher,
+		    	  addSlot(
+		    			  new Slot(comp,
 		    			  col + 1 + (row * 9)+2, 	// インデックス
 		    			  8 + col * 18,
 		    			  72 + row * 18){
@@ -79,7 +79,7 @@ public class ContainerCrusher extends Container implements IPowerSwitchContainer
 		int OFFSET = 74;
 		for (int rows = 0; rows < 3; rows++){
 			for ( int slotIndex = 0; slotIndex < 9; slotIndex++){
-				addSlotToContainer(new Slot(player,
+				addSlot(new Slot(player,
 						slotIndex + (rows * 9) + 9,
 						8 + slotIndex * 18,
 						140 + rows * 18));
@@ -88,7 +88,7 @@ public class ContainerCrusher extends Container implements IPowerSwitchContainer
 
 		// メインインベントリ
 		for (int slotIndex = 0; slotIndex < ModCommon.PLANTER_MAX_SLOT; slotIndex++){
-			addSlotToContainer(new Slot(player,
+			addSlot(new Slot(player,
 					slotIndex,
 					8 + slotIndex * 18,
 					198));
@@ -200,7 +200,7 @@ public class ContainerCrusher extends Container implements IPowerSwitchContainer
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityCrusher)this.inventory).setField(id, data);

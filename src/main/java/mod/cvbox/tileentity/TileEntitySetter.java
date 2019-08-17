@@ -3,6 +3,7 @@ package mod.cvbox.tileentity;
 import org.apache.commons.lang3.BooleanUtils;
 
 import mod.cvbox.block.BlockSetter;
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.inventory.ContainerSetter;
 import mod.cvbox.util.ModUtil;
 import net.minecraft.block.Block;
@@ -18,13 +19,14 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntitySetter extends TileEntityLockableLoot implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
 	public static final String NAME="setter";
@@ -42,13 +44,14 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 
 
 	public TileEntitySetter(){
+		super(EntityCore.Setter);
 		power = false;
 		crush_count = 0;
         power_count = 0;
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (isCrushing()){
 			crush_count++;
 		}
@@ -92,7 +95,7 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -121,7 +124,7 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 			if (!item.isEmpty()){
 				Block setBlock = Block.getBlockFromItem(item.getItem());
 				if (setBlock != Blocks.AIR){
-	        		if (this.world.setBlockState(pos2, setBlock.getStateFromMeta(item.getMetadata()))){
+	        		if (this.world.setBlockState(pos2, setBlock.getDefaultState())){
 	        			item.shrink(1);
 	        		}
 	        		break;
@@ -132,13 +135,13 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 	public boolean isCrushing(){
@@ -208,19 +211,19 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
     }
 
     @Override
-    public String getName()
+    public ITextComponent getName()
     {
-        return this.hasCustomName() ? this.customName : "container.setter";
+        return this.hasCustomName() ? this.customName : new TextComponentTranslation("container.setter");
     }
 
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-        super.readFromNBT(compound);
+        super.read(compound);
 		power = compound.getBoolean("power");
-		crush_count=compound.getInteger("count");
-		power_count=compound.getInteger("power_count");
+		crush_count=compound.getInt("count");
+		power_count=compound.getInt("power_count");
 
         this.stacks = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
@@ -229,25 +232,26 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
             ItemStackHelper.loadAllItems(compound, this.stacks);
         }
 
-        if (compound.hasKey("CustomName", 8))
+        if (compound.hasKey("CustomName"))
         {
-            this.customName = compound.getString("CustomName");
+            this.customName = new TextComponentTranslation(compound.getString("CustomName"));
         }
     }
 
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-        return false;
-    }
+//    @Override
+//    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+//    {
+//    	super.shouldRenderInPass(pass)
+//        return false;
+//    }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-        super.writeToNBT(compound);
+        super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("count", crush_count);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("count", crush_count);
+		compound.setInt("power_count",power_count);
 
         if (!this.checkLootAndWrite(compound))
         {
@@ -256,7 +260,7 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 
         if (this.hasCustomName())
         {
-            compound.setString("CustomName", this.customName);
+            compound.setString("CustomName", this.customName.toString());
         }
 
         return compound;
@@ -267,21 +271,21 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
@@ -360,7 +364,7 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 			ret = BooleanUtils.toInteger(power);
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -376,7 +380,7 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 			power = BooleanUtils.toBoolean(value);
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -420,5 +424,29 @@ public class TileEntitySetter extends TileEntityLockableLoot implements IInvento
 
 	public ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	protected void setItems(NonNullList<ItemStack> itemsIn) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

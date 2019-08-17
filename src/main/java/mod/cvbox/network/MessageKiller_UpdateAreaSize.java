@@ -1,14 +1,14 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import mod.cvbox.inventory.ContainerKiller;
 import mod.cvbox.tileentity.TileEntityKiller;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageKiller_UpdateAreaSize implements IMessage, IMessageHandler<MessageKiller_UpdateAreaSize, IMessage> {
+public class MessageKiller_UpdateAreaSize {
 
 	private int x;
 	private int y;
@@ -22,29 +22,33 @@ public class MessageKiller_UpdateAreaSize implements IMessage, IMessageHandler<M
 		this.z = z;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		x = buf.readInt();
-		y = buf.readInt();
-		z = buf.readInt();
+	public static void encode(MessageKiller_UpdateAreaSize pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.x);
+		buf.writeInt(pkt.y);
+		buf.writeInt(pkt.z);
+
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(x);
-		buf.writeInt(y);
-		buf.writeInt(z);
+	public static MessageKiller_UpdateAreaSize decode(PacketBuffer buf)
+	{
+		return new MessageKiller_UpdateAreaSize(buf.readInt(),buf.readInt(),buf.readInt());
 	}
 
-	@Override
-	public IMessage onMessage(MessageKiller_UpdateAreaSize message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		if ( player.openContainer instanceof ContainerKiller){
-			TileEntityKiller killer = ((ContainerKiller)player.openContainer).getTileEntity();
-			killer.setField(TileEntityKiller.FIELD_AREASIZEX, message.x);
-			killer.setField(TileEntityKiller.FIELD_AREASIZEY, message.y);
-			killer.setField(TileEntityKiller.FIELD_AREASIZEZ, message.z);
+	public static class Handler
+	{
+		public static void handle(final MessageKiller_UpdateAreaSize pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerKiller){
+					TileEntityKiller killer = ((ContainerKiller)player.openContainer).getTileEntity();
+					killer.setField(TileEntityKiller.FIELD_AREASIZEX, pkt.x);
+					killer.setField(TileEntityKiller.FIELD_AREASIZEY, pkt.y);
+					killer.setField(TileEntityKiller.FIELD_AREASIZEZ, pkt.z);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
 }

@@ -1,12 +1,13 @@
 package mod.cvbox.tileentity;
 
+import mod.cvbox.entity.EntityCore;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityExpBank extends TileEntity{
-	public static final String REGISTER_NAME = "expbanck";
+	public static final String NAME = "expbanck";
 	private int input_exp = 0;
 	private int box_exp = 0;
 	private String player_name = "";
@@ -15,6 +16,7 @@ public class TileEntityExpBank extends TileEntity{
 	private float angle = -2.1F;
 
 	public TileEntityExpBank(){
+		super(EntityCore.ExpBank);
 	}
 
 	public void set_face(int face){
@@ -58,23 +60,23 @@ public class TileEntityExpBank extends TileEntity{
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt){
-		super.readFromNBT(nbt);;
-		input_exp = nbt.getInteger("input_exp");
-		box_exp = nbt.getInteger("box_exp");
+	public void read(NBTTagCompound nbt){
+		super.read(nbt);;
+		input_exp = nbt.getInt("input_exp");
+		box_exp = nbt.getInt("box_exp");
 		player_name = nbt.getString("player");
-		face = nbt.getInteger("face");
+		face = nbt.getInt("face");
 		cover_open = nbt.getBoolean("cover");
 		angle = nbt.getFloat("angle");
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt){
-		super.writeToNBT(nbt);
-		nbt.setInteger("input_exp", input_exp);
-		nbt.setInteger("box_exp", box_exp);
+	public NBTTagCompound write(NBTTagCompound nbt){
+		super.write(nbt);
+		nbt.setInt("input_exp", input_exp);
+		nbt.setInt("box_exp", box_exp);
 		nbt.setString("player", player_name);
-		nbt.setInteger("face", face);
+		nbt.setInt("face", face);
 		nbt.setBoolean("cover", cover_open);
 		nbt.setFloat("angle", angle);
 		return nbt;
@@ -84,12 +86,26 @@ public class TileEntityExpBank extends TileEntity{
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket(){
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		writeToNBT(nbtTagCompound);
+		write(nbtTagCompound);
 		return new SPacketUpdateTileEntity(pos, 1, nbtTagCompound);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
-		readFromNBT(pkt.getNbtCompound());
+		read(pkt.getNbtCompound());
+	}
+
+
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

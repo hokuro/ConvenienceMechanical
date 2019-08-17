@@ -1,33 +1,39 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import mod.cvbox.inventory.ContainerStraw;
 import mod.cvbox.tileentity.TileEntityStraw;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageStraw_ClearArea implements IMessage, IMessageHandler<MessageStraw_ClearArea, IMessage> {
+public class MessageStraw_ClearArea {
 
 	public MessageStraw_ClearArea(){}
 
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
+	public static void encode(MessageStraw_ClearArea pkt, PacketBuffer buf)
+	{
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
+	public static MessageStraw_ClearArea decode(PacketBuffer buf)
+	{
+		return new MessageStraw_ClearArea();
 	}
 
-	@Override
-	public IMessage onMessage(MessageStraw_ClearArea message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		if ( player.openContainer instanceof ContainerStraw){
-			TileEntityStraw straw = ((ContainerStraw)player.openContainer).getTileEntity();
-			straw.resetSearchArea();
+	public static class Handler
+	{
+		public static void handle(final MessageStraw_ClearArea pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerStraw){
+					TileEntityStraw straw = ((ContainerStraw)player.openContainer).getTileEntity();
+					straw.resetSearchArea();
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
 }

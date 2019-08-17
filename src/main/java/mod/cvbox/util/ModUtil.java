@@ -5,7 +5,7 @@ import java.util.Random;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,7 +21,7 @@ public class ModUtil {
 		if (stack1 == null){return false;}
 		if (stack2 == null){return false;}
 		if (stack1.isEmpty() && stack2.isEmpty()){return true;}
-		return (stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata()));
+		return (stack2.getItem() == stack1.getItem());
 	}
 
 	public static boolean compareItemStacks(ItemStack stack1, ItemStack stack2, CompaierLevel level){
@@ -33,19 +33,10 @@ public class ModUtil {
 		switch(level){
 		case LEVEL_EQUAL_ALL:
 			ret = ((stack1.getItem() == stack2.getItem()) &&
-					stack1.getMetadata() == stack2.getMetadata() &&
-					stack1.getCount() == stack2.getCount());
-			break;
-		case LEVEL_EQUAL_COUNT:
-			ret = ((stack1.getItem() == stack2.getItem()) &&
 					stack1.getCount() == stack2.getCount());
 			break;
 		case LEVEL_EQUAL_ITEM:
 			ret = ((stack1.getItem() == stack2.getItem()));
-			break;
-		case LEVEL_EQUAL_META:
-			ret = ((stack1.getItem() == stack2.getItem()) &&
-					stack1.getMetadata() == stack2.getMetadata());
 			break;
 		default:
 			break;
@@ -79,7 +70,7 @@ public class ModUtil {
 
         while (!stack.isEmpty())
         {
-            EntityItem entityitem = new EntityItem(worldIn, x + (double)f, y + (double)f1, z + (double)f2, stack.splitStack(RANDOM.nextInt(21) + 10));
+            EntityItem entityitem = new EntityItem(worldIn, x + (double)f, y + (double)f1, z + (double)f2, stack.split(RANDOM.nextInt(21) + 10));
             float f3 = 0.05F;
             entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
             entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
@@ -88,7 +79,7 @@ public class ModUtil {
         }
     }
 
-    public static void spawnParticles(World worldIn, BlockPos pos, EnumParticleTypes part)
+    public static void spawnParticles(World worldIn, BlockPos pos, IParticleData part)
     {
         Random random = worldIn.rand;
         double d0 = 0.0625D;
@@ -99,32 +90,32 @@ public class ModUtil {
             double d2 = (double)((float)pos.getY() + random.nextFloat());
             double d3 = (double)((float)pos.getZ() + random.nextFloat());
 
-            if (i == 0 && !worldIn.getBlockState(pos.up()).isOpaqueCube())
+            if (i == 0 && !worldIn.getBlockState(pos.up()).isOpaqueCube(worldIn,pos))
             {
                 d2 = (double)pos.getY() + 0.0625D + 1.0D;
             }
 
-            if (i == 1 && !worldIn.getBlockState(pos.down()).isOpaqueCube())
+            if (i == 1 && !worldIn.getBlockState(pos.down()).isOpaqueCube(worldIn,pos))
             {
                 d2 = (double)pos.getY() - 0.0625D;
             }
 
-            if (i == 2 && !worldIn.getBlockState(pos.south()).isOpaqueCube())
+            if (i == 2 && !worldIn.getBlockState(pos.south()).isOpaqueCube(worldIn,pos))
             {
                 d3 = (double)pos.getZ() + 0.0625D + 1.0D;
             }
 
-            if (i == 3 && !worldIn.getBlockState(pos.north()).isOpaqueCube())
+            if (i == 3 && !worldIn.getBlockState(pos.north()).isOpaqueCube(worldIn,pos))
             {
                 d3 = (double)pos.getZ() - 0.0625D;
             }
 
-            if (i == 4 && !worldIn.getBlockState(pos.east()).isOpaqueCube())
+            if (i == 4 && !worldIn.getBlockState(pos.east()).isOpaqueCube(worldIn,pos))
             {
                 d1 = (double)pos.getX() + 0.0625D + 1.0D;
             }
 
-            if (i == 5 && !worldIn.getBlockState(pos.west()).isOpaqueCube())
+            if (i == 5 && !worldIn.getBlockState(pos.west()).isOpaqueCube(worldIn,pos))
             {
                 d1 = (double)pos.getX() - 0.0625D;
             }

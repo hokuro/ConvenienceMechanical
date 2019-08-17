@@ -1,28 +1,15 @@
 package mod.cvbox.network;
 
-import org.apache.commons.lang3.BooleanUtils;
+import java.util.function.Supplier;
 
-import io.netty.buffer.ByteBuf;
 import mod.cvbox.core.log.ModLog;
 import mod.cvbox.inventory.IPowerSwitchContainer;
 import mod.cvbox.tileentity.IPowerSwitchEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class Message_BoxSwitchChange implements IMessage, IMessageHandler<Message_BoxSwitchChange, IMessage> {
-
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		nextValue = BooleanUtils.toBoolean(buf.readInt());
-	}
-
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(BooleanUtils.toInteger(nextValue));
-	}
-
+public class Message_BoxSwitchChange {
 
 	private boolean nextValue;
 
@@ -31,16 +18,33 @@ public class Message_BoxSwitchChange implements IMessage, IMessageHandler<Messag
 		nextValue = value;
 	}
 
-	@Override
-	public IMessage onMessage(Message_BoxSwitchChange message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		try{
-			Class<?> cls = player.openContainer.getClass();
-			IPowerSwitchEntity te = (IPowerSwitchEntity)((IPowerSwitchContainer)player.openContainer).getTileEntity();
-			te.setPower(message.nextValue);
-		}catch(Exception ex){
-			ModLog.log().fatal(ex.getMessage());
-		}
-		return null;
+	public static void encode(Message_BoxSwitchChange pkt, PacketBuffer buf)
+	{
+		buf.writeBoolean(pkt.nextValue);
 	}
+
+	public static Message_BoxSwitchChange decode(PacketBuffer buf)
+	{
+
+		return new Message_BoxSwitchChange(buf.readBoolean());
+	}
+
+	public static class Handler
+	{
+		public static void handle(final Message_BoxSwitchChange pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				try{
+					Class<?> cls = player.openContainer.getClass();
+					IPowerSwitchEntity te = (IPowerSwitchEntity)((IPowerSwitchContainer)player.openContainer).getTileEntity();
+					te.setPower(pkt.nextValue);
+				}catch(Exception ex){
+					ModLog.log().fatal(ex.getMessage());
+				}
+			});
+			ctx.get().setPacketHandled(true);
+		}
+	}
+
 }

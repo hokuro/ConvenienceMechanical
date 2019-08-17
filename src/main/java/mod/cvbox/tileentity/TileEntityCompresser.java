@@ -5,33 +5,35 @@ import java.util.Map;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.util.ModUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.item.crafting.ShapedRecipe;
+import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityCompresser extends TileEntity implements IInventory, ITickable, ISidedInventory, IPowerSwitchEntity{
-	public static final String NAME = "compresser";
+	public static final String NAME = "compress";
 	public static final int FIELD_POWER = 0;
 	public static final int FIELD_COUNT = 1;
 	public static final int FIELD_IRON = 2;
@@ -66,18 +68,17 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 	private Map<ResourceLocation,Compless> maps = new HashMap<ResourceLocation,Compless>();
 
 	public TileEntityCompresser(){
-		super();
+		super(EntityCore.Compresser);
 		power = false;
 		powder = new int[]{0,0,0,0,0,0};
 		crush_count = 0;
 		nowCrush = null;
 
-		for (ResourceLocation locate : CraftingManager.REGISTRY.getKeys()){
-			IRecipe recipe = CraftingManager.REGISTRY.getObject(locate);
-			if (recipe instanceof ShapedRecipes){
-				makeResultMap(((ShapedRecipes)recipe).getRecipeOutput(), ((ShapedRecipes)recipe).recipeItems);
-			}else if (recipe instanceof ShapelessRecipes){
-				makeResultMap(((ShapelessRecipes)recipe).getRecipeOutput(), ((ShapelessRecipes)recipe).recipeItems);
+		for (IRecipe recipe : Minecraft.getInstance().player.world.getRecipeManager().getRecipes()){
+			if (recipe instanceof ShapedRecipe){
+				makeResultMap(((ShapedRecipe)recipe).getRecipeOutput(), ((ShapedRecipe)recipe).getIngredients());
+			}else if (recipe instanceof ShapelessRecipe){
+				makeResultMap(((ShapelessRecipe)recipe).getRecipeOutput(), ((ShapelessRecipe)recipe).getIngredients());
 			}
 		}
 	}
@@ -102,7 +103,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (isCrushing()){
 			crush_count++;
 		}
@@ -147,7 +148,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 		}else{
 			if (checkPowerOn()){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 		}
@@ -155,13 +156,13 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
     private void crush_block()
@@ -220,7 +221,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
     	while(this.powder[POWDER_LAPS] >= 100){
     		this.powder[POWDER_LAPS] -= 100;
     		if (stacks.get(POWDER_LAPS+POWDER_OFFSET).isEmpty()){
-    			stacks.set(POWDER_LAPS+POWDER_OFFSET, new ItemStack(Items.DYE,1,EnumDyeColor.BLUE.getDyeDamage()));
+    			stacks.set(POWDER_LAPS+POWDER_OFFSET, new ItemStack(Items.LAPIS_LAZULI,1));
     		}else{
     			stacks.get(POWDER_LAPS+POWDER_OFFSET).grow(1);
     		}
@@ -228,43 +229,47 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-		crush_count=compound.getInteger("count");
-		power_count=compound.getInteger("power_count");
+		crush_count=compound.getInt("count");
+		power_count=compound.getInt("power_count");
 
 		String res = "";
 		this.nowCrush = (res = compound.getString("res")).isEmpty()?null:new ResourceLocation(res);
 
 		for (int i = 0; i < powder.length; i++){
-			powder[i] = compound.getInteger("powder"+i);
+			powder[i] = compound.getInt("powder"+i);
 		}
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+
+//		NBTTagList itemsTagList = compound.getList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.size(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompound(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex,  new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("count", crush_count);
-		compound.setInteger("power_count",power_count);
+		compound.setInt("count", crush_count);
+		compound.setInt("power_count",power_count);
 		if (nowCrush != null){
 			compound.setString("res", nowCrush.toString());
 		}
 		for ( int i = 0; i < powder.length; i++){
-			compound.setInteger("powder"+i, powder[i]);
+			compound.setInt("powder"+i, powder[i]);
 		}
 
 		NBTTagList itemsTagList = new NBTTagList();
@@ -273,9 +278,9 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 
 			itemTagCompound.setByte("Slot",(byte)slotIndex);
 			if (stacks.size()>slotIndex){
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
 			}
-			itemsTagList.appendTag(itemTagCompound);
+			itemsTagList.add(itemTagCompound);
 		}
 		compound.setTag("Items",itemsTagList);
 
@@ -286,26 +291,26 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.compresser";
+	public ITextComponent getName() {
+		return  new TextComponentTranslation("tileentity.compresser");
 	}
 
 	@Override
@@ -431,7 +436,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 			ret = powder[POWDER_LAPS];
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -468,7 +473,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 			powder[POWDER_LAPS] = value;
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -503,7 +508,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 			{put(Items.DIAMOND,new Integer[]{2,10});}
 			{put(Items.EMERALD,new Integer[]{3,10});}
 			{put(Items.REDSTONE,new Integer[]{4,10});}
-			{put(Items.DYE,new Integer[]{5,10});}
+			{put(Items.LAPIS_LAZULI,new Integer[]{5,10});}
 			{put(new ItemStack(Blocks.IRON_BLOCK).getItem(),new Integer[]{0, 100});}
 			{put(new ItemStack(Blocks.GOLD_BLOCK).getItem(),new Integer[]{1, 100});}
 			{put(new ItemStack(Blocks.DIAMOND_BLOCK).getItem(),new Integer[]{2, 100});}
@@ -531,7 +536,7 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 
 
 		public void grow(ItemStack item){
-			if ( containItem.containsKey(item.getItem()) || (containItem.containsKey(item.getItem())&& item.getItem() == Items.DYE && item.getMetadata() == EnumDyeColor.BLUE.getDyeDamage())){
+			if ( containItem.containsKey(item.getItem()) || (containItem.containsKey(item.getItem())&& item.getItem() == Items.LAPIS_LAZULI)){
 				Integer[] pair = containItem.get(item.getItem());
 				counter[pair[0]] += pair[1];
 
@@ -558,5 +563,23 @@ public class TileEntityCompresser extends TileEntity implements IInventory, ITic
 
 	public ItemStack getPower(){
 		return this.stacks.get(0);
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

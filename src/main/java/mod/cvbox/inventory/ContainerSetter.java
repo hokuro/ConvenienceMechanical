@@ -10,20 +10,20 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerSetter extends Container  implements IPowerSwitchContainer{
 	   private final IInventory inventory;
 	    private int power;
 	    private int battery;
 
-	    public ContainerSetter(IInventory playerInventory, IInventory setterInventoryIn)
+	    public ContainerSetter(IInventory playerInventory, IInventory comp)
 	    {
-	        this.inventory = setterInventoryIn;
+	        this.inventory = comp;
 
 			// バッテリー
-			addSlotToContainer(
+			addSlot(
 					new Slot(inventory, 0, 123, 6){
 					    public boolean isItemValid(ItemStack stack)
 					    {
@@ -36,7 +36,7 @@ public class ContainerSetter extends Container  implements IPowerSwitchContainer
 	        {
 	            for (int j = 0; j < 3; ++j)
 	            {
-	                this.addSlotToContainer(new Slot(setterInventoryIn, 1 + j + i * 3, 62 + j * 18, 17 + i * 18){
+	                this.addSlot(new Slot(comp, 1 + j + i * 3, 62 + j * 18, 17 + i * 18){
 	                    public boolean isItemValid(ItemStack stack)
 	                    {
 	                    	if (Block.getBlockFromItem(stack.getItem()) != null && Block.getBlockFromItem(stack.getItem()) != Blocks.AIR){
@@ -52,13 +52,13 @@ public class ContainerSetter extends Container  implements IPowerSwitchContainer
 	        {
 	            for (int i1 = 0; i1 < 9; ++i1)
 	            {
-	                this.addSlotToContainer(new Slot(playerInventory, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+	                this.addSlot(new Slot(playerInventory, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
 	            }
 	        }
 
 	        for (int l = 0; l < 9; ++l)
 	        {
-	            this.addSlotToContainer(new Slot(playerInventory, l, 8 + l * 18, 142));
+	            this.addSlot(new Slot(playerInventory, l, 8 + l * 18, 142));
 	        }
 	    }
 
@@ -144,7 +144,7 @@ public class ContainerSetter extends Container  implements IPowerSwitchContainer
 		    }
 
 
-		    @SideOnly(Side.CLIENT)
+		    @OnlyIn(Dist.CLIENT)
 		    public void updateProgressBar(int id, int data)
 		    {
 		    	((TileEntitySetter)this.inventory).setField(id, data);

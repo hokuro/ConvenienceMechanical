@@ -2,6 +2,7 @@ package mod.cvbox.tileentity;
 
 import org.apache.commons.lang3.BooleanUtils;
 
+import mod.cvbox.entity.EntityCore;
 import mod.cvbox.item.ItemCore;
 import mod.cvbox.util.ModUtil;
 import mod.cvbox.util.ModUtil.CompaierLevel;
@@ -10,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.Particles;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -17,12 +19,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITickable, IPowerSwitchEntity{
 	public static final String NAME = "liquidmaker";
@@ -43,14 +47,14 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 	private int power_count;
 
 	public TileEntityLiquidMaker(){
-		super();
+		super(EntityCore.LiquidMaker);
 		power = false;
 		count = 0;
 		power_count = 0;
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!getPower().isEmpty() && power_count == 0){
 			powerDown();
 		}
@@ -58,7 +62,7 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 			count++;
 			if (world.isRemote){
 				if (Math.random() > 0.7){
-					ModUtil.spawnParticles(this.world, this.pos, EnumParticleTypes.REDSTONE);
+					ModUtil.spawnParticles(this.world, this.pos, RedstoneParticleData.REDSTONE_DUST);
 				}
 			}
 			if (count >= COUNT_MAX){
@@ -84,13 +88,13 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 
 	private boolean checkPowerOn(){
 		ItemStack st = getPower();
-		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getItemDamage() > 1)) &&
+		return (((!st.isEmpty()) && (st.getMaxDamage() -  st.getDamage() > 1)) &&
 				power);
 	}
 
 	private void powerDown(){
-		int damage = getPower().getItemDamage()+1;
-		getPower().setItemDamage(damage);
+		int damage = getPower().getDamage()+1;
+		getPower().setDamage(damage);
 	}
 
 	private BlockPos[] offset = new BlockPos[]{
@@ -123,7 +127,7 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 					state.getMaterial() == Material.ROCK ||
 					state.getMaterial() == Material.SAND){
 					if (!world.isRemote){
-						this.world.setBlockState(this.pos.add(p.getX(),p.getY(),p.getZ()), Blocks.LAVA.getDefaultState());
+						this.world.setBlockState(this.pos.add(p.getX(),p.getY(),p.getZ()),  Blocks.LAVA.getDefaultState());
 					}
 			        double d0 = (double)pos.getX() + p.getX();
 			        double d1 = (double)pos.getY() + p.getY();
@@ -133,9 +137,9 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 							0.5F, 2.6F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.8F, true);
 			        for (int i = 0; i < 8; ++i)
 			        {
-			        	this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D);
+			        	this.world.spawnParticle(Particles.LARGE_SMOKE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D);
 			        }
-				}if (state.getMaterial() != Material.LAVA){
+				}else if (state.getBlock() != Blocks.LAVA && state.getMaterial() != Material.AIR){
 					if (!world.isRemote){
 						this.world.setBlockState(this.pos.add(p.getX(),p.getY(),p.getZ()), Blocks.AIR.getDefaultState());
 					}
@@ -147,7 +151,7 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 							0.5F, 2.6F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.8F, true);
 			        for (int i = 0; i < 8; ++i)
 			        {
-			        	this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D);
+			        	this.world.spawnParticle(Particles.LARGE_SMOKE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D);
 			        }
 				}
 			}
@@ -155,32 +159,34 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
     }
 
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(NBTTagCompound compound)
     {
-		super.readFromNBT(compound);
+		super.read(compound);
 		power = compound.getBoolean("power");
-		power_count=compound.getInteger("power_count");
-		count=compound.getInteger("count");
+		power_count=compound.getInt("power_count");
+		count=compound.getInt("count");
 
+	    this.stacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+	    ItemStackHelper.loadAllItems(compound, this.stacks);
 
-		NBTTagList itemsTagList = compound.getTagList("Items",10);
-		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
-			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
-
-			byte slotIndex =itemTagCompound.getByte("Slot");
-			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
-				stacks.set(slotIndex, new ItemStack(itemTagCompound));
-			}
-		}
+//		NBTTagList itemsTagList = compound.getTagList("Items",10);
+//		for (int tagCounter = 0; tagCounter < itemsTagList.tagCount(); tagCounter++){
+//			NBTTagCompound itemTagCompound = itemsTagList.getCompoundTagAt(tagCounter);
+//
+//			byte slotIndex =itemTagCompound.getByte("Slot");
+//			if ((slotIndex >= 0) && (slotIndex < stacks.size())){
+//				stacks.set(slotIndex, new ItemStack(itemTagCompound));
+//			}
+//		}
     }
 
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound write(NBTTagCompound compound)
     {
-		compound = super.writeToNBT(compound);
+		compound = super.write(compound);
 		compound.setBoolean("power", power);
-		compound.setInteger("power_count",power_count);
-		compound.setInteger("count",count);
+		compound.setInt("power_count",power_count);
+		compound.setInt("count",count);
 
 		NBTTagList itemsTagList = new NBTTagList();
 		for (int slotIndex = 0; slotIndex < stacks.size(); slotIndex++){
@@ -188,9 +194,9 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 
 			itemTagCompound.setByte("Slot",(byte)slotIndex);
 			if (stacks.size()>slotIndex){
-				this.stacks.get(slotIndex).writeToNBT(itemTagCompound);
+				this.stacks.get(slotIndex).write(itemTagCompound);
 			}
-			itemsTagList.appendTag(itemTagCompound);
+			itemsTagList.add(itemTagCompound);
 		}
 		compound.setTag("Items",itemsTagList);
 
@@ -201,26 +207,26 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
     public NBTTagCompound getUpdateTag()
     {
         NBTTagCompound cp = super.getUpdateTag();
-        return this.writeToNBT(cp);
+        return this.write(cp);
     }
 
 	@Override
     public void handleUpdateTag(NBTTagCompound tag)
     {
 		super.handleUpdateTag(tag);
-		this.readFromNBT(tag);
+		this.read(tag);
     }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return new SPacketUpdateTileEntity(this.pos, 1,  this.writeToNBT(nbtTagCompound));
+        return new SPacketUpdateTileEntity(this.pos, 1,  this.write(nbtTagCompound));
     }
 
 	@Override
-	public String getName() {
-		return "tileentity.compresser";
+	public ITextComponent getName() {
+		return new TextComponentTranslation("tileentity.compresser");
 	}
 
 	@Override
@@ -302,7 +308,7 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 			ret = BooleanUtils.toInteger(power);
 			break;
 		case FIELD_BATTERY:
-			ret = getPower().getItemDamage();
+			ret = getPower().getDamage();
 			break;
 		case FIELD_BATTERYMAX:
 			ret = getPower().getMaxDamage();
@@ -327,7 +333,7 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 			this.count = value;
 			break;
 		case FIELD_BATTERY:
-			getPower().setItemDamage(value);
+			getPower().setDamage(value);
 			break;
 		}
 	}
@@ -349,7 +355,9 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 
 	public static final ItemStack[] ice = new ItemStack[]{
 			new ItemStack(Blocks.ICE),
-			new ItemStack(Blocks.PACKED_ICE)
+			new ItemStack(Blocks.PACKED_ICE),
+			new ItemStack(Blocks.BLUE_ICE),
+			new ItemStack(Blocks.FROSTED_ICE)
 	};
 	public static final ItemStack[] lava = new ItemStack[]{
 			new ItemStack(Items.LAVA_BUCKET),
@@ -360,14 +368,14 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 		ItemStack stack = getModeItem();
 		if (!stack.isEmpty()){
 			for (ItemStack st : ice){
-				if (ModUtil.compareItemStacks(stack, st, CompaierLevel.LEVEL_EQUAL_META)){
+				if (ModUtil.compareItemStacks(stack, st, CompaierLevel.LEVEL_EQUAL_ITEM)){
 					ret = MODE_ICE;
 					break;
 				}
 			}
 			if (ret == MODE_NONE){
 				for (ItemStack st : lava){
-					if (ModUtil.compareItemStacks(stack, st, CompaierLevel.LEVEL_EQUAL_META)){
+					if (ModUtil.compareItemStacks(stack, st, CompaierLevel.LEVEL_EQUAL_ITEM)){
 						ret = MODE_LAVA;
 						break;
 					}
@@ -385,4 +393,22 @@ public class TileEntityLiquidMaker extends TileEntity implements IInventory, ITi
 		return this.stacks.get(1);
 	}
 
+
+	@Override
+	public ITextComponent getCustomName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 }

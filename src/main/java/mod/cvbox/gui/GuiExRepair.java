@@ -1,10 +1,5 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
-import io.netty.buffer.Unpooled;
 import mod.cvbox.inventory.ContainerExRepair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
@@ -16,8 +11,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
+import net.minecraft.network.play.client.CPacketRenameItem;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -31,7 +26,7 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 
 	 public GuiExRepair(InventoryPlayer inventoryIn, World worldIn)
 	 {
-		 super(new ContainerExRepair(inventoryIn, worldIn, Minecraft.getMinecraft().player));
+		 super(new ContainerExRepair(inventoryIn, worldIn, Minecraft.getInstance().player));
 		 this.playerInventory = inventoryIn;
 		 this.anvil = (ContainerExRepair)this.inventorySlots;
 	 }
@@ -41,7 +36,7 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	 public void initGui()
 	 {
 		 super.initGui();
-		 Keyboard.enableRepeatEvents(true);
+	     this.mc.keyboardListener.enableRepeatEvents(true);
 		 int i = (this.width - this.xSize) / 2;
 		 int j = (this.height - this.ySize) / 2;
 		 this.nameField = new GuiTextField(0, this.fontRenderer, i + 62, j + 24, 103, 12);
@@ -49,6 +44,8 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 		 this.nameField.setDisabledTextColour(-1);
 		 this.nameField.setEnableBackgroundDrawing(false);
 		 this.nameField.setMaxStringLength(35);
+	     this.nameField.setTextAcceptHandler(this::func_195393_a);
+	     this.children.add(this.nameField);
 		 this.inventorySlots.removeListener(this);
 		 this.inventorySlots.addListener(this);
 	 }
@@ -57,7 +54,7 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	 public void onGuiClosed()
 	 {
 		 super.onGuiClosed();
-	     Keyboard.enableRepeatEvents(false);
+			this.mc.keyboardListener.enableRepeatEvents(false);
 	     this.inventorySlots.removeListener(this);
 	 }
 
@@ -88,15 +85,15 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	             int j = -16777216 | (i & 16579836) >> 2 | i & -16777216;
 	             int k = this.xSize - 8 - this.fontRenderer.getStringWidth(s);
 	             int l = 67;
-	             if (this.fontRenderer.getUnicodeFlag())
-	             {
+	             //if (this.fontRenderer.)
+	             //{
 	            	 drawRect(k - 3, 65, this.xSize - 7, 77, -16777216);
 	                 drawRect(k - 2, 66, this.xSize - 8, 76, -12895429);
-	             }else{
-	            	 this.fontRenderer.drawString(s, k, 68, j);
-	                 this.fontRenderer.drawString(s, k + 1, 67, j);
-	                 this.fontRenderer.drawString(s, k + 1, 68, j);
-	             }
+	             //}else{
+	           // 	 this.fontRenderer.drawString(s, k, 68, j);
+	             //    this.fontRenderer.drawString(s, k + 1, 67, j);
+	             //    this.fontRenderer.drawString(s, k + 1, 68, j);
+	             //}
 	             this.fontRenderer.drawString(s, k, 67, i);
 	         }
 		 }
@@ -104,16 +101,17 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	 }
 
 	 @Override
-	 protected void keyTyped(char typedChar, int keyCode) throws IOException
+	 public boolean charTyped(char typedChar, int keyCode)
 	 {
-		 if (this.nameField.textboxKeyTyped(typedChar, keyCode))
+		 if (this.nameField.charTyped(typedChar, keyCode))
 	     {
 			 this.renameItem();
 	     }
 	     else
 	     {
-	         super.keyTyped(typedChar, keyCode);
+	         super.charTyped(typedChar, keyCode);
 	     }
+		 return true;
 	 }
 
 	 private void renameItem()
@@ -127,31 +125,32 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	     }
 
 	     this.anvil.updateItemName(s);
-	     this.mc.player.connection.sendPacket(new CPacketCustomPayload("MC|ItemName", (new PacketBuffer(Unpooled.buffer())).writeString(s)));
+	     this.mc.player.connection.sendPacket(new CPacketCustomPayload());
 	 }
 
 	 @Override
-	 protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+	 public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
 	 {
 		 super.mouseClicked(mouseX, mouseY, mouseButton);
 	     this.nameField.mouseClicked(mouseX, mouseY, mouseButton);
+	     return true;
 	 }
 
 	 @Override
-	 public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	 public void render(int mouseX, int mouseY, float partialTicks)
 	 {
 		 this.drawDefaultBackground();
-		 super.drawScreen(mouseX, mouseY, partialTicks);
+		 super.render(mouseX, mouseY, partialTicks);
 		 this.renderHoveredToolTip(mouseX, mouseY);
 		 GlStateManager.disableLighting();
 		 GlStateManager.disableBlend();
-		 this.nameField.drawTextBox();
+		 this.nameField.drawTextField(mouseX, mouseY, partialTicks);
 	 }
 
 	 @Override
 	 protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
 	 {
-		 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		 GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		 this.mc.getTextureManager().bindTexture(ANVIL_RESOURCE);
 		 int i = (this.width - this.xSize) / 2;
 		 int j = (this.height - this.ySize) / 2;
@@ -175,7 +174,7 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	 {
 		 if (slotInd == 0)
 		 {
-			 this.nameField.setText(stack.isEmpty() ? "" : stack.getDisplayName());
+			 this.nameField.setText(stack.isEmpty() ? "" : stack.getDisplayName().getFormattedText());
 			 this.nameField.setEnabled(!stack.isEmpty());
 			 if (!stack.isEmpty())
 			 {
@@ -195,5 +194,18 @@ public class GuiExRepair extends GuiContainer implements IContainerListener{
 	public void sendAllWindowProperties(Container containerIn, IInventory inventory) {
 
 	}
+
+	   private void func_195393_a(int p_195393_1_, String p_195393_2_) {
+		      if (!p_195393_2_.isEmpty()) {
+		         String s = p_195393_2_;
+		         Slot slot = this.anvil.getSlot(0);
+		         if (slot != null && slot.getHasStack() && !slot.getStack().hasDisplayName() && p_195393_2_.equals(slot.getStack().getDisplayName().getString())) {
+		            s = "";
+		         }
+
+		         this.anvil.updateItemName(s);
+		         this.mc.player.connection.sendPacket(new CPacketRenameItem(s));
+		      }
+		   }
 
 }

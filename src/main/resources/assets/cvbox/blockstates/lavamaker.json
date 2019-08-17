@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:lavamaker" }
+        "":{ "model":"cvbox:block/lavamaker" }
     }
 }

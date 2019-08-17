@@ -1,14 +1,14 @@
 package mod.cvbox.network;
 
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import mod.cvbox.inventory.ContainerKiller;
 import mod.cvbox.tileentity.TileEntityKiller;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageKiller_UpdateTarget implements IMessage, IMessageHandler<MessageKiller_UpdateTarget, IMessage> {
+public class MessageKiller_UpdateTarget {
 
 	String entityName;
 
@@ -18,28 +18,31 @@ public class MessageKiller_UpdateTarget implements IMessage, IMessageHandler<Mes
 		entityName = name;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
+	public static void encode(MessageKiller_UpdateTarget pkt, PacketBuffer buf)
+	{
+		buf.writeInt(pkt.entityName.length());
+		buf.writeString(pkt.entityName);
+
+	}
+
+	public static MessageKiller_UpdateTarget decode(PacketBuffer buf)
+	{
 		int len = buf.readInt();
-		byte[] name = new byte[len];
-		buf.readBytes(name);
-		entityName = new String(name);
+		return new MessageKiller_UpdateTarget(buf.readString(len));
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		byte[] name = entityName.getBytes();
-		buf.writeInt(name.length);
-		buf.writeBytes(name);
-	}
-
-	@Override
-	public IMessage onMessage(MessageKiller_UpdateTarget message, MessageContext ctx){
-		EntityPlayer player = ctx.getServerHandler().player;
-		if ( player.openContainer instanceof ContainerKiller){
-			TileEntityKiller killer = ((ContainerKiller)player.openContainer).getTileEntity();
-			killer.updateTarget(message.entityName);
+	public static class Handler
+	{
+		public static void handle(final MessageKiller_UpdateTarget pkt, Supplier<NetworkEvent.Context> ctx)
+		{
+			ctx.get().enqueueWork(() -> {
+				EntityPlayer player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerKiller){
+					TileEntityKiller killer = ((ContainerKiller)player.openContainer).getTileEntity();
+					killer.updateTarget(pkt.entityName);
+				}
+			});
+			ctx.get().setPacketHandled(true);
 		}
-		return null;
 	}
 }

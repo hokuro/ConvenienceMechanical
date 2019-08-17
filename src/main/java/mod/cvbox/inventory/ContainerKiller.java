@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerKiller extends Container implements IPowerSwitchContainer{
 
@@ -22,13 +22,13 @@ public class ContainerKiller extends Container implements IPowerSwitchContainer{
     private int power;
     private int battery;
 
-	public ContainerKiller(IInventory player, IInventory killer, World world, BlockPos pos){
+	public ContainerKiller(IInventory player, IInventory comp, World world, BlockPos pos){
 		this.pos = pos;
 		this.world = world;
-		this.inventory = killer;
+		this.inventory = comp;
 
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 120, 6){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -36,7 +36,7 @@ public class ContainerKiller extends Container implements IPowerSwitchContainer{
 				    }
 			  });
 
-        this.addSlotToContainer(new Slot(killer, 1, 80,20){
+        this.addSlot(new Slot(comp, 1, 80,20){
             public boolean isItemValid(ItemStack stack)
             {
             	if (stack.getItem() instanceof ItemSword){
@@ -50,13 +50,13 @@ public class ContainerKiller extends Container implements IPowerSwitchContainer{
         {
             for (int i1 = 0; i1 < 9; ++i1)
             {
-                this.addSlotToContainer(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l)
         {
-            this.addSlotToContainer(new Slot(player, l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player, l, 8 + l * 18, 142));
         }
 	}
 
@@ -149,7 +149,7 @@ public class ContainerKiller extends Container implements IPowerSwitchContainer{
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityKiller)this.inventory).setField(id, data);

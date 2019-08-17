@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal":{ "model":"cvbox:crussher" }
+        "":{ "model":"cvbox:block/crussher" }
     }
 }

@@ -1,12 +1,9 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerComplesser;
-import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityCompresser;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -34,32 +31,34 @@ public class GuiCompresser extends GuiContainer {
 	}
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
 
-        int l = mouseX - (i + 146);
-        int i1 = mouseY - (j + 5);
+        double l = mouseX - (i + 146);
+        double i1 = mouseY - (j + 5);
 
         if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
         {
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
+        	MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER)));
+        	//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityCompresser.FIELD_POWER))));
         }
+        return true;
     }
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks){
+	public void render(int mouseX, int mouseY, float partialTicks){
         this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y){
 		// 背景
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(tex);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;

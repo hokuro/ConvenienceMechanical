@@ -27,26 +27,26 @@ public final class ModCommon {
 
 	// コンフィグ カテゴリー general
 	public static final String MOD_CONFIG_CAT_GENELAL = "general";
-	public static final String MOD_CHANEL ="Mod_Channel_ConvenienceBox";
+	public static final String MOD_CHANEL ="mod_channec_conveniencebox";
 
 
 	// GUIID
-	public static final int GUIID_EXPBANK = 1;
-	public static final int GUIID_EXENCHANTER = 2;
-	public static final int GUIID_EXANVIL = 3;
-	public static final int GUIID_PLANTER = 101;
-	public static final int GUIID_HARVESTER = 102;
-	public static final int GUIID_WOODPLANTER = 103;
-	public static final int GUIID_WOODHARVESTER = 104;
-	public static final int GUIID_SETTER = 201;
-	public static final int GUIID_KILLER = 202;
-	public static final int GUIID_EXPCOLLECTOR = 203;
-	public static final int GUIID_CRUSHER = 204;
-	public static final int GUIID_COMPLESSER = 205;
-	public static final int GUIID_STRAW = 206;
-	public static final int GUIID_DESTROY=207;
-	public static final int GUIID_LIQUIDMAKER = 208;
-	public static final int GUID_VACUMER = 209;
+	public static final String GUIID_EXPBANK = "gui_expbank";
+	public static final String GUIID_EXENCHANTER = "gui_exenchant";
+	public static final String GUIID_EXANVIL = "gui_exanvil";
+	public static final String GUIID_PLANTER = "gui_planter";
+	public static final String GUIID_HARVESTER = "gui_harvester";
+	public static final String GUIID_WOODPLANTER = "gui_woodplanter";
+	public static final String GUIID_WOODHARVESTER = "gui_woodharvester";
+	public static final String GUIID_SETTER = "gui_setter";
+	public static final String GUIID_KILLER = "gui_killer";
+	public static final String GUIID_EXPCOLLECTOR = "gui_expcollector";
+	public static final String GUIID_CRUSHER = "gui_crusher";
+	public static final String GUIID_COMPLESSER = "gui_complesser";
+	public static final String GUIID_STRAW = "gui_straw";
+	public static final String GUIID_DESTROY="gui_destroy";
+	public static final String GUIID_LIQUIDMAKER = "gui_liquidmaker";
+	public static final String GUID_VACUMER = "gui_vaclumer";
 
 
 	// GUINAME

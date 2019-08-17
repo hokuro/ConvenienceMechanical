@@ -1,15 +1,9 @@
 package mod.cvbox.gui;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.inventory.ContainerStraw;
-import mod.cvbox.network.MessageStraw_AreaSizeUpdate;
-import mod.cvbox.network.MessageStraw_ClearArea;
-import mod.cvbox.network.MessageStraw_GetAll;
-import mod.cvbox.network.Message_BoxSwitchChange;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityStraw;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -28,20 +22,61 @@ public class GuiStraw extends GuiContainer {
     	te = (TileEntityStraw)containerinv;
 	}
 
+	@Override
 	public void initGui(){
 		super.initGui();
     	int x=(this.width - this.xSize) / 2;
     	int y=(this.height - this.ySize) / 2;
-    	this.buttonList.clear();
-    	this.buttonList.add(new GuiButton(101,x+102, y+16,20,20,"-"));
-    	this.buttonList.add(new GuiButton(102,x+149, y+16,20,20,"+"));
-    	this.buttonList.add(new GuiButton(103,x+102, y+37,20,20,"-"));
-    	this.buttonList.add(new GuiButton(104,x+149, y+37,20,20,"+"));
-    	this.buttonList.add(new GuiButton(106,x+149, y+58,20,20,"clear"));
-    	this.buttonList.add(new GuiButton(107,x+42, y+51,40,20,"get all"));
+    	this.buttons.clear();
+    	GuiButton b1 = new GuiButton(101,x+102, y+16,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b2 = new GuiButton(102,x+149, y+16,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b3 = new GuiButton(103,x+102, y+37,20,20,"-"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b4 = new GuiButton(104,x+149, y+37,20,20,"+"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b5 = new GuiButton(106,x+149, y+58,20,20,"clear"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+    	GuiButton b6 = new GuiButton(107,x+42, y+51,40,20,"get all"){
+    		@Override
+    		public void onClick(double mouseX, double mouseY){
+    			actionPerformed(this);
+    		}
+    	};
+
+
+    	this.buttons.add(b1);
+    	this.buttons.add(b2);
+    	this.buttons.add(b3);
+    	this.buttons.add(b4);
+    	this.buttons.add(b5);
+    	this.buttons.add(b6);
+
+    	this.children.addAll(buttons);
 	}
 
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(GuiButton button)
     {
     	int w = 0;
     	int d = 0;
@@ -60,48 +95,52 @@ public class GuiStraw extends GuiContainer {
     		break;
 
     	case 106:
-    		Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_ClearArea());
+    		MessageHandler.SendMessage_Straw_CreaArea();
+    		//Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_ClearArea());
     		break;
 
     	case 107:
-    		Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_GetAll());
+    		MessageHandler.SendMessage_Straw_GetAll();
+    		//Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_GetAll());
     		break;
     	}
 
     	if (w != 0 || d != 0){
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_AreaSizeUpdate(w,d));
+        	MessageHandler.SendMessage_Straw_AreaSizeUpdate(w,d);
+    		//Mod_ConvenienceBox.Net_Instance.sendToServer(new MessageStraw_AreaSizeUpdate(w,d));
     	}
 
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
 
-        int l = mouseX - (i + 46);
-        int i1 = mouseY - (j + 19);
+        double l = mouseX - (i + 46);
+        double i1 = mouseY - (j + 19);
 
         if (l >= 0 && i1 >= 0 && l < 26 && i1 < 18)
         {
-        	Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityStraw.FIELD_POWER))));
+        	MessageHandler.SendMessage_BoxSwitchChante(!BooleanUtils.toBoolean(te.getField(TileEntityStraw.FIELD_POWER)));
+        	//Mod_ConvenienceBox.Net_Instance.sendToServer(new Message_BoxSwitchChange(!BooleanUtils.toBoolean(te.getField(TileEntityStraw.FIELD_POWER))));
         }
+        return true;
     }
 
+    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         this.fontRenderer.drawString("Liquid Container", 12, 5, 4210752);
         this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
     }
 
-    /**
-     * Draws the background layer of this container (behind the items).
-     */
+    @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(TEXTURE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;

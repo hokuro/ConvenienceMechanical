@@ -4,11 +4,11 @@ import java.util.Random;
 
 import mod.cvbox.block.ab.BlockFacingContainer;
 import mod.cvbox.core.FileManager;
-import mod.cvbox.core.ModCommon;
-import mod.cvbox.core.Mod_ConvenienceBox;
 import mod.cvbox.core.PlayerExpBank;
-import mod.cvbox.network.MessageExpBank_ExperienceInfo;
+import mod.cvbox.intaractionobject.IntaractionObjectEcpBank;
+import mod.cvbox.network.MessageHandler;
 import mod.cvbox.tileentity.TileEntityExpBank;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,34 +19,44 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockExpBank extends BlockFacingContainer {
 	public BlockExpBank(Material material){
-		super(material);
-		setHardness(0.5F);
-		this.setSoundType(SoundType.ANVIL);
-		this.setResistance(2000.0F);
+		super(Block.Properties.create(material)
+				.hardnessAndResistance(0.5F,2000.0F)
+				.sound(SoundType.ANVIL));
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
+	 public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntityExpBank tileEntity = (TileEntityExpBank)worldIn.getTileEntity(pos);
 		if ((tileEntity == null) || (playerIn == null)){
 			return false;
 		}
-		if ((playerIn.capabilities.isCreativeMode) && (playerIn.isSneaking())){
+		if ((playerIn.abilities.isCreativeMode) && (playerIn.isSneaking())){
 			return true;
 		}
 		if (playerIn.isSneaking()){
 			return false;
 		}
 		if(!worldIn.isRemote){
-			FileManager.read_file(playerIn.getPersistentID().toString());
+			FileManager.read_file(playerIn.getUniqueID().toString());
 			CreateMessage(playerIn);
+			NetworkHooks.openGui((EntityPlayerMP)playerIn,
+        			new IntaractionObjectEcpBank(pos),
+        			(buf)->{
+						buf.writeInt(pos.getX());
+						buf.writeInt(pos.getY());
+						buf.writeInt(pos.getZ());
+					});
 		}else{
-			playerIn.openGui(Mod_ConvenienceBox.instance,  ModCommon.GUIID_EXPBANK, worldIn, pos.getX(),pos.getY(),pos.getZ());
+
+        	//playerIn.openGui(Mod_ConvenienceBox.instance,  ModCommon.GUIID_EXPBANK, worldIn, pos.getX(),pos.getY(),pos.getZ());
 		}
 		return true;
 	}
@@ -61,18 +71,18 @@ public class BlockExpBank extends BlockFacingContainer {
 
 
 	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune){
+	public IItemProvider getItemDropped(IBlockState state, World worldIn, BlockPos pos, int fortune) {
 		return Item.getItemFromBlock(this);
 		// return new ItemStack(state.getBlock(),1,state.getBlock().getMetaFromState(state)).getItem();
 	}
 
 	@Override
-	public int quantityDropped(Random random){
+	public int quantityDropped(IBlockState state,Random random){
 		return 1;
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createNewTileEntity(IBlockReader worldIn) {
 		try{
 			return new TileEntityExpBank();
 		}catch(Exception ex){
@@ -106,7 +116,7 @@ public class BlockExpBank extends BlockFacingContainer {
 		if (player == null){
 			return;
 		}
-		String player_uuid = player.getPersistentID().toString();
+		String player_uuid = player.getUniqueID().toString();
 		for (int n = 0; n < PlayerExpBank.player_name.size(); n++){
 			if (((String) PlayerExpBank.player_name.get(n)).equals(player_uuid)){
 				list_no = n;
@@ -226,7 +236,7 @@ public class BlockExpBank extends BlockFacingContainer {
 
 	}
 	public static void CreateMessage(EntityPlayer player){
-		String player_uuid = player.getPersistentID().toString();
+		String player_uuid = player.getUniqueID().toString();
 
 		int list_no = -1;
 		int box_exp = 0;
@@ -252,7 +262,8 @@ public class BlockExpBank extends BlockFacingContainer {
 		int player_exp = tmp + bar_exp;
 		PlayerExpBank.player_exp.set(list_no, Integer.valueOf(player_exp));
 		if(player instanceof EntityPlayerMP){
-			Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExpBank_ExperienceInfo(player_exp, box_exp), (EntityPlayerMP)player);
+			MessageHandler.SendMessage_ExpBank_ExperienceInfo(player_exp, box_exp, (EntityPlayerMP)player);
+			//Mod_ConvenienceBox.Net_Instance.sendTo(new MessageExpBank_ExperienceInfo(player_exp, box_exp), (EntityPlayerMP)player);
 		}
 	}
 
@@ -271,4 +282,6 @@ public class BlockExpBank extends BlockFacingContainer {
 	public static int xpBarCap(int lv){
 		return ((lv >= 15) ? (37 +(lv-15)*5) : ((lv >= 30) ? (112+(lv-30) * 9) : (7 + lv * 2)));
 	}
+
+
 }

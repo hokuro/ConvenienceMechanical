@@ -9,13 +9,10 @@ import mod.cvbox.core.ModCommon;
 import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.event.RegistryEvent;
 
 public class BlockCore{
 
@@ -23,6 +20,8 @@ public class BlockCore{
 	public static final String NAME_EXPBANK = "expbank";			// 経験値貯金箱
 	public static final String NAME_EXENCHANTER = "exenchanter";	// スーパーエンチャントテーブル
 	public static final String NAME_EXANVIL ="exanvil";				// スーパーアンビル
+	public static final String NAME_EXANVIL_CHIPPED = "exanvile_chipped";
+	public static final String NAME_EXANVIL_DAMAGED = "exanvile_damaged";
 
 	// 農業系
 	public static final String NAME_PLANTER = "planter";			// 種まき機
@@ -41,29 +40,81 @@ public class BlockCore{
 	public static final String NAME_LIQUIDCSTRAWER = "straw";		// 給水機
 	public static final String NAME_VACUMER = "vacumer";			// 吸引機
 
-	public static Block block_expbank;
-	public static Block block_exenchanter;
-	public static Block block_exanvil;
+	// 経験値貯金箱
+	public static Block block_expbank = new BlockExpBank(Material.ROCK)
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK);
 
-	public static Block block_planter;
-	public static Block block_harvester;
-	public static Block block_woodplanter;
-	public static Block block_woodharvester;
+	// エンチャント台
+	public static Block block_exenchanter = new BlockExEnchantmentTable()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER);
 
-	public static Block block_liquidmaker;
-	public static Block block_destroyer;
-	public static Block block_setter;
-	public static Block block_killer;
-	public static Block block_excollector;
-	public static Block block_crusher;
-	public static Block block_compresser;
-	public static Block block_straw;
-	public static Block block_vacumer;
+	// かなとこ
+	public static Block block_exanvil = new BlockExAnvil()
+	.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL);
+
+	public static Block block_exanvil_chipped = new BlockExAnvil()
+	.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL_CHIPPED);
+
+	public static Block block_exanvil_damaged = new BlockExAnvil()
+	.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL_DAMAGED);
+
+	// 種まき機
+	public static Block block_planter = new BlockPlanter()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER);
+	// 収穫機
+	public static Block block_harvester = new BlockHarvester()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER);
+
+	// 植林機
+	public static Block block_woodplanter = new BlockWoodPlanter()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER);
+
+	// きこり機
+	public static Block block_woodharvester = new BlockWoodHarvester()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER);
+
+	// 製氷機
+	public static Block block_liquidmaker = new BlockLiquidMaker()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER);
+
+	// 破砕機
+	public static Block block_destroyer = new BlockDestroyer()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER);
+
+	// 配置機
+	public static Block block_setter = new BlockSetter()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER);
+
+	// キラー
+	public static Block block_killer = new BlockKiller()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER);
+
+	// 経験値収集機
+	public static Block block_excollector = new BlockExpCollector()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR);
+
+	// 粉砕機
+	public static Block block_crusher = new BlockCrusher()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER);
+
+	// 圧縮機
+	public static Block block_compresser = new BlockCompresser()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER);
+
+	// ストロー
+	public static Block block_straw = new BlockStraw()
+			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER);
+
+	// 吸引機
+	public static Block block_vacumer = new BlockVacumer()
+	.setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER);
 
 	private static final String[] NAME_LIST = new String[]{
 			 NAME_EXPBANK,
 			 NAME_EXENCHANTER,
 			 NAME_EXANVIL,
+//			 NAME_EXANVIL_CHIPPED,
+//			 NAME_EXANVIL_DAMAGED,
 
 			 NAME_PLANTER,
 			 NAME_HARVESTER,
@@ -86,97 +137,15 @@ public class BlockCore{
 	private static Map<String,ResourceLocation[]> resourceMap;
 
 	private static void init(){
-		// 経験値貯金箱
-		block_expbank = new BlockExpBank(Material.ROCK)
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK)
-				.setUnlocalizedName(NAME_EXPBANK)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
 
-		// エンチャント台
-		block_exenchanter = new BlockExEnchantmentTable()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER)
-				.setUnlocalizedName(NAME_EXENCHANTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabWorker);
-
-		// かなとこ
-		block_exanvil = new BlockExAnvil()
-		.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL)
-		.setUnlocalizedName(NAME_EXANVIL)
-		.setCreativeTab(Mod_ConvenienceBox.tabWorker);
-
-		// 種まき機
-		block_planter = new BlockPlanter()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER)
-				.setUnlocalizedName(NAME_PLANTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
-		// 収穫機
-		block_harvester = new BlockHarvester()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER)
-				.setUnlocalizedName(NAME_HARVESTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
-
-		// 植林機
-		block_woodplanter = new BlockWoodPlanter()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER)
-				.setUnlocalizedName(NAME_WOODPLANTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
-
-		// きこり機
-		block_woodharvester = new BlockWoodHarvester()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER)
-				.setUnlocalizedName(NAME_WOODHARVESTER)
-				.setCreativeTab(Mod_ConvenienceBox.tabFarmer);
-
-		// 製氷機
-		block_liquidmaker = new BlockLiquidMaker()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER)
-				.setUnlocalizedName(NAME_LIQUIDMAKER);
-
-		// 破砕機
-		block_destroyer = new BlockDestroyer()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER)
-				.setUnlocalizedName(NAME_DESTROYER);
-
-		// 配置機
-		block_setter = new BlockSetter()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER)
-				.setUnlocalizedName(NAME_SETTER);
-
-		// キラー
-		block_killer = new BlockKiller()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER)
-				.setUnlocalizedName(NAME_KILLER);
-
-		// 経験値収集機
-		block_excollector = new BlockExpCollector()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR)
-				.setUnlocalizedName(NAME_EXCOLLECTOR);
-
-		// 粉砕機
-		block_crusher = new BlockCrusher()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER)
-				.setUnlocalizedName(NAME_CRUSSHER);
-
-		// 圧縮機
-		block_compresser = new BlockCompresser()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER)
-				.setUnlocalizedName(NAME_COMPLESSER);
-
-		// ストロー
-		block_straw = new BlockStraw()
-				.setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER)
-				.setUnlocalizedName(NAME_LIQUIDCSTRAWER).setCreativeTab(Mod_ConvenienceBox.tabFactory);
-
-		// 吸引機
-		block_vacumer = new BlockVacumer()
-		.setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER)
-		.setUnlocalizedName(NAME_VACUMER).setCreativeTab(Mod_ConvenienceBox.tabFactory);
 
 
 		blockMap = new HashMap<String,Block>(){
 			{put(NAME_EXPBANK,block_expbank);}
 			{put(NAME_EXENCHANTER,block_exenchanter);}
 			{put(NAME_EXANVIL,block_exanvil);}
+			{put(NAME_EXANVIL_CHIPPED,block_exanvil_chipped);}
+			{put(NAME_EXANVIL_DAMAGED,block_exanvil_damaged);}
 
 			{put(NAME_PLANTER,block_planter);}
 			{put(NAME_HARVESTER,block_harvester);}
@@ -196,23 +165,25 @@ public class BlockCore{
 
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_EXPBANK,new ItemExpBank(block_expbank).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK));}
-			{put(NAME_EXENCHANTER, new ItemBlock(block_exenchanter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER));}
-			{put(NAME_EXANVIL, new ItemBlock(block_exanvil).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL));}
+			{put(NAME_EXENCHANTER, new ItemBlock(block_exenchanter, new Item.Properties().group(Mod_ConvenienceBox.tabWorker)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXENCHANTER));}
+			{put(NAME_EXANVIL, new ItemBlock(block_exanvil,new Item.Properties().group(Mod_ConvenienceBox.tabWorker)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL));}
+			{put(NAME_EXANVIL_CHIPPED, new ItemBlock(block_exanvil_chipped,new Item.Properties().group(Mod_ConvenienceBox.tabWorker)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL_CHIPPED));}
+			{put(NAME_EXANVIL_DAMAGED, new ItemBlock(block_exanvil_damaged,new Item.Properties().group(Mod_ConvenienceBox.tabWorker)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXANVIL_DAMAGED));}
 
 			{put(NAME_PLANTER, new ItemPlanter(block_planter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_PLANTER));}
-			{put(NAME_HARVESTER, new ItemBlock(block_harvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER));}
+			{put(NAME_HARVESTER, new ItemBlock(block_harvester, new Item.Properties().group(Mod_ConvenienceBox.tabFarmer)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_HARVESTER));}
 			{put(NAME_WOODPLANTER, new ItemPlanter(block_woodplanter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODPLANTER));}
-			{put(NAME_WOODHARVESTER, new ItemBlock(block_woodharvester).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER));}
+			{put(NAME_WOODHARVESTER, new ItemBlock(block_woodharvester,new Item.Properties().group(Mod_ConvenienceBox.tabFarmer)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_WOODHARVESTER));}
 
-			{put(NAME_LIQUIDMAKER, new ItemBlock(block_liquidmaker).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER));}
-			{put(NAME_DESTROYER, new ItemBlock(block_destroyer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER));}
-			{put(NAME_SETTER, new ItemBlock(block_setter).setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER));}
-			{put(NAME_KILLER, new ItemBlock(block_killer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER));}
-			{put(NAME_EXCOLLECTOR, new ItemBlock(block_excollector).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR));}
-			{put(NAME_CRUSSHER, new ItemBlock(block_crusher).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
-			{put(NAME_COMPLESSER, new ItemBlock(block_compresser).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
-			{put(NAME_LIQUIDCSTRAWER, new ItemBlock(block_straw).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER));}
-			{put(NAME_VACUMER, new ItemBlock(block_vacumer).setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER));}
+			{put(NAME_LIQUIDMAKER, new ItemBlock(block_liquidmaker,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDMAKER));}
+			{put(NAME_DESTROYER, new ItemBlock(block_destroyer,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_DESTROYER));}
+			{put(NAME_SETTER, new ItemBlock(block_setter,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_SETTER));}
+			{put(NAME_KILLER, new ItemBlock(block_killer,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_KILLER));}
+			{put(NAME_EXCOLLECTOR, new ItemBlock(block_excollector,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXCOLLECTOR));}
+			{put(NAME_CRUSSHER, new ItemBlock(block_crusher,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_CRUSSHER));}
+			{put(NAME_COMPLESSER, new ItemBlock(block_compresser,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_COMPLESSER));}
+			{put(NAME_LIQUIDCSTRAWER, new ItemBlock(block_straw,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_LIQUIDCSTRAWER));}
+			{put(NAME_VACUMER, new ItemBlock(block_vacumer,new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(ModCommon.MOD_ID + ":" + NAME_VACUMER));}
 		};
 
 
@@ -239,25 +210,17 @@ public class BlockCore{
 	}
 
 
-	public static void register(FMLPreInitializationEvent event){
-		init();
-		for (String key: NAME_LIST){
-			ForgeRegistries.BLOCKS.register(blockMap.get(key));
-			ForgeRegistries.ITEMS.register(itemMap.get(key));
+	public static void registerBlock(final RegistryEvent.Register<Block> event){
+		if (blockMap == null){ init();}
+		for (String name : NAME_LIST){
+			event.getRegistry().register(blockMap.get(name));
 		}
+	}
 
-		if (event.getSide().isClient()){
-			for (String key : NAME_LIST){
-				Item witem = itemMap.get(key);
-				ResourceLocation[] wresource = resourceMap.get(key);
-				if (wresource.length > 1){
-					ModelLoader.registerItemVariants(witem, wresource);
-				}
-				for (int i = 0; i < wresource.length; i++){
-					ModelLoader.setCustomModelResourceLocation(witem, i,
-							new ModelResourceLocation(wresource[i], "inventory"));
-				}
-			}
+	public static void registerItemBlock(final RegistryEvent.Register<Item> event){
+		if (blockMap == null){ init();}
+		for (String name : NAME_LIST){
+			event.getRegistry().register(itemMap.get(name));
 		}
 	}
 }

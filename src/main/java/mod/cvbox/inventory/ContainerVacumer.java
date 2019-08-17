@@ -8,8 +8,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ContainerVacumer extends Container implements IPowerSwitchContainer{
 	public final static int ROW_SLOT = 1;
@@ -24,7 +24,7 @@ public class ContainerVacumer extends Container implements IPowerSwitchContainer
 		this.inventory = comp;
 
 		// バッテリー
-		addSlotToContainer(
+		addSlot(
 				new Slot(inventory, 0, 123, 6){
 				    public boolean isItemValid(ItemStack stack)
 				    {
@@ -35,7 +35,7 @@ public class ContainerVacumer extends Container implements IPowerSwitchContainer
 		// コンテナインベントリ
 	    for (int row = 0; row < ROW_SLOT; row++) {
 		      for (int col = 0; col < COL_SLOT; col++) {
-		    	  addSlotToContainer(
+		    	  addSlot(
 		    			  new Slot((IInventory)inventory,
 		    			  1 + col + (row * COL_SLOT), 	// インデックス
 		    			  8 + col * 18,
@@ -47,13 +47,13 @@ public class ContainerVacumer extends Container implements IPowerSwitchContainer
         {
             for (int i1 = 0; i1 < 9; ++i1)
             {
-                this.addSlotToContainer(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
+                this.addSlot(new Slot(player, i1 + k * 9 + 9, 8 + i1 * 18, 84 + k * 18));
             }
         }
 
         for (int l = 0; l < 9; ++l)
         {
-            this.addSlotToContainer(new Slot(player, l, 8 + l * 18, 142));
+            this.addSlot(new Slot(player, l, 8 + l * 18, 142));
         }
 	}
 
@@ -143,7 +143,7 @@ public class ContainerVacumer extends Container implements IPowerSwitchContainer
 	    }
 
 
-	    @SideOnly(Side.CLIENT)
+	    @OnlyIn(Dist.CLIENT)
 	    public void updateProgressBar(int id, int data)
 	    {
 	    	((TileEntityVacumer)this.inventory).setField(id, data);
