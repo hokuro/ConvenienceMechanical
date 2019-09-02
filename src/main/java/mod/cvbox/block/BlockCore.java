@@ -40,6 +40,8 @@ public class BlockCore{
 	public static final String NAME_LIQUIDCSTRAWER = "straw";		// 給水機
 	public static final String NAME_VACUMER = "vacumer";			// 吸引機
 
+	搾乳機と羊毛刈り取り機とミルクボールとゲノム採取装置とゲノム解析機と万能細胞培養器とモブ複製機とゴルディオンハンマーを追加する
+
 	// 経験値貯金箱
 	public static Block block_expbank = new BlockExpBank(Material.ROCK)
 			.setRegistryName(ModCommon.MOD_ID + ":" + NAME_EXPBANK);

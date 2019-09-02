@@ -3,6 +3,7 @@ package mod.cvbox.render;
 import mod.cvbox.model.ModelLiquidMaker;
 import mod.cvbox.tileentity.TileEntityLiquidMaker;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.ResourceLocation;
 
@@ -41,7 +42,8 @@ public class RenderLiquidMaker   extends TileEntityRenderer<TileEntityLiquidMake
 		GlStateManager.scaled(0.0625D,0.0625D,0.0625D);
 		GlStateManager.rotatef(180,0F,0F,1F);
 		GlStateManager.color4f(1.0F, 1.0F,1.0F,1.0F);
-
+		GlStateManager.disableLighting();
+		OpenGlHelper.glMultiTexCoord2f(OpenGlHelper.GL_TEXTURE1, 15 * 16, 15 * 16);
 		int mode = te.getMode();
 		switch(mode){
 		case TileEntityLiquidMaker.MODE_NONE:
@@ -59,6 +61,7 @@ public class RenderLiquidMaker   extends TileEntityRenderer<TileEntityLiquidMake
 
 		}
 		this.mainModel.render(te,1.0F);
+		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
 
 
