@@ -1,8 +1,8 @@
 {
     "parent": "block/cube_bottom_top",
     "textures": {
-        "bottom": "cvbox:blocks/vacumer_bottom",
+        "bottom": "cvbox:blocks/machine_bottom",
         "top": "cvbox:blocks/vacumer_top",
-        "side": "cvbox:blocks/vacumer_side"
+        "side": "cvbox:blocks/machine_side"
     }
 }

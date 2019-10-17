@@ -1,6 +1,9 @@
 {
-    "parent": "block/cube_all",
+    "parent": "block/cube_bottom_top",
     "textures": {
-        "all": "cvbox:blocks/kirer"
+        "bottom": "cvbox:blocks/machine_bottom",
+        "top": "cvbox:blocks/kirer_top",
+        "side": "cvbox:blocks/machine_side"
     }
 }
+

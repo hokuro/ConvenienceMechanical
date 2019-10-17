@@ -4,22 +4,22 @@ package mod.cvbox.network;
 //import basashi.autoplanting.entity.TileEntityAutoPlanting;
 //import io.netty.buffer.ByteBuf;
 //import io.netty.channel.ChannelHandlerContext;
-//import net.minecraft.block.state.IBlockState;
-//import net.minecraft.entity.player.EntityPlayer;
+//import net.minecraft.block.BlockState;
+//import net.minecraft.entity.player.PlayerEntity;
 //import net.minecraft.tileentity.TileEntity;
 //import net.minecraft.util.BlockPos;
 //import net.minecraft.world.World;
 //
-//public class PacketGuiButton extends AbstractPacket {
+//public class PacketButton extends AbstractPacket {
 //	private int buttonId;
 //	private int x = 0;
 //	private int y=0;
 //	private int z = 0;
 //
-//	public PacketGuiButton(){
+//	public PacketButton(){
 //	}
 //
-//	public PacketGuiButton(int id, int xx, int yy, int zz){
+//	public PacketButton(int id, int xx, int yy, int zz){
 //		buttonId = id;
 //		x = xx;
 //		y = yy;
@@ -41,10 +41,10 @@ package mod.cvbox.network;
 //		z = buffer.readInt();
 //	}
 //
-//	public void handleClientSide(EntityPlayer player){
+//	public void handleClientSide(PlayerEntity player){
 //	}
 //
-//	public void handleServerSide(EntityPlayer player){
+//	public void handleServerSide(PlayerEntity player){
 //		World world = player.worldObj;
 //
 //		TileEntity tileEntity = world.getTileEntity(new BlockPos(x,y,z));
@@ -54,10 +54,10 @@ package mod.cvbox.network;
 //
 //			tileEntityNoop.dt_selectPriority = this.buttonId;
 //			if (this.buttonId == 0) {
-//				IBlockState meta = world.getBlockState(new BlockPos(x,y,z));
+//				BlockState meta = world.getBlockState(new BlockPos(x,y,z));
 //				world.setBlockState(new BlockPos(x,y,z), meta);
 //			} else {
-//				IBlockState meta = world.getBlockState(new BlockPos(x,y,z));
+//				BlockState meta = world.getBlockState(new BlockPos(x,y,z));
 //				world.setBlockState(new BlockPos(x,y,z), meta);
 //			}
 //		}

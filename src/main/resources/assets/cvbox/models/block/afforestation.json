@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "cvbox:blocks/afforestation_bottom",
+        "top": "cvbox:blocks/afforestation_top",
+        "side": "cvbox:blocks/afforestation_side"
+    }
+}

@@ -11,7 +11,7 @@ public class CreativeTabFarmarBox extends ItemGroup {
 
 	@Override
 	public ItemStack createIcon() {
-		return new ItemStack(BlockCore.block_planter);
+		return new ItemStack(BlockCore.block_farming);
 	}
 
 	public String getTranslationKey() {

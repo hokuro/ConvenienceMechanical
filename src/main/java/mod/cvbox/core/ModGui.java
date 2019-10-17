@@ -3,7 +3,7 @@ package mod.cvbox.core;
 public class ModGui {//implements IGuiHandler {
 //
 //	@Override
-//	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+//	public Object getServerGuiElement(int id, PlayerEntity player, World world, int x, int y, int z) {
 //		BlockPos pos = new BlockPos(x,y,z);
 //		TileEntity ent = null;
 //		switch(id){
@@ -112,7 +112,7 @@ public class ModGui {//implements IGuiHandler {
 //	}
 //
 //	@Override
-//	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+//	public Object getClientGuiElement(int id, PlayerEntity player, World world, int x, int y, int z) {
 //		BlockPos pos = new BlockPos(x,y,z);
 //		TileEntity ent = null;
 //		switch(id){

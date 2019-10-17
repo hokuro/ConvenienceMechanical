@@ -50,8 +50,8 @@ public class ModLog {
 		if (ModCommon.isDebug){
 			StackTraceElement throwableStackTraceElement = new Throwable().getStackTrace()[1];
 			_log.info(throwableStackTraceElement.getClassName()+ "." +
-			           throwableStackTraceElement.getMethodName() + "(" +
-					   throwableStackTraceElement.getLineNumber() + ")" + ":" + message);
+			throwableStackTraceElement.getMethodName() + "(" +
+					throwableStackTraceElement.getLineNumber() + ")" + ":" + message);
 		}
 	}
 }

@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "cvbox:blocks/machine_bottom",
+        "top": "cvbox:blocks/woolcutting_top",
+        "side": "cvbox:blocks/machine_side"
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "":{ "model":"cvbox:block/livingcreator" }
+    }
+}

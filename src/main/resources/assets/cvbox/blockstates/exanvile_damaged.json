@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=south": { "model": "cvbox:block/exanvil" },
-        "facing=west": { "model": "cvbox:block/exanvil", "y": 90 },
-        "facing=north": { "model": "cvbox:block/exanvil", "y": 180 },
-        "facing=east": { "model": "cvbox:block/exanvil", "y": 270 }
-    }
-}

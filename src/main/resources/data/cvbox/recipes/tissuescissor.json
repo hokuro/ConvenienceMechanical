@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "tissuescissor",
+  "pattern": [
+    "  M",
+    " M ",
+    "S  "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "M": {
+      "item": "cvbox:machinematter"
+    }
+  },
+  "result": {
+    "item": "cvbox:tissuescissor",
+    "count": 1
+  }
+}

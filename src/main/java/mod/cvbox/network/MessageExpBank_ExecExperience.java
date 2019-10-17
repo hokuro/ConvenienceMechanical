@@ -2,7 +2,7 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.block.BlockExpBank;
+import mod.cvbox.block.work.BlockExpBank;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;

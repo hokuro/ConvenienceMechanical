@@ -1,0 +1,9 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "cvbox:blocks/machine_bottom",
+        "top": "cvbox:blocks/machine_bottom",
+        "side": "cvbox:blocks/livingcreator_top"
+    }
+}
+

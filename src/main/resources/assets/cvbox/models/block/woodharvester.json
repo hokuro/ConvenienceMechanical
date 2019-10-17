@@ -1,8 +1,0 @@
-{
-    "parent": "block/cube_bottom_top",
-    "textures": {
-        "bottom": "cvbox:blocks/woodharvester_bottom",
-        "top": "cvbox:blocks/woodharvester_top",
-        "side": "cvbox:blocks/woodharvester_side"
-    }
-}

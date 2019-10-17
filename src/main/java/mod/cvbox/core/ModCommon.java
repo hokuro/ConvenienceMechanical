@@ -8,27 +8,8 @@ public final class ModCommon {
 	public static final String MOD_ID = "cvbox";
 	// モッド名
 	public static final String MOD_NAME = "ConvenienceBox";
-    // 前に読み込まれるべき前提MODをバージョン込みで指定
-    public static final String MOD_DEPENDENCIES = "required-after:Forge@[1.9-12.16.0.1853,)";
-    // 起動出来るMinecraft本体のバージョン。記法はMavenのVersion Range Specificationを検索すること。
-    public static final String MOD_ACCEPTED_MC_VERSIONS = "[1.12]";
-	public static final String MOD_PACKAGE = "mod.cvbox";
-	public static final String MOD_CLIENT_SIDE = ".client.ClientProxy";
-	public static final String MOD_SERVER_SIDE = ".core.CommonProxy";
-	public static final String MOD_FACTRY = ".client.config.ConvenienceFactory";
-	// モッドバージョン
-	public static final String MOD_VERSION = "1.12.0";
-	// コンフィグファイル名
-	public static final String MOD_CONFIG_FILE = "";
-	// コンフィグ
-	public static final String MOD_CONFIG_LANG = "";
-	// コンフィグリロード間隔
-	public static final long MOD_CONFIG_RELOAD = 500L;
 
-	// コンフィグ カテゴリー general
-	public static final String MOD_CONFIG_CAT_GENELAL = "general";
 	public static final String MOD_CHANEL ="mod_channec_conveniencebox";
-
 
 	// GUIID
 	public static final String GUIID_EXPBANK = "gui_expbank";
@@ -79,35 +60,25 @@ public final class ModCommon {
 //	public static final String MOD_CHANNEL1 = "AutoPlanting1";
 //	public static final String MOD_CHANNEL2 = "AutoPlanting2";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	public static final String MOD_CONTAINERID_COMPLESSER ="container_compleser";
+	public static final String MOD_CONTAINERID_CRUSHER ="container_crusher";
+	public static final String MOD_CONTAINERID_DESTROYER ="container_destroyer";
+	public static final String MOD_CONTAINERID_EXENCHANTMENT ="container_exenchantment";
+	public static final String MOD_CONTAINERID_EXPBANK ="container_expbank";
+	public static final String MOD_CONTAINERID_EXPCOLLECTOR ="container_expcollector";
+	public static final String MOD_CONTAINERID_EXREPAIR ="container_exrepaier";
+	public static final String MOD_CONTAINERID_KILLER ="container_killer";
+	public static final String MOD_CONTAINERID_LIQUIDMAKER ="container_liquidmaker";
+	public static final String MOD_CONTAINERID_SETTER ="container_setter";
+	public static final String MOD_CONTAINERID_STRAW ="container_straw";
+	public static final String MOD_CONTAINERID_VACUMER ="container_vacumer";
+	public static final String MOD_CONTAINERID_PLANTNURTURE = "container_plantnurture";
+	public static final String MOD_CONTAINERID_AUTOFEED = "container_autofeed";
+	public static final String MOD_CONTAINERID_GENOMANALYSER = "container_genomanalyser";
+	public static final String MOD_CONTAINERID_IPSCELLMAKER = "container_ipscellmaker";
+	public static final String MOD_CONTAINERID_LIVINGCREATOR = "container_livingcreator";
+	public static final String MOD_CONTAINERID_BEDROCKMAKER = "container_bedrockmaker";
+	public static final String MOD_CONTAINERID_DELIVERBOX = "container_deliverbox";
+	public static final String MOD_CONTAINERID_MILLKING = "container.millking";
+	public static final String MOD_CONTAINERID_WOOLCUTTING = "container.woolcutting";
 }

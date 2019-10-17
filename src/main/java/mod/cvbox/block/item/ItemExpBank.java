@@ -1,22 +1,19 @@
 package mod.cvbox.block.item;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
-import mod.cvbox.tileentity.TileEntityExpBank;
+import mod.cvbox.tileentity.work.TileEntityExpBank;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 
-public class ItemExpBank extends ItemBlock {
-	public ItemExpBank(Block block){
-		super(block,new Item.Properties()
-				.group(Mod_ConvenienceBox.tabWorker)
-				.defaultMaxDamage(0));
+public class ItemExpBank extends BlockItem {
+	public ItemExpBank(Block block, Item.Properties property){
+		super(block,property);
 	}
 
 	@Override
-	public boolean placeBlock(BlockItemUseContext context, IBlockState state){
+	public boolean placeBlock(BlockItemUseContext context, BlockState state){
 		if(super.placeBlock(context,state)){
 			TileEntityExpBank tile = (TileEntityExpBank) context.getWorld().getTileEntity(context.getPos());
 			if(tile == null){

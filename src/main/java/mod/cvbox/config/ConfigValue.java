@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ConfigValue{
@@ -19,10 +19,8 @@ public class ConfigValue{
 	public static final General general = new General(BUILDER);
 	public static final ExpBank expbank = new ExpBank(BUILDER);
 	public static final ExEnchant exenchatn = new ExEnchant(BUILDER);
-	public static final Planter planter = new Planter(BUILDER);
-	public static final Harvester harvester = new Harvester(BUILDER);
-	public static final WoodPlanter woodplanter = new WoodPlanter(BUILDER);
-	public static final WoodHarvester woodharvester = new WoodHarvester(BUILDER);
+	public static final Afforestation afforestation = new Afforestation(BUILDER);
+	public static final Farming farming = new Farming(BUILDER);
 	public static final IceMaker icemaker = new IceMaker(BUILDER);
 	public static final LavaMaker lavamaker = new LavaMaker(BUILDER);
 	public static final ExpCollector expcollector = new ExpCollector(BUILDER);
@@ -69,22 +67,81 @@ public class ConfigValue{
 		}
 	}
 
-	public static class Planter{
+	public static class Afforestation{
+		public final ForgeConfigSpec.ConfigValue<Integer> maxDistance;
+		public final ForgeConfigSpec.ConfigValue<Integer> maxPlantHeight;
+		public final ForgeConfigSpec.ConfigValue<Integer> maxHarvestHeight;
+		public final ForgeConfigSpec.ConfigValue<Integer> oneTicPlant;
+		public final ForgeConfigSpec.ConfigValue<Integer> execTimeSpan;
+		public final ForgeConfigSpec.ConfigValue<String> targetItemIds;
+
+		public Afforestation(ForgeConfigSpec.Builder builder){
+			builder.push("WoodPlanter");
+			maxDistance = builder.comment("Maximum Distance(x-z) 1-128").defineInRange("MaxDistance", 8, 1, 128);
+			maxPlantHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxPlantHeight", 3, 1, 128);
+			maxHarvestHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxHarvestHeight", 30, 1, 128);
+			oneTicPlant = builder.comment("Planting one tick 1-128").defineInRange("OneTicPlant", 1, 1, 128);
+			execTimeSpan = builder.comment("Planting Time Span").defineInRange("ExecTimeSpan", 20, 1, 200);
+			targetItemIds = builder.comment("enable item ids").define("TargetItemIds",
+					"minecraft:oak_sapling,"
+							+ "minecraft:birch_sapling,"
+							+ "minecraft:jungle_sapling,"
+							+ "minecraft:acacia_sapling,"
+							+ "minecraft:dark_oak_sapling,");
+			builder.pop();
+		}
+
+		public int MaxDistance(){return this.maxDistance.get();}
+		public int MaxPlantHeight(){return this.maxPlantHeight.get();}
+		public int MaxHarvestHeight() {return this.maxHarvestHeight.get();}
+		public int OneTicPlant(){return this.oneTicPlant.get();}
+		public int ExecTimeSpan(){return this.execTimeSpan.get();}
+		public String TargetItemIds(){return this.targetItemIds.get();}
+
+
+		private List<ItemStack> targetStacks = new ArrayList<ItemStack>();
+		public void setItem(){
+			targetStacks.clear();
+			String regex="^[0-9]+$";
+			Pattern p = Pattern.compile(regex);
+			String[] targets = targetItemIds.get().split(",");
+			for (String target : targets){
+				ResourceLocation res = new ResourceLocation(target.toLowerCase());
+
+				ItemStack w = ItemStack.EMPTY;
+				try{
+					w = new ItemStack(Registry.ITEM.getOrDefault(res));
+				}catch(Exception ex){
+
+				}
+				if (w.isEmpty()){
+					try{
+						w = new ItemStack(Registry.BLOCK.getOrDefault(res));
+					}catch(Exception ex){
+
+					}
+				}
+				if (!w.isEmpty()){
+					targetStacks.add(w.copy());
+				}
+			}
+		}
+	}
+
+	public static class Farming{
 		public final ForgeConfigSpec.ConfigValue<Integer> maxDistance;
 		public final ForgeConfigSpec.ConfigValue<Integer> maxHeight;
 		public final ForgeConfigSpec.ConfigValue<Integer> oneTicPlant;
 		public final ForgeConfigSpec.ConfigValue<Integer> execTimeSpan;
-		public final ForgeConfigSpec.ConfigValue<Boolean> rightClick;
 		public final ForgeConfigSpec.ConfigValue<String> targetItemIds;
 		public final ForgeConfigSpec.ConfigValue<Boolean> canfarming;
 
-		public Planter(ForgeConfigSpec.Builder builder){
+		public Farming(ForgeConfigSpec.Builder builder){
 			builder.push("Planter");
 			maxDistance = builder.comment("Maximum Distance(x-z) 1-128").defineInRange("MaxDistance", 4, 1, 128);
 			maxHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxHeight", 3, 1, 128);
 			oneTicPlant = builder.comment("Planting one tick 1-128").defineInRange("OneTicPlant", 1, 1, 128);
 			execTimeSpan = builder.comment("Planting Time Span").defineInRange("ExecTimeSpan", 20, 1, 200);
-			rightClick = builder.comment("right click possible [true/false]").define("RightClick",true);
 			targetItemIds = builder.comment("enable item ids").define("TargetItemIds",
 					"minecraft:potato,"
 					+ "minecraft:carrot,"
@@ -96,7 +153,11 @@ public class ConfigValue{
 					+ "minecraft:cactus,"
 					+ "minecraft:sugar_cane,"
 					+ "minecraft:nether_wart,"
-					+ "minecraft:chorus_flower");
+					+ "minecraft:chorus_flower,"
+					+ "minecraft:kelp,"
+					+ "minecraft:sweet_berries,"
+					+ "minecraft:bamboo_sapling,"
+					+ "minecraft:bamboo");
 			canfarming = builder.comment("farming dirt").define("CanFarming", true);
 			builder.pop();
 		}
@@ -105,7 +166,6 @@ public class ConfigValue{
 		public int MaxHeight(){return this.maxHeight.get();}
 		public int OneTicPlant(){return this.oneTicPlant.get();}
 		public int ExecTimeSpan(){return this.execTimeSpan.get();}
-		public boolean RightClick(){return this.rightClick.get();}
 		public String TargetItemIds(){return this.targetItemIds.get();}
 		public boolean CanFarming() {return this.canfarming.get();}
 
@@ -121,13 +181,13 @@ public class ConfigValue{
 
 				ItemStack w = ItemStack.EMPTY;
 				try{
-					w = new ItemStack(IRegistry.field_212630_s.func_212608_b(res));
+					w = new ItemStack(Registry.ITEM.getOrDefault(res));
 				}catch(Exception ex){
 
 				}
 				if (w.isEmpty()){
 					try{
-						w = new ItemStack(IRegistry.field_212618_g.func_212608_b(res));
+						w = new ItemStack(Registry.BLOCK.getOrDefault(res));
 					}catch(Exception ex){
 
 					}
@@ -145,118 +205,20 @@ public class ConfigValue{
 			return targetStacks;
 		}
 
-
-	}
-
-	public static class Harvester{
-		public final ForgeConfigSpec.ConfigValue<Integer> maxDistance;
-		public final ForgeConfigSpec.ConfigValue<Integer> maxHeight;
-		public final ForgeConfigSpec.ConfigValue<Integer> oneTicPlant;
-		public final ForgeConfigSpec.ConfigValue<Integer> execTimeSpan;
-		public final ForgeConfigSpec.ConfigValue<Integer> searchPlanter;
-
-		public Harvester(ForgeConfigSpec.Builder builder){
-			builder.push("ExEnchant");
-			maxDistance = builder.comment("Maximum Distance(x-z) 1-128").defineInRange("MaxDistance", 4,1,128);
-			maxHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxHeight", 3,1,128);
-			oneTicPlant = builder.comment("Harvest one tick 1-128").define("OneTicPlant", 1);
-			execTimeSpan = builder.comment("Planting Time Span").define("ExecTimeSpan", 20);
-			searchPlanter = builder.comment("search planter block distance(x.y.z) 1-128").define("SearchPlanter", 3);
-			builder.pop();
-		}
-
-		public int MaxDistance(){return maxDistance.get();}
-		public int MaxHeight(){return maxHeight.get();}
-		public int OneTicPlant(){return oneTicPlant.get();}
-		public int ExecTimeSpan(){return execTimeSpan.get();}
-		public int SearchPlanter(){return searchPlanter.get();}
-
-	}
-
-	public static class WoodPlanter{
-		public final ForgeConfigSpec.ConfigValue<Integer> maxDistance;
-		public final ForgeConfigSpec.ConfigValue<Integer> maxHeight;
-		public final ForgeConfigSpec.ConfigValue<Integer> oneTicPlant;
-		public final ForgeConfigSpec.ConfigValue<Integer> execTimeSpan;
-		public final ForgeConfigSpec.ConfigValue<Boolean> rightClick;
-		public final ForgeConfigSpec.ConfigValue<String> targetItemIds;
-
-		public WoodPlanter(ForgeConfigSpec.Builder builder){
-			builder.push("WoodPlanter");
-			maxDistance = builder.comment("Maximum Distance(x-z) 1-128").defineInRange("MaxDistance", 9, 1, 128);
-			maxHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxHeight", 3, 1, 128);
-			oneTicPlant = builder.comment("Planting one tick 1-128").defineInRange("OneTicPlant", 1, 1, 128);
-			execTimeSpan = builder.comment("Planting Time Span").defineInRange("ExecTimeSpan", 20, 1, 200);
-			rightClick = builder.comment("right click possible [true/false]").define("RightClick",true);
-			targetItemIds = builder.comment("enable item ids").define("TargetItemIds",
-					"oak_sapling,"
-							+ "birch_sapling,"
-							+ "jungle_sapling,"
-							+ "acacia_sapling,"
-							+ "dark_oak_sapling,");
-			builder.pop();
-		}
-
-		public int MaxDistance(){return this.maxDistance.get();}
-		public int MaxHeight(){return this.maxHeight.get();}
-		public int OneTicPlant(){return this.oneTicPlant.get();}
-		public int ExecTimeSpan(){return this.execTimeSpan.get();}
-		public boolean RightClick(){return this.rightClick.get();}
-		public String TargetItemIds(){return this.targetItemIds.get();}
-
-
-		private List<ItemStack> targetStacks = new ArrayList<ItemStack>();
-		public void setItem(){
-			targetStacks.clear();
-			String regex="^[0-9]+$";
-			Pattern p = Pattern.compile(regex);
-			String[] targets = targetItemIds.get().split(",");
-			for (String target : targets){
-				ResourceLocation res = new ResourceLocation(target.toLowerCase());
-
-				ItemStack w = ItemStack.EMPTY;
-				try{
-					w = new ItemStack(IRegistry.field_212630_s.func_212608_b(res));
-				}catch(Exception ex){
-
-				}
-				if (w.isEmpty()){
-					try{
-						w = new ItemStack(IRegistry.field_212618_g.func_212608_b(res));
-					}catch(Exception ex){
-
-					}
-				}
-				if (!w.isEmpty()){
-					targetStacks.add(w.copy());
+		public boolean CheckItem(ItemStack stack) {
+			boolean ret = false;
+			if (targetStacks.size() == 0) {
+				setItem();
+			}
+			for(ItemStack check : targetStacks) {
+				if (stack.getItem() == check.getItem()) {
+					ret = true;
+					break;
 				}
 			}
-		}
-	}
-
-	public static class WoodHarvester{
-
-		public final ForgeConfigSpec.ConfigValue<Integer> maxDistance;
-		public final ForgeConfigSpec.ConfigValue<Integer> maxHeight;
-		public final ForgeConfigSpec.ConfigValue<Integer> oneTicPlant;
-		public final ForgeConfigSpec.ConfigValue<Integer> execTimeSpan;
-		public final ForgeConfigSpec.ConfigValue<Integer> searchPlanter;
-
-		public WoodHarvester(ForgeConfigSpec.Builder builder){
-			builder.push("WoodHarvester");
-			maxDistance = builder.comment("Maximum Distance(x-z) 1-128").defineInRange("MaxDistance", 9,1,128);
-			maxHeight = builder.comment("Maximum Distance(y) 1-128").defineInRange("MaxHeight", 3,1,128);
-			oneTicPlant = builder.comment("Harvest one tick 1-128").define("OneTicPlant", 1);
-			execTimeSpan = builder.comment("Planting Time Span").define("ExecTimeSpan", 20);
-			searchPlanter = builder.comment("search planter block distance(x.y.z) 1-128").define("SearchPlanter", 3);
-			builder.pop();
+			return ret;
 		}
 
-		public int MaxDistance(){return maxDistance.get();}
-		public int MaxHeight(){return maxHeight.get();}
-		public int OneTicPlant(){return oneTicPlant.get();}
-		public int ExecTimeSpan(){return execTimeSpan.get();}
-		public int SearchPlanter(){return searchPlanter.get();}
 
 	}
 

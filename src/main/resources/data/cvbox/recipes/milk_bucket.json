@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "milk_bucket",
+  "ingredients": [
+    {
+      "item": "cvbox:milkball"
+    },
+    {
+      "item": "minecraft:bucket"
+    }
+  ],
+  "result": {
+    "item": "minecraft:milk_bucket"
+  }
+}

@@ -2,8 +2,8 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerExEnchantment;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.work.ContainerExEnchantment;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -38,7 +38,7 @@ public class MessageExEnchant_UpdateParameter{
 		public static void handle(final MessageExEnchant_UpdateParameter pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if (player != null){
 					ContainerExEnchantment.updateEnchantment(pkt.getIndex(),pkt.getLevel(),player);
 				}

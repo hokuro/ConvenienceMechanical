@@ -2,9 +2,9 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerDestroyer;
-import mod.cvbox.tileentity.TileEntityDestroyer;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.factory.ContainerDestroyer;
+import mod.cvbox.tileentity.factory.TileEntityDestroyer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -37,7 +37,7 @@ public class Message_UpdateDestroy  {
 		public static void handle(final Message_UpdateDestroy pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if ( player.openContainer instanceof ContainerDestroyer){
 					TileEntityDestroyer destroyer = (TileEntityDestroyer)((ContainerDestroyer) player.openContainer).getTileEntity();
 					destroyer.updateValues(pkt.mode,pkt.time);

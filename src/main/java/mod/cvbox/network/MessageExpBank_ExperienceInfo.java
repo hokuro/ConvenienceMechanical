@@ -2,7 +2,7 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.gui.GuiExpBank;
+import mod.cvbox.gui.work.GuiExpBank;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;

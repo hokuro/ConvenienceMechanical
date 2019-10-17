@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "cvbox:blocks/farming_bottom",
+        "top": "cvbox:blocks/farming_top",
+        "side": "cvbox:blocks/farming_side"
+    }
+}

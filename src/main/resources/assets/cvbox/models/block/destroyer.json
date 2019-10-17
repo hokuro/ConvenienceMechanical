@@ -1,8 +1,8 @@
 {
     "parent": "block/orientable",
     "textures": {
-        "top": "cvbox:blocks/destroyer_side",
+        "top": "cvbox:blocks/machine_side",
         "front": "cvbox:blocks/destroyer_front",
-        "side": "cvbox:blocks/destroyer_side"
+        "side": "cvbox:blocks/machine_side"
     }
 }

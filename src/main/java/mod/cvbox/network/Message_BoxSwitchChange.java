@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import mod.cvbox.core.log.ModLog;
 import mod.cvbox.inventory.IPowerSwitchContainer;
-import mod.cvbox.tileentity.IPowerSwitchEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.tileentity.ab.IPowerSwitchEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -34,7 +34,7 @@ public class Message_BoxSwitchChange {
 		public static void handle(final Message_BoxSwitchChange pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				try{
 					Class<?> cls = player.openContainer.getClass();
 					IPowerSwitchEntity te = (IPowerSwitchEntity)((IPowerSwitchContainer)player.openContainer).getTileEntity();

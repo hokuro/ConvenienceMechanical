@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=up": { "model": "cvbox:block/deliverbox" },
+        "facing=down": { "model": "cvbox:block/deliverbox", "x": 180 },
+        "facing=north": { "model": "cvbox:block/deliverbox", "x":90 },
+        "facing=south": { "model": "cvbox:block/deliverbox", "x": 270 },
+        "facing=west": { "model": "cvbox:block/deliverbox", "x": 90, "y":270 },
+        "facing=east": { "model": "cvbox:block/deliverbox", "x": 270, "y":270 }
+    }
+}

@@ -6,8 +6,8 @@ import java.util.Map;
 import mod.cvbox.config.ConfigValue;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public class Utils {
 	public static CombinedEnchantments combine(Map<Enchantment, Integer> enchList1, Map<Enchantment, Integer> enchList2, ItemStack item){

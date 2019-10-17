@@ -4,20 +4,19 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import mod.cvbox.core.Mod_ConvenienceBox;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.item.Items;
+import net.minecraft.item.ToolItem;
+import net.minecraft.util.ActionResultType;
 
-public class ItemSickle extends ItemTool{
+public class ItemSickle extends ToolItem{
     private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(Blocks.MELON, Blocks.PUMPKIN, Blocks.CACTUS, Blocks.WHEAT, Blocks.POTATOES,Blocks.SUGAR_CANE, Blocks.CARROTS, Blocks.BEETROOTS, Blocks.NETHER_WART,
     		Blocks.CHORUS_FLOWER, Blocks.CHORUS_PLANT, Blocks.COCOA);
     private static final float[] ATTACK_DAMAGES = new float[] {6.0F, 8.0F, 8.0F, 8.0F, 6.0F};
@@ -26,24 +25,21 @@ public class ItemSickle extends ItemTool{
 
     protected ItemSickle(IItemTier tier, int attackDamageIn, float attackSpeedIn, Item.Properties builder) {
         super((float)attackDamageIn, attackSpeedIn, tier, EFFECTIVE_ON,
-        		builder.addToolType(net.minecraftforge.common.ToolType.PICKAXE, tier.getHarvestLevel())
-        		.group(Mod_ConvenienceBox.tabFarmer));
+        		builder.addToolType(net.minecraftforge.common.ToolType.PICKAXE, tier.getHarvestLevel()));
      }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, IBlockState state)
-    {
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
         Material material = state.getMaterial();
-        return material != Material.WOOD && material != Material.PLANTS && material != Material.VINE ? super.getDestroySpeed(stack, state) : this.efficiency;
+        return material != Material.WOOD && material != Material.PLANTS && material != Material.TALL_PLANTS ? super.getDestroySpeed(stack, state) : this.efficiency;
     }
 
 
     @Override
-    public EnumActionResult onItemUse(ItemUseContext context)
-    {
+    public ActionResultType onItemUse(ItemUseContext context) {
         ItemStack itemstack = context.getItem();
 
-        IBlockState iblockstate = context.getWorld().getBlockState(context.getPos());
+        BlockState iblockstate = context.getWorld().getBlockState(context.getPos());
         Block block = iblockstate.getBlock();
         ItemStack drop =ItemStack.EMPTY;
         if (block == Blocks.MELON){
@@ -68,7 +64,7 @@ public class ItemSickle extends ItemTool{
     			context.getPlayer().dropItem(drop, false);
         	}
     		context.getWorld().destroyBlock(context.getPos(), true);
-    		itemstack.damageItem(1, context.getPlayer());
+    		itemstack.damageItem(1, context.getPlayer(), (player)->{player.sendBreakAnimation(context.getHand());});
     		drop = ItemStack.EMPTY;
         }
 
@@ -78,6 +74,6 @@ public class ItemSickle extends ItemTool{
         	}
         	context.getWorld().setBlockState(context.getPos(), Blocks.AIR.getDefaultState());
     	}
-        return EnumActionResult.SUCCESS;
+        return ActionResultType.SUCCESS;
     }
 }

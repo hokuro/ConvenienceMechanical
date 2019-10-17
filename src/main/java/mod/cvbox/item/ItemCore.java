@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mod.cvbox.core.Mod_ConvenienceBox;
-import net.minecraft.init.Blocks;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemTier;
 import net.minecraftforge.event.RegistryEvent;
 
@@ -23,6 +24,12 @@ public class ItemCore {
 	public static final String NAME_EXBATTERY = "battery_extra";
 	public static final String NAME_LARGEBATTERY ="battery_large";
 	public static final String NAME_HUGEBATTERY = "battery_huge";
+	public static final String NAME_TISSUESCISSOR = "tissuescissor";
+	public static final String NAME_MOBTISSUE = "mobtissue";
+	public static final String NAME_MOBGENOM = "mobgenom";
+	public static final String NAME_IPSCELL = "ipscell";
+	public static final String NAME_MILLKBALL = "milkball";
+	public static final String NAME_GOLDIONHAMMER = "goldionhammer";
 
 
 	public static final String[] NAME_LIST = new String[]{
@@ -31,32 +38,44 @@ public class ItemCore {
 			NAME_IRONSICKLE,
 			NAME_GOLDSICKLE,
 			NAME_DIAMONDSICKLE,
+			NAME_SPANA,
+			NAME_GOLDIONHAMMER,
 			NAME_MACHINEMATTER,
 			NAME_WATERBALL,
 			NAME_LAVABALL,
-			NAME_SPANA,
+			NAME_MILLKBALL,
 			NAME_BATTERY,
 			NAME_EXBATTERY,
 			NAME_LARGEBATTERY,
 			NAME_HUGEBATTERY,
+			NAME_TISSUESCISSOR,
+			NAME_MOBTISSUE,
+			NAME_MOBGENOM,
+			NAME_IPSCELL
 	};
 
-	public static Item item_sickle_wood = new ItemSickle(ItemTier.WOOD,6,-3.2F, new Item.Properties()).setRegistryName(NAME_WOODSICKLE);
-	public static Item item_sickle_stone = new ItemSickle(ItemTier.STONE,8,-3.2F,new Item.Properties()).setRegistryName(NAME_STONESICKLE);
-	public static Item item_sickle_iron = new ItemSickle(ItemTier.IRON,8,-3.1F,new Item.Properties()).setRegistryName(NAME_IRONSICKLE);
-	public static Item item_sickle_gold = new ItemSickle(ItemTier.GOLD,8,-3.0F,new Item.Properties()).setRegistryName(NAME_GOLDSICKLE);
-	public static Item item_sickle_diamond = new ItemSickle(ItemTier.DIAMOND,6,-3.0F,new Item.Properties()).setRegistryName(NAME_DIAMONDSICKLE);;
+	public static Item item_sickle_wood = new ItemSickle(ItemTier.WOOD,6,-3.2F, new Item.Properties().group(ItemGroup.TOOLS)).setRegistryName(NAME_WOODSICKLE);
+	public static Item item_sickle_stone = new ItemSickle(ItemTier.STONE,8,-3.2F,new Item.Properties().group(ItemGroup.TOOLS)).setRegistryName(NAME_STONESICKLE);
+	public static Item item_sickle_iron = new ItemSickle(ItemTier.IRON,8,-3.1F,new Item.Properties().group(ItemGroup.TOOLS)).setRegistryName(NAME_IRONSICKLE);
+	public static Item item_sickle_gold = new ItemSickle(ItemTier.GOLD,8,-3.0F,new Item.Properties().group(ItemGroup.TOOLS)).setRegistryName(NAME_GOLDSICKLE);
+	public static Item item_sickle_diamond = new ItemSickle(ItemTier.DIAMOND,6,-3.0F,new Item.Properties().group(ItemGroup.TOOLS)).setRegistryName(NAME_DIAMONDSICKLE);;
 	public static Item item_machinematter = new Item(new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_MACHINEMATTER);
-	public static Item item_waterball = new ItemLiquidBall(Blocks.WATER).setRegistryName(NAME_WATERBALL);
-	public static Item item_lavaball =  new ItemLiquidBall(Blocks.LAVA).setRegistryName(NAME_LAVABALL);
-	public static Item item_spana = new ItemSpana().setRegistryName(NAME_SPANA);
-	public static Item item_battery = new ItemBattery(8400).setRegistryName(NAME_BATTERY);
-	public static Item item_exbattery = new ItemBattery(36000).setRegistryName(NAME_EXBATTERY);
-	public static Item largebattery = new ItemBattery(438000).setRegistryName(NAME_LARGEBATTERY);
-	public static Item hugebattery = new ItemBattery(4380000).setRegistryName(NAME_HUGEBATTERY);
+	public static Item item_waterball = new ItemLiquidBall(Fluids.WATER, new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_WATERBALL);
+	public static Item item_lavaball =  new ItemLiquidBall(Fluids.LAVA, new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_LAVABALL);
+	public static Item item_spana = new ItemSpana(new Item.Properties().maxDamage(128).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_SPANA);
+	public static Item item_battery = new ItemBattery(new Item.Properties().maxDamage(8400).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_BATTERY);
+	public static Item item_exbattery = new ItemBattery(new Item.Properties().maxDamage(36000).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_EXBATTERY);
+	public static Item item_largebattery = new ItemBattery(new Item.Properties().maxDamage(438000).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_LARGEBATTERY);
+	public static Item item_hugebattery = new ItemBattery(new Item.Properties().maxDamage(4380000).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_HUGEBATTERY);
+	public static Item item_tissuesissor = new ItemTissueSissor(new Item.Properties().maxDamage(128).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_TISSUESCISSOR);
+	public static Item item_mobtissue = new ItemMobGenom(new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_MOBTISSUE);
+	public static Item item_mobgenom = new ItemMobGenom(new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_MOBGENOM);
+	public static Item item_ipscell = new Item(new Item.Properties().group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_IPSCELL);
+	public static Item item_millkball = new ItemMillkBall(new Item.Properties().group(Mod_ConvenienceBox.tabFarmer)).setRegistryName(NAME_MILLKBALL);
+	public static Item item_goldionhammer = new ItemGoldionHammer(new Item.Properties().maxDamage(128).group(Mod_ConvenienceBox.tabFactory)).setRegistryName(NAME_GOLDIONHAMMER);
 
 	private static Map<String,Item> itemMap = null;
-	private static void init(){
+	public static void init(){
 		if (itemMap != null){return;}
 		itemMap = new HashMap<String,Item>(){
 			{put(NAME_WOODSICKLE,item_sickle_wood);}
@@ -70,15 +89,22 @@ public class ItemCore {
 			{put(NAME_SPANA,item_spana);}
 			{put(NAME_BATTERY,item_battery);}
 			{put(NAME_EXBATTERY,item_exbattery);}
-			{put(NAME_LARGEBATTERY,largebattery);}
-			{put(NAME_HUGEBATTERY,hugebattery);}
+			{put(NAME_LARGEBATTERY,item_largebattery);}
+			{put(NAME_HUGEBATTERY,item_hugebattery);}
+			{put(NAME_TISSUESCISSOR,item_tissuesissor);}
+			{put(NAME_MOBTISSUE,item_mobtissue);}
+			{put(NAME_MOBGENOM,item_mobgenom);}
+			{put(NAME_IPSCELL,item_ipscell);}
+			{put(NAME_MILLKBALL,item_millkball);}
+			{put(NAME_GOLDIONHAMMER,item_goldionhammer);}
 		};
 	}
 
 	public static void register(final RegistryEvent.Register<Item> event) {
-		init();
 		for (String key : NAME_LIST){
-			event.getRegistry().register(itemMap.get(key));
+			if (itemMap.containsKey(key)) {
+				event.getRegistry().register(itemMap.get(key));
+			}
 		}
 	}
 }

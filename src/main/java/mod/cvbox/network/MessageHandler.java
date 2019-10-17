@@ -1,7 +1,7 @@
 package mod.cvbox.network;
 
 import mod.cvbox.core.ModCommon;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -38,13 +38,18 @@ public class MessageHandler {
 		Handler.registerMessage(disc++, Message_BoxSwitchChange.class, Message_BoxSwitchChange::encode, Message_BoxSwitchChange::decode, Message_BoxSwitchChange.Handler::handle);
 		Handler.registerMessage(disc++, Message_ResetWork.class, Message_ResetWork::encode, Message_ResetWork::decode, Message_ResetWork.Handler::handle);
 		Handler.registerMessage(disc++, Message_UpdateDestroy.class, Message_UpdateDestroy::encode, Message_UpdateDestroy::decode, Message_UpdateDestroy.Handler::handle);
+		Handler.registerMessage(disc++, MessageMillking_GetAll.class, MessageMillking_GetAll::encode, MessageMillking_GetAll::decode, MessageMillking_GetAll.Handler::handle);
+		Handler.registerMessage(disc++, MessageMillking_AreaSizeUpdate.class, MessageMillking_AreaSizeUpdate::encode, MessageMillking_AreaSizeUpdate::decode, MessageMillking_AreaSizeUpdate.Handler::handle);
+		Handler.registerMessage(disc++, MessageWoolCutting_AreaSizeUpdate.class, MessageWoolCutting_AreaSizeUpdate::encode, MessageWoolCutting_AreaSizeUpdate::decode, MessageWoolCutting_AreaSizeUpdate.Handler::handle);
+		Handler.registerMessage(disc++, MessageAutoFeed_AreaSizeUpdate.class, MessageAutoFeed_AreaSizeUpdate::encode, MessageAutoFeed_AreaSizeUpdate::decode, MessageAutoFeed_AreaSizeUpdate.Handler::handle);
+		Handler.registerMessage(disc++, Message_DeliverBox_ModeChange.class, Message_DeliverBox_ModeChange::encode, Message_DeliverBox_ModeChange::decode, Message_DeliverBox_ModeChange.Handler::handle);
 	}
 
-	public static void SendMessage_ExEnchant_ClearParameter(EntityPlayerMP player){
+	public static void SendMessage_ExEnchant_ClearParameter(ServerPlayerEntity player){
 		Handler.sendTo(new MessageExEnchant_ClearParameter(), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
 	}
 
-	public static void SendMessage_ExpBank_ExperienceInfo(int player_exp, int box_exp, EntityPlayerMP player) {
+	public static void SendMessage_ExpBank_ExperienceInfo(int player_exp, int box_exp, ServerPlayerEntity player) {
 		// TODO 自動生成されたメソッド・スタブ
 		Handler.sendTo(new MessageExpBank_ExperienceInfo(player_exp, box_exp),  player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
 	}
@@ -104,6 +109,26 @@ public class MessageHandler {
 
 	public static void SendMessage_ExpBank_ExecExperience(int mode, int x, int y, int z, int exp) {
 		Handler.sendToServer(new MessageExpBank_ExecExperience(mode,x,y,z,exp));
+	}
+
+	public static void SendMessage_Millking_GetAll() {
+		Handler.sendToServer(new MessageMillking_GetAll());
+	}
+
+	public static void SendMessage_Millking_AreaSizeUpdate(int x, int z) {
+		Handler.sendToServer(new MessageMillking_AreaSizeUpdate(x,z));
+	}
+
+	public static void SendMessage_WoolCutting_AreaSizeUpdate(int x, int z) {
+		Handler.sendToServer(new MessageWoolCutting_AreaSizeUpdate(x,z));
+	}
+
+	public static void SendMessage_AutoFeed_AreaSizeUpdate(int x, int z) {
+		Handler.sendToServer(new MessageAutoFeed_AreaSizeUpdate(x,z));
+	}
+
+	public static void SendMessage_DeliverBox_ModeChange() {
+		Handler.sendToServer(new Message_DeliverBox_ModeChange());
 	}
 
 }

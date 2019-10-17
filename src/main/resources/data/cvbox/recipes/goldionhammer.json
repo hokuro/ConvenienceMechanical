@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "goldionhammer",
+  "pattern": [
+    "###",
+    "#S#",
+    "#S#"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "#": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "cvbox:goldionhammer",
+    "count": 1
+  }
+}

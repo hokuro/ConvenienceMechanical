@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerStraw;
-import mod.cvbox.tileentity.TileEntityStraw;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.factory.ContainerStraw;
+import mod.cvbox.tileentity.factory.TileEntityStraw;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -30,7 +30,7 @@ public class MessageStraw_GetAll  {
 		public static void handle(final MessageStraw_GetAll pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if ( player.openContainer instanceof ContainerStraw){
 					TileEntityStraw straw = ((ContainerStraw)player.openContainer).getTileEntity();
 					int tank = straw.getField(TileEntityStraw.FIELD_TANK);
@@ -45,11 +45,10 @@ public class MessageStraw_GetAll  {
 						straw.setInventorySlotContents(1, ItemStack.EMPTY);
 					}
 
-		            for (int i = 0; i < stacks.size(); ++i)
-		            {
-		            	player.inventory.placeItemBackInInventory(player.world, stacks.get(i).copy());
-		            }
-		            straw.setField(TileEntityStraw.FIELD_TANK, 0);
+					for (int i = 0; i < stacks.size(); ++i) {
+						player.inventory.placeItemBackInInventory(player.world, stacks.get(i).copy());
+					}
+					straw.setField(TileEntityStraw.FIELD_TANK, 0);
 				}
 			});
 			ctx.get().setPacketHandled(true);

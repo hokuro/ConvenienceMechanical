@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ipscellmaker",
+  "pattern": [
+    "K K",
+    "KRK",
+    "KGK"
+  ],
+  "key": {
+    "K": {
+      "item": "cvbox:machinematter"
+    },
+    "G": {
+      "item": "minecraft:furnace"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "item": "cvbox:ipscellmaker",
+    "count": 1
+  }
+}

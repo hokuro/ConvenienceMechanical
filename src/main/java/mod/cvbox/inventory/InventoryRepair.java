@@ -1,16 +1,15 @@
 package mod.cvbox.inventory;
 
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
 
-public class InventoryRepair extends InventoryBasic {
+public class InventoryRepair extends Inventory {
 
     /** Container of this anvil's block. */
-    private final mod.cvbox.inventory.ContainerExRepair theContainer;
+    private final mod.cvbox.inventory.work.ContainerExRepair theContainer;
 
-    public InventoryRepair(mod.cvbox.inventory.ContainerExRepair containerRepairBA, String inventoryTitle, boolean isLocalized, int slotCount) {
-        super(new TextComponentString( inventoryTitle), slotCount);
+    public InventoryRepair(mod.cvbox.inventory.work.ContainerExRepair containerRepairBA, String inventoryTitle, boolean isLocalized, int slotCount) {
+        super(slotCount);
         this.theContainer = containerRepairBA;
     }
 

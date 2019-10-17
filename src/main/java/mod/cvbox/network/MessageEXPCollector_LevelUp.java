@@ -2,9 +2,9 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerExpCollector;
-import mod.cvbox.tileentity.TileEntityExpCollector;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.factory.ContainerExpCollector;
+import mod.cvbox.tileentity.factory.TileEntityExpCollector;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -33,7 +33,7 @@ public class MessageEXPCollector_LevelUp {
 		public static void handle(final MessageEXPCollector_LevelUp pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if (player.openContainer instanceof ContainerExpCollector){
 					TileEntityExpCollector collector = ((ContainerExpCollector)player.openContainer).getTileEntity();
 					if (pkt.exp < 0){

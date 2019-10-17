@@ -2,9 +2,9 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerStraw;
-import mod.cvbox.tileentity.TileEntityStraw;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.factory.ContainerStraw;
+import mod.cvbox.tileentity.factory.TileEntityStraw;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -27,7 +27,7 @@ public class MessageStraw_ClearArea {
 		public static void handle(final MessageStraw_ClearArea pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if ( player.openContainer instanceof ContainerStraw){
 					TileEntityStraw straw = ((ContainerStraw)player.openContainer).getTileEntity();
 					straw.resetSearchArea();

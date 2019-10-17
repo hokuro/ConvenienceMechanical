@@ -4,15 +4,9 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import mod.cvbox.inventory.ContainerAutoHarvest;
-import mod.cvbox.inventory.ContainerAutoPlanting;
-import mod.cvbox.inventory.ContainerWoodHarvester;
-import mod.cvbox.inventory.ContainerWoodPlanter;
-import mod.cvbox.tileentity.TileEntityHarvester;
-import mod.cvbox.tileentity.TileEntityPlanter;
-import mod.cvbox.tileentity.TileEntityWoodHarvester;
-import mod.cvbox.tileentity.TileEntityWoodPlanter;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.farm.ContainerPlantNurture;
+import mod.cvbox.tileentity.ab.TileEntityPlantNurtureBase;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -52,34 +46,13 @@ public class MessageFarmer_UpdateDelivery {
 		public static void handle(final MessageFarmer_UpdateDelivery pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
-				if ( player.openContainer instanceof ContainerAutoPlanting){
-					((ContainerAutoPlanting)player.openContainer).setDeliverMode(pkt.deliver);
-					World world = ((ContainerAutoPlanting)player.openContainer).getWorld();
+				PlayerEntity player = ctx.get().getSender();
+				if ( player.openContainer instanceof ContainerPlantNurture){
+					((ContainerPlantNurture)player.openContainer).setDeliverMode(pkt.deliver);
+					World world = ((ContainerPlantNurture)player.openContainer).getWorld();
 					TileEntity ent = world.getTileEntity(pkt.pos);
-					if ( ent instanceof TileEntityPlanter){
-						((TileEntityPlanter)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
-					}
-				}else if (player.openContainer instanceof ContainerAutoHarvest){
-					((ContainerAutoHarvest)player.openContainer).setDeliverMode(pkt.deliver);
-					World world = ((ContainerAutoHarvest)player.openContainer).getWorld();
-					TileEntity ent = world.getTileEntity(pkt.pos);
-					if ( ent instanceof TileEntityHarvester){
-						((TileEntityHarvester)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
-					}
-				}else if (player.openContainer instanceof ContainerWoodPlanter){
-					((ContainerWoodPlanter)player.openContainer).setDeliverMode(pkt.deliver);
-					World world = ((ContainerWoodPlanter)player.openContainer).getWorld();
-					TileEntity ent = world.getTileEntity(pkt.pos);
-					if ( ent instanceof TileEntityWoodPlanter){
-						((TileEntityWoodPlanter)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
-					}
-				}else if (player.openContainer instanceof ContainerWoodHarvester){
-					((ContainerWoodHarvester)player.openContainer).setDeliverMode(pkt.deliver);
-					World world = ((ContainerWoodHarvester)player.openContainer).getWorld();
-					TileEntity ent = world.getTileEntity(pkt.pos);
-					if ( ent instanceof TileEntityWoodHarvester){
-						((TileEntityWoodHarvester)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
+					if ( ent instanceof TileEntityPlantNurtureBase){
+						((TileEntityPlantNurtureBase)ent).setField(1, BooleanUtils.toInteger(pkt.deliver));
 					}
 				}
 			});

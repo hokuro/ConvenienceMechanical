@@ -4,11 +4,8 @@ import java.util.function.Supplier;
 
 import mod.cvbox.core.log.ModLog;
 import mod.cvbox.inventory.IPowerSwitchContainer;
-import mod.cvbox.tileentity.TileEntityHarvester;
-import mod.cvbox.tileentity.TileEntityPlanter;
-import mod.cvbox.tileentity.TileEntityWoodHarvester;
-import mod.cvbox.tileentity.TileEntityWoodPlanter;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.tileentity.ab.TileEntityPlantNurtureBase;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -33,18 +30,12 @@ public class Message_ResetWork {
 		public static void handle(final Message_ResetWork pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				try{
 					Class<?> cls = player.openContainer.getClass();
 					TileEntity te = ((IPowerSwitchContainer)player.openContainer).getTileEntity();
-					if (te instanceof TileEntityHarvester){
-						((TileEntityHarvester)te).reset();
-					}else if (te instanceof TileEntityPlanter){
-						((TileEntityPlanter)te).reset();
-					}else if (te instanceof TileEntityWoodHarvester){
-						((TileEntityWoodHarvester)te).reset();
-					}else if (te instanceof TileEntityWoodPlanter){
-						((TileEntityWoodPlanter)te).reset();
+					if (te instanceof TileEntityPlantNurtureBase){
+						((TileEntityPlantNurtureBase)te).reset();
 					}
 				}catch(Exception ex){
 					ModLog.log().fatal(ex.getMessage());

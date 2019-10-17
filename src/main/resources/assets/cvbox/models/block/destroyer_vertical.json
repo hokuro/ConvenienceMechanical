@@ -2,6 +2,6 @@
     "parent": "block/orientable_vertical",
     "textures": {
         "front": "cvbox:blocks/destroyer_front",
-        "side": "cvbox:blocks/destroyer_side"
+        "side": "cvbox:blocks/machine_side"
     }
 }

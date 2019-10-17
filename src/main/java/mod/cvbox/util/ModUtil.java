@@ -3,7 +3,7 @@ package mod.cvbox.util;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.util.math.BlockPos;
@@ -70,60 +70,23 @@ public class ModUtil {
 
         while (!stack.isEmpty())
         {
-            EntityItem entityitem = new EntityItem(worldIn, x + (double)f, y + (double)f1, z + (double)f2, stack.split(RANDOM.nextInt(21) + 10));
+            ItemEntity entityitem = new ItemEntity(worldIn, x + (double)f, y + (double)f1, z + (double)f2, stack.split(RANDOM.nextInt(21) + 10));
             float f3 = 0.05F;
-            entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;
-            entityitem.motionY = RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-            entityitem.motionZ = RANDOM.nextGaussian() * 0.05000000074505806D;
-            worldIn.spawnEntity(entityitem);
+            entityitem.setMotion(RANDOM.nextGaussian() * 0.05000000074505806D,
+            						RANDOM.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D,
+            						RANDOM.nextGaussian() * 0.05000000074505806D);
+            worldIn.addEntity(entityitem);
         }
     }
 
-    public static void spawnParticles(World worldIn, BlockPos pos, IParticleData part)
-    {
+    public static void addParticleTypes(World worldIn, BlockPos pos, IParticleData part) {
         Random random = worldIn.rand;
         double d0 = 0.0625D;
-
-        for (int i = 0; i < 6; ++i)
-        {
-            double d1 = (double)((float)pos.getX() + random.nextFloat());
-            double d2 = (double)((float)pos.getY() + random.nextFloat());
-            double d3 = (double)((float)pos.getZ() + random.nextFloat());
-
-            if (i == 0 && !worldIn.getBlockState(pos.up()).isOpaqueCube(worldIn,pos))
-            {
-                d2 = (double)pos.getY() + 0.0625D + 1.0D;
-            }
-
-            if (i == 1 && !worldIn.getBlockState(pos.down()).isOpaqueCube(worldIn,pos))
-            {
-                d2 = (double)pos.getY() - 0.0625D;
-            }
-
-            if (i == 2 && !worldIn.getBlockState(pos.south()).isOpaqueCube(worldIn,pos))
-            {
-                d3 = (double)pos.getZ() + 0.0625D + 1.0D;
-            }
-
-            if (i == 3 && !worldIn.getBlockState(pos.north()).isOpaqueCube(worldIn,pos))
-            {
-                d3 = (double)pos.getZ() - 0.0625D;
-            }
-
-            if (i == 4 && !worldIn.getBlockState(pos.east()).isOpaqueCube(worldIn,pos))
-            {
-                d1 = (double)pos.getX() + 0.0625D + 1.0D;
-            }
-
-            if (i == 5 && !worldIn.getBlockState(pos.west()).isOpaqueCube(worldIn,pos))
-            {
-                d1 = (double)pos.getX() - 0.0625D;
-            }
-
-            if (d1 < (double)pos.getX() || d1 > (double)(pos.getX() + 1) || d2 < 0.0D || d2 > (double)(pos.getY() + 1) || d3 < (double)pos.getZ() || d3 > (double)(pos.getZ() + 1))
-            {
-                worldIn.spawnParticle(part, d1, d2, d3, 0.0D, 0.0D, 0.0D);
-            }
+        for(int i = 0; i < 10; ++i) {
+        	double d3 = random.nextGaussian() * 0.02D;
+        	double d4 = random.nextGaussian() * 0.02D;
+            double d5 = random.nextGaussian() * 0.02D;
+            worldIn.addParticle(part, (double)pos.getX() + (double)0.13125F + (double)0.7375F * (double)random.nextFloat(), (double)pos.getY() + d0 + (double)random.nextFloat() * (1.0D - d0), (double)pos.getZ() + (double)0.13125F + (double)0.7375F * (double)random.nextFloat(), d3, d4, d5);
         }
     }
 

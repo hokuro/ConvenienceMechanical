@@ -2,9 +2,9 @@ package mod.cvbox.network;
 
 import java.util.function.Supplier;
 
-import mod.cvbox.inventory.ContainerKiller;
-import mod.cvbox.tileentity.TileEntityKiller;
-import net.minecraft.entity.player.EntityPlayer;
+import mod.cvbox.inventory.factory.ContainerKiller;
+import mod.cvbox.tileentity.factory.TileEntityKiller;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -40,7 +40,7 @@ public class MessageKiller_UpdateAreaSize {
 		public static void handle(final MessageKiller_UpdateAreaSize pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().enqueueWork(() -> {
-				EntityPlayer player = ctx.get().getSender();
+				PlayerEntity player = ctx.get().getSender();
 				if ( player.openContainer instanceof ContainerKiller){
 					TileEntityKiller killer = ((ContainerKiller)player.openContainer).getTileEntity();
 					killer.setField(TileEntityKiller.FIELD_AREASIZEX, pkt.x);

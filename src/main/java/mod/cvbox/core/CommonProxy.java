@@ -1,6 +1,6 @@
 package mod.cvbox.core;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public class CommonProxy{
@@ -32,5 +32,5 @@ public class CommonProxy{
 	public void registerRender(){
 
 	}
-	public EntityPlayer getEntityPlayerInstance() {return null;}
+	public PlayerEntity getPlayerEntityInstance() {return null;}
 }
